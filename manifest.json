@@ -12,6 +12,7 @@
         "name": "Click to enable/disable grammar checks",
         "default_icon": "disabled.png"
     },
+    "options_page": "options.html",
     "background": {
         "scripts": [
             "background.js"
