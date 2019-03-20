@@ -1,37 +1,60 @@
 'use strict';
 
 function toggleIcon(tab) {
-    const url = (new URL(tab.url)).hostname
-    chrome.storage.sync.get(url, (data) => {
+    if (!tab) {
+        return console.error('toggleIcon: tab input cannot be falsy');
+    }
+    const host = (new URL(tab.url)).hostname;
+    if (!host) {
+        return console.error('toggleIcon: hostname must be a non-nil string');
+    }
+
+    chrome.storage.sync.get(host, (data) => {
         let save = {}
-        save[url] = !data[url]
+        save[host] = !data[host]
         chrome.storage.sync.set(save, () => {
-            console.log('updated', url, 'to', save);
+            console.log('toggleIcon: updated', host, 'to', save);
+            setTabState(tab);
         });
-        chrome.browserAction.setIcon({ path: data[url] ? 'disabled.png' : 'enabled.png' });
     });
 };
 
-function checkStatus(tab) {
+function setTabState(tab) {
     if (!tab) {
-        return
+        return console.error('setTabState: tab input cannot be falsy');
     }
-    const url = (new URL(tab.url)).hostname
-    chrome.storage.sync.get(url, (data) => {
-        console.log('value of', url, ':', data)
-        chrome.browserAction.setIcon({ path: data[url] ? 'enabled.png' : 'disabled.png' });
+    const host = (new URL(tab.url)).hostname;
+    if (!host) {
+        return console.error('setTabState: hostname must be a non-nil string');
+    }
+    chrome.storage.sync.get(host, (data) => {
+        console.log('setTabState: state of', host, 'is', data[host])
+        chrome.browserAction.setIcon({ path: data[host] ? 'enabled.png' : 'disabled.png' });
     });
 }
 
-chrome.runtime.onInstalled.addListener(function () {
-    chrome.tabs.getCurrent(checkStatus);
+chrome.runtime.onInstalled.addListener(() => {
+    console.log('runtime.onInstalled fired');
 });
 
 // Called when the user clicks on the browser action.
-chrome.browserAction.onClicked.addListener(toggleIcon);
+chrome.browserAction.onClicked.addListener((tab) => {
+    console.log('browserAction.onClicked fired: ', tab);
+    toggleIcon(tab);
+});
 
 // Called when user switches tab. Check if enabled for this tab
-chrome.tabs.onActivated.addListener(function (active) {
-    console.log('tab', tab.tabId, 'activated');
-    chrome.tabs.get(active.tabId, checkStatus)
+chrome.tabs.onActivated.addListener((active) => {
+    console.log('tabs.onActivated fired: ', active);
+    chrome.tabs.get(active.tabId, setTabState);
 });
+
+// TODO: Figure out how to make initial tab active if it was already active.
+// chrome.tabs.getCurrent((tab) => {
+//     console.log('tabs.getCurrent: current tab', tab)
+//     setTabState(tab);
+// });
+
+// Note on chrome.storage:
+// Refreshing the extension from the chrome extensions page doesn't reset data in storage.
+// Removing the plugin and reloading it resets the storage.
