@@ -3,12 +3,19 @@
     "version": "0.1",
     "description": "Grammar suggestions",
     "manifest_version": 2,
-    "permissions": ["storage"],
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "storage"
+    ],
     "browser_action": {
-        "name": "Click to enable/disable grammar checks"
+        "name": "Click to enable/disable grammar checks",
+        "default_icon": "disabled.png"
     },
     "background": {
-      "scripts": ["background.js"],
-      "persistent": false
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
     }
-  }
+}
