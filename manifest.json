@@ -1,9 +1,12 @@
 {
     "name": "Write Better",
     "version": "0.1",
-    "description": "Spelling and Grammar suggestions",
+    "description": "Grammar suggestions",
     "manifest_version": 2,
     "permissions": ["storage"],
+    "browser_action": {
+        "name": "Click to enable/disable grammar checks"
+    },
     "background": {
       "scripts": ["background.js"],
       "persistent": false
