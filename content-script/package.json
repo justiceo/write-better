@@ -5,7 +5,7 @@
   "main": "content-script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify content-script.js -o bin/content-script.js"
+    "build": "gulp build"
   },
   "author": "Justice Ogbonna",
   "license": "ISC",
@@ -13,6 +13,9 @@
     "write-good": "^1.0.1"
   },
   "devDependencies": {
-    "browserify": "^16.2.3"
+    "gulp": "^3.9.1",
+    "gulp-browserify": "^0.5.1",
+    "gulp-rename": "^1.4.0",
+    "tsify": "^4.0.1"
   }
 }
