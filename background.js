@@ -32,7 +32,7 @@ function setTabState(tab) {
         chrome.browserAction.setIcon({ path: data[host] ? 'enabled.png' : 'disabled.png' });
         if (data[host]) {
             injectCode(tab, () => {
-                chrome.tabs.sendMessage(tab.id, { text: 'analyze_doc' }, (resp) => {
+                chrome.tabs.sendMessage(tab.id, 'analyze_doc', (resp) => {
                     console.log('Done analyzing doc:', resp);
                 });
             });
