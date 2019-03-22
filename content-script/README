@@ -1,6 +1,0 @@
-# Content-Script 
-
-### To build
-```
-npm run-script build
-```
