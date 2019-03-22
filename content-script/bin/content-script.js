@@ -6,8 +6,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
     if (msg.text === 'analyze_doc') {
         let p = document.getElementsByClassName('kix-page');
         for (let i = 0; i < p.length; i++) {
-            console.log("kix page text: ", textNodes(p[i]));
-            console.log('writeGood output', writeGood(p[i].textContent));
+            let t = textNodes(p[i]);
+            for (let j = 0; j < t.length; j++) {
+                if (t[j].textContent.trim() != "") {
+                    console.debug('writeGood: ', t[j].textContent, '->', writeGood(t[j].textContent));
+                }
+            }
         }
         callback(document.body.innerHTML);
     }
