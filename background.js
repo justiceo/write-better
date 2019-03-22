@@ -30,6 +30,23 @@ function setTabState(tab) {
     chrome.storage.sync.get(host, (data) => {
         console.log('setTabState: state of', host, 'is', data[host])
         chrome.browserAction.setIcon({ path: data[host] ? 'enabled.png' : 'disabled.png' });
+        if (data[host]) {
+            injectCode(tab, () => {
+                chrome.tabs.sendMessage(tab.id, { text: 'analyze_doc' }, (resp) => {
+                    console.log('Done analyzing doc:', resp);
+                });
+            });
+        }
+    });
+}
+
+function injectCode(tab, callback) {
+    chrome.tabs.insertCSS(tab.id, { file: 'ext.css', allFrames: true }, (res) => {
+        console.log('injectCode: added css file', res)
+    });
+    chrome.tabs.executeScript(tab.id, { file: 'ext.js', allFrames: true }, (res) => {
+        console.log('injectCode: added ext.js file', res);
+        callback();
     });
 }
 
