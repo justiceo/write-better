@@ -1,0 +1,15 @@
+{
+  "name": "content-script",
+  "version": "1.0.0",
+  "description": "The content script of write better extension",
+  "main": "content-script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify content-script.js -o bin/content-script.js"
+  },
+  "author": "Justice Ogbonna",
+  "license": "ISC",
+  "dependencies": {
+    "write-good": "^1.0.1"
+  }
+}
