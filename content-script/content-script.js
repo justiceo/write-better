@@ -4,13 +4,20 @@ chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
     console.log('runtime.onMessage fired', msg);
     if (msg.text === 'analyze_doc') {
         let allPages = document.querySelector('.kix-paginateddocumentplugin');
+
         let txts = textNodes(allPages);
         let nodeMap = {};
         for (let i = 0; i < txts.length; i++) {
-            const txt = txts[i];
-            if (txt.textContent.trim() != "") {
-                nodeMap[txt.textContent] = writeGood(txt.textContent);
+            let txt = txts[i].textContent;
+            if (txt.trim() == "") {
+                continue;
             }
+            const suggestions = writeGood(txt);
+            for (let j = suggestions.length - 1; j >= 0; j--) {
+                const s = suggestions[j];
+                txt = txt.substring(0, s.index) + '<strong>' + txt.substring(s.index, s.index + s.offset) + '</strong>' + txt.substring(s.index + s.offset);
+            }
+            nodeMap[txts[i].textContent] = txt;
         }
         console.debug('writeGood: ', nodeMap);
         callback('success');
