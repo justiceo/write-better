@@ -10,6 +10,7 @@
   "author": "Justice Ogbonna",
   "license": "ISC",
   "dependencies": {
+    "@types/chrome": "0.0.81",
     "write-good": "^1.0.1"
   },
   "devDependencies": {

@@ -9,7 +9,7 @@ gulp.task('build', function () {
     return gulp
         .src(source, { read: false })
         .pipe(browserify({
-            plugin: ['tsify'],
+            plugin: [tsify, { noImplicitAny: true }],
         }))
         .pipe(rename('content-script.js'))
         .pipe(gulp.dest('./bin'));
