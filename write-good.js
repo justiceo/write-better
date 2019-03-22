@@ -1697,6 +1697,7 @@ function writeGood(text, opts = {}) {
 
   return dedup(suggestions).sort((a, b) => (a.index < b.index ? -1 : 1));
 }
+console.log('write-good:', writeGood('So the cat was stolen.'));
 module.exports = writeGood;
 
 module.exports.annotate = require('./lib/annotate');

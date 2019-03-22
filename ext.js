@@ -1,3 +1,4 @@
+
 chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
     console.log('runtime.onMessage fired', msg);
     if (msg.text === 'analyze_doc') {
@@ -5,7 +6,6 @@ chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
         for (let i = 0; i < p.length; i++) {
             console.log("kix page text: ", textNodes(p[i]));
         }
-
         callback(document.body.innerHTML);
     }
 });
