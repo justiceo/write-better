@@ -1,14 +1,13 @@
 {
-  "name": "content-script",
-  "version": "1.0.0",
-  "description": "The content script of write better extension",
-  "main": "content-script.js",
+  "name": "write-better",
+  "version": "0.1.0",
+  "description": "Grammar and writing style suggestions to improve the quality of your writings",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "gulp build"
   },
   "author": "Justice Ogbonna",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@types/chrome": "0.0.81",
     "write-good": "^1.0.1"
