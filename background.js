@@ -44,10 +44,13 @@ function injectCode(tab, callback) {
     chrome.tabs.insertCSS(tab.id, { file: 'ext.css', allFrames: true }, (res) => {
         console.log('injectCode: added css file', res)
     });
-    chrome.tabs.executeScript(tab.id, { file: 'ext.js', allFrames: true }, (res) => {
-        console.log('injectCode: added ext.js file', res);
-        callback();
+    chrome.tabs.executeScript(tab.id, { file: 'write-good.js', allFrames: true }, () => {
+        chrome.tabs.executeScript(tab.id, { file: 'ext.js', allFrames: true }, (res) => {
+            console.log('injectCode: added ext.js file', res);
+            callback();
+        });
     });
+    
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -65,6 +68,7 @@ chrome.tabs.onActivated.addListener((active) => {
     console.log('tabs.onActivated fired: ', active);
     chrome.tabs.get(active.tabId, setTabState);
 });
+
 
 // TODO: Figure out how to make initial tab active if it was already active.
 // chrome.tabs.getCurrent((tab) => {
