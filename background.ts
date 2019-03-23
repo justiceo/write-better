@@ -1,6 +1,6 @@
 'use strict';
 
-function toggleIcon(tab) {
+function toggleIcon(tab: chrome.tabs.Tab) {
     if (!tab) {
         return console.error('toggleIcon: tab input cannot be falsy');
     }
@@ -10,7 +10,7 @@ function toggleIcon(tab) {
     }
 
     chrome.storage.sync.get(host, (data) => {
-        let save = {}
+        let save: any = {}
         save[host] = !data[host]
         chrome.storage.sync.set(save, () => {
             console.log('toggleIcon: updated', host, 'to', save);
@@ -19,7 +19,7 @@ function toggleIcon(tab) {
     });
 };
 
-function setTabState(tab) {
+function setTabState(tab: chrome.tabs.Tab) {
     if (!tab) {
         return console.error('setTabState: tab input cannot be falsy');
     }
@@ -40,29 +40,29 @@ function setTabState(tab) {
     });
 }
 
-function injectCode(tab, callback) {
-    chrome.tabs.insertCSS(tab.id, { file: 'ext.css', allFrames: true }, (res) => {
-        console.log('injectCode: added css file', res)
+function injectCode(tab: chrome.tabs.Tab, callback: (args?: any) => void) {
+    chrome.tabs.insertCSS(tab.id, { file: 'ext.css', allFrames: true }, () => {
+        console.log('injectCode: added css file')
     });
-    chrome.tabs.executeScript(tab.id, { file: 'bin/content-script.js', allFrames: true }, (res) => {
+    chrome.tabs.executeScript(tab.id, { file: 'bin/content-script.js', allFrames: true }, (res: any[]) => {
         console.log('injectCode: added bin/content-script.js file', res);
         callback();
     });
-    
+
 }
 
-chrome.runtime.onInstalled.addListener(() => {
-    console.log('runtime.onInstalled fired');
+chrome.runtime.onInstalled.addListener((details: chrome.runtime.InstalledDetails) => {
+    console.log('runtime.onInstalled fired:' + details.reason);
 });
 
 // Called when the user clicks on the browser action.
-chrome.browserAction.onClicked.addListener((tab) => {
+chrome.browserAction.onClicked.addListener((tab: chrome.tabs.Tab) => {
     console.log('browserAction.onClicked fired: ', tab);
     toggleIcon(tab);
 });
 
 // Called when user switches tab. Check if enabled for this tab
-chrome.tabs.onActivated.addListener((active) => {
+chrome.tabs.onActivated.addListener((active: chrome.tabs.TabActiveInfo) => {
     console.log('tabs.onActivated fired: ', active);
     chrome.tabs.get(active.tabId, setTabState);
 });

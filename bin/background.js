@@ -39,16 +39,16 @@ function setTabState(tab) {
     });
 }
 function injectCode(tab, callback) {
-    chrome.tabs.insertCSS(tab.id, { file: 'ext.css', allFrames: true }, function (res) {
-        console.log('injectCode: added css file', res);
+    chrome.tabs.insertCSS(tab.id, { file: 'ext.css', allFrames: true }, function () {
+        console.log('injectCode: added css file');
     });
     chrome.tabs.executeScript(tab.id, { file: 'bin/content-script.js', allFrames: true }, function (res) {
         console.log('injectCode: added bin/content-script.js file', res);
         callback();
     });
 }
-chrome.runtime.onInstalled.addListener(function () {
-    console.log('runtime.onInstalled fired');
+chrome.runtime.onInstalled.addListener(function (details) {
+    console.log('runtime.onInstalled fired:' + details.reason);
 });
 // Called when the user clicks on the browser action.
 chrome.browserAction.onClicked.addListener(function (tab) {
