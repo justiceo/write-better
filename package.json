@@ -9,6 +9,7 @@
   "author": "Justice Ogbonna",
   "license": "MIT",
   "dependencies": {
+    "@medv/finder": "^1.1.1",
     "@types/chrome": "0.0.81",
     "write-good": "^1.0.1"
   },
