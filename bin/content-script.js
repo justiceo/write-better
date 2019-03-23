@@ -68,7 +68,188 @@ function stylesheet(rules) {
     return css;
 }
 
-},{"@medv/finder":2,"write-good":17}],2:[function(require,module,exports){
+},{"@medv/finder":3,"write-good":18}],2:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var finder_1 = require("@medv/finder");
+var writeGood = require('write-good');
+var WBSuggestion = /** @class */ (function () {
+    function WBSuggestion() {
+    }
+    return WBSuggestion;
+}());
+var WBAbsNode = /** @class */ (function () {
+    function WBAbsNode() {
+    }
+    WBAbsNode.prototype.getUniqueSelector = function () {
+        return this.uniqueSelector;
+    };
+    WBAbsNode.prototype.getText = function () {
+        // TODO: this.text should always be equal to this.element.textContent
+        // What do we do when it's not?
+        if (this.text !== this.element.textContent) {
+            console.error("Element text:" + this.text + " \nnot same as textContent: " + this.element.textContent);
+        }
+        return this.text;
+    };
+    WBAbsNode.prototype.getElement = function () {
+        return this.element;
+    };
+    WBAbsNode.prototype.getChildren = function () {
+        // Todo: throw unimplemented exception or make abstract
+        return null;
+    };
+    WBAbsNode.prototype.getQuerySelector = function () {
+        // Todo: throw unimplemented exception or make abstract
+        return null;
+    };
+    WBAbsNode.prototype.getSuggestions = function () {
+        return this.suggestions;
+    };
+    WBAbsNode.prototype.visit = function (fn, prev) {
+        var out = fn(this, prev);
+        if (out) {
+            prev.concat(out);
+        }
+        this.getChildren().forEach(function (c) {
+            c.visit(fn, prev);
+        });
+    };
+    return WBAbsNode;
+}());
+var WBDoc = /** @class */ (function (_super) {
+    __extends(WBDoc, _super);
+    function WBDoc(elem) {
+        var _this = _super.call(this) || this;
+        _this.children = [];
+        _this.element = elem;
+        _this.uniqueSelector = finder_1["default"](elem);
+        _this.text = elem.textContent;
+        var children = document.querySelectorAll(WBParagraph.QuerySelector);
+        children.forEach(function (e) {
+            _this.children.push(new WBParagraph(e));
+        });
+        return _this;
+    }
+    WBDoc.prototype.getChildren = function () {
+        return this.children;
+    };
+    WBDoc.prototype.getQuerySelector = function () {
+        return WBDoc.QuerySelector;
+    };
+    WBDoc.QuerySelector = 'kix-document';
+    return WBDoc;
+}(WBAbsNode));
+var WBParagraph = /** @class */ (function (_super) {
+    __extends(WBParagraph, _super);
+    function WBParagraph(elem) {
+        var _this = _super.call(this) || this;
+        _this.children = [];
+        _this.element = elem;
+        _this.uniqueSelector = finder_1["default"](elem);
+        _this.text = elem.textContent;
+        var children = document.querySelectorAll(WBLine.QuerySelector);
+        children.forEach(function (e) {
+            _this.children.push(new WBLine(e));
+        });
+        return _this;
+    }
+    WBParagraph.prototype.getChildren = function () {
+        return this.children;
+    };
+    WBParagraph.prototype.getQuerySelector = function () {
+        return WBParagraph.QuerySelector;
+    };
+    WBParagraph.QuerySelector = 'kix-paragraph';
+    return WBParagraph;
+}(WBAbsNode));
+var WBLine = /** @class */ (function (_super) {
+    __extends(WBLine, _super);
+    function WBLine(elem) {
+        var _this = _super.call(this) || this;
+        _this.children = [];
+        _this.element = elem;
+        _this.uniqueSelector = finder_1["default"](elem);
+        _this.text = elem.textContent;
+        var children = _this.textNodes(elem);
+        children.forEach(function (e) {
+            _this.children.push(new WBSegment(e.parentElement));
+        });
+        return _this;
+    }
+    WBLine.prototype.getChildren = function () {
+        return this.children;
+    };
+    WBLine.prototype.getQuerySelector = function () {
+        return WBLine.QuerySelector;
+    };
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element
+    WBLine.prototype.textNodes = function (node) {
+        if (!node)
+            return [];
+        var all = [];
+        for (node = node.firstChild; node; node = node.nextSibling) {
+            if (node.nodeType == 3)
+                all.push(node);
+            else
+                all = all.concat(this.textNodes(node));
+        }
+        return all;
+    };
+    WBLine.QuerySelector = 'kix-line';
+    return WBLine;
+}(WBAbsNode));
+// WBSegment is the immediate parent of a text node. 
+// Its only child is the text node.
+var WBSegment = /** @class */ (function (_super) {
+    __extends(WBSegment, _super);
+    function WBSegment(elem) {
+        var _this = _super.call(this) || this;
+        _this.element = elem;
+        _this.uniqueSelector = finder_1["default"](elem);
+        _this.text = elem.textContent;
+        if (elem.childElementCount != 1) {
+            console.error("WBSegment.constructor: segment has " + elem.childElementCount + " children expected 1.");
+        }
+        return _this;
+    }
+    WBSegment.prototype.getChildren = function () {
+        return [];
+    };
+    WBSegment.prototype.getQuerySelector = function () {
+        return "return_nothing_when_used_by_accident";
+    };
+    return WBSegment;
+}(WBAbsNode));
+function suggestionVisitor(node, prev) {
+    if (node instanceof WBParagraph && node instanceof WBLine) {
+        return prev;
+    }
+    var suggestions = writeGood(node.getText());
+    // Only add suggestion if it has not been added.
+    suggestions.forEach(function (s) {
+        if (prev.find(function (v) { return v.text == s.text; })) {
+            return;
+        }
+        prev.push(s);
+    });
+    return prev;
+}
+
+},{"@medv/finder":3,"write-good":18}],3:[function(require,module,exports){
 "use strict";
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
@@ -402,7 +583,7 @@ function same(path, input) {
     return rootDocument.querySelector(selector(path)) === input;
 }
 
-},{"cssesc":5}],3:[function(require,module,exports){
+},{"cssesc":6}],4:[function(require,module,exports){
 const adverbs = [
   'absolutel',
   'accidentall',
@@ -620,7 +801,7 @@ module.exports = function matchAdverbs(text) {
   return matcher(adverbRegex, text);
 };
 
-},{"./matcher":4}],4:[function(require,module,exports){
+},{"./matcher":5}],5:[function(require,module,exports){
 function matcher(regex, text) {
   const results = [];
   let result = regex.exec(text);
@@ -635,7 +816,7 @@ function matcher(regex, text) {
 
 module.exports = matcher;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*! https://mths.be/cssesc v1.0.1 by @mathias */
 'use strict';
 
@@ -756,7 +937,7 @@ cssesc.version = '1.0.1';
 
 module.exports = cssesc;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var toBe = [
     'am',
     'are',
@@ -802,7 +983,7 @@ module.exports = function (text) {
 
     return suggestions;
 };
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 const cliches = [
   'a chip off the old block',
   'a clean slate',
@@ -1510,9 +1691,9 @@ module.exports = function clichesMatcher(text) {
   return matcher(clicheRegex, text);
 };
 
-},{"./matcher":8}],8:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],9:[function(require,module,exports){
+},{"./matcher":9}],9:[function(require,module,exports){
+arguments[4][5][0].apply(exports,arguments)
+},{"dup":5}],10:[function(require,module,exports){
 var irregulars = [
   'awoken',
   'been',
@@ -1719,9 +1900,9 @@ function constructByRe () {
   return byRe = new RegExp(re.toString().slice(1, -3) + '\\s*by\\b', 'gi');
 }
 
-},{}],10:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],11:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+arguments[4][5][0].apply(exports,arguments)
+},{"dup":5}],12:[function(require,module,exports){
 const matcher = require('./matcher');
 
 const wordyWords = [
@@ -1949,7 +2130,7 @@ module.exports = function isTextWordy(text) {
   return matcher(wordyRegex, text);
 };
 
-},{"./matcher":10}],12:[function(require,module,exports){
+},{"./matcher":11}],13:[function(require,module,exports){
 var weasels = [
   'are a number',
   'clearly',
@@ -2002,7 +2183,7 @@ module.exports = function (text, opts) {
   return suggestions;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 function repeatChar(ch, times) {
   let str = '';
   for (let i = times; i > 0; i--) {
@@ -2055,7 +2236,7 @@ module.exports = function annotate(contents, suggestions, parse) {
   });
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 // via http://matt.might.net/articles/shell-scripts-for-passive-voice-weasel-words-duplicates/
 
 // Example:
@@ -2085,7 +2266,7 @@ module.exports = function lexicalIllusions(text) {
   return suggestions;
 };
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /* eslint-disable no-cond-assign */
 
 // Opinion: I think it's gross to start written English independent clauses with "so"
@@ -2116,7 +2297,7 @@ module.exports = function startsWithSo(text) {
   return suggestions;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /* eslint-disable no-cond-assign */
 
 // Opinion: I think it's gross to start written English sentences with "there (is|are)"
@@ -2143,7 +2324,7 @@ module.exports = function startsWithThereIs(text) {
   return suggestions;
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 const weaselWords = require('weasel-words');
 const passiveVoice = require('passive-voice');
 const adverbWhere = require('adverb-where');
@@ -2224,4 +2405,4 @@ module.exports = function writeGood(text, opts = {}) {
 
 module.exports.annotate = require('./lib/annotate');
 
-},{"./lib/annotate":13,"./lib/lexical-illusions":14,"./lib/starts-with-so":15,"./lib/there-is":16,"adverb-where":3,"e-prime":6,"no-cliches":7,"passive-voice":9,"too-wordy":11,"weasel-words":12}]},{},[1]);
+},{"./lib/annotate":14,"./lib/lexical-illusions":15,"./lib/starts-with-so":16,"./lib/there-is":17,"adverb-where":4,"e-prime":7,"no-cliches":8,"passive-voice":10,"too-wordy":12,"weasel-words":13}]},{},[1,2]);

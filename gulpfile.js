@@ -5,7 +5,7 @@ var sstream = require('vinyl-source-stream');
 
 gulp.task("build", function () {
     return browserify()
-        .add("content-script.ts")
+        .add(["content-script.ts", "model.ts"])
         .plugin(tsify, { noImplicitAny: true })
         .bundle()
         .on("error", (err) => {console.error(err)})
@@ -23,5 +23,5 @@ gulp.task("build", function () {
 
 
 gulp.task('default', ['build'], function () {
-    gulp.watch(["content-script.ts", "background.ts"], ['build']);
+    gulp.watch(["content-script.ts", "model.ts", "background.ts"], ['build']);
 });
