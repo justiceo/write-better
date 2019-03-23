@@ -1,4 +1,5 @@
 import finder from '@medv/finder'
+import { WBDoc,WBSuggestion, suggestionVisitor } from './model';
 
 const writeGood: (input: string) => [{ index: number, offset: number, suggestion: string }] = require('write-good');
 
@@ -9,6 +10,10 @@ chrome.runtime.onMessage.addListener((
     console.log('runtime.onMessage fired', msg);
     if (msg === 'analyze_doc') {
         let allPages: Element = document.querySelector('.kix-paginateddocumentplugin');
+        let doc = new WBDoc(allPages as HTMLElement);
+        let sg: WBSuggestion[] = [];
+        doc.visit(suggestionVisitor, sg);
+        console.log("suggestions: ", sg);
 
         let txts = textNodes(allPages);
         let nodeMap: any = {};
