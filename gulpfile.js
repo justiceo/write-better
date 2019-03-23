@@ -23,5 +23,5 @@ gulp.task("build", function () {
 
 
 gulp.task('default', ['build'], function () {
-    gulp.watch(source, ['build']);
+    gulp.watch(["content-script.ts", "background.ts"], ['build']);
 });
