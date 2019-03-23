@@ -23,15 +23,15 @@ chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
                 continue;
             }
             nodeMap[txts[i].textContent] = txt;
-            var ucss = "";
+            var selector = "";
             try {
-                ucss = finder_1["default"](txts[i].parentElement);
+                selector = finder_1["default"](txts[i].parentElement);
             }
             catch (err) {
                 console.log(err, txts[i].nodeType, txts[i].nodeName);
             }
-            console.log("unique css", ucss);
-            document.body.appendChild(stylesheet(ucss + " {\n                border-bottom: 2px solid black;\n            }"));
+            console.log("unique css", selector);
+            document.body.appendChild(stylesheet(selector + " {\n                border-bottom: 2px solid black;\n            }"));
         }
         console.debug('writeGood: ', nodeMap);
         callback('success');
