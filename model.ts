@@ -1,12 +1,9 @@
 import finder from '@medv/finder'
 
-class Position {
+class WBSuggestion {
     start: number
     offset: number
-
-    toString(): string {
-        return `${this.start}:${this.offset}`
-    }
+    text: string
 }
 
 interface WBNode {
@@ -15,7 +12,7 @@ interface WBNode {
     getText: () => string;
     getElement: () => HTMLElement;
     getChildren: () => WBNode[];
-    getSuggestions: () => Map<Position, string>;
+    getSuggestions: () => WBSuggestion[];
     visit: () => void;
 }
 
@@ -23,7 +20,7 @@ class WBAbsNode implements WBNode {
     uniqueSelector: string;
     text: string;
     element: HTMLElement;
-    suggestions: Map<Position, string>;
+    suggestions: WBSuggestion[];
 
     getUniqueSelector(): string {
         return this.uniqueSelector;
@@ -51,7 +48,7 @@ class WBAbsNode implements WBNode {
         return null;
     }
 
-    getSuggestions(): Map<Position, string> {
+    getSuggestions(): WBSuggestion[] {
         return this.suggestions;
     }
 
@@ -63,7 +60,6 @@ class WBAbsNode implements WBNode {
 
 class WBDoc extends WBAbsNode {
     static QuerySelector: string = 'kix-document';
-    relPosition: Map<Position, WBParagraph> = new Map();
     children: WBParagraph[] = [];
 
     constructor(elem: HTMLElement) {
@@ -88,7 +84,6 @@ class WBDoc extends WBAbsNode {
 
 class WBParagraph extends WBAbsNode {
     static QuerySelector: string = 'kix-paragraph';
-    relPosition: Map<Position, WBParagraph> = new Map();
     children: WBLine[] = [];
 
     constructor(elem: HTMLElement) {
@@ -113,7 +108,6 @@ class WBParagraph extends WBAbsNode {
 
 class WBLine extends WBAbsNode {
     static QuerySelector: string = 'kix-line';
-    relPosition: Map<Position, WBSegment> = new Map();
     children: WBSegment[] = [];
 
     constructor(elem: HTMLElement) {
@@ -163,7 +157,7 @@ class WBSegment extends WBAbsNode {
     getChildren(): WBNode[] {
         return [];
     }
-    
+
     getQuerySelector(): string {
         return "return_nothing_when_used_by_accident";
     }
