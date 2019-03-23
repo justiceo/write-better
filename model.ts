@@ -1,4 +1,5 @@
-import finder from '@medv/finder'
+import finder from '@medv/finder';
+import writeGood from 'write-good';
 
 class WBSuggestion {
     start: number
@@ -13,7 +14,7 @@ interface WBNode {
     getElement: () => HTMLElement;
     getChildren: () => WBNode[];
     getSuggestions: () => WBSuggestion[];
-    visit: () => void;
+    visit: <T>(fn: (node: WBNode, prev: T[]) => T[], prev: T[]) => void
 }
 
 class WBAbsNode implements WBNode {
@@ -52,9 +53,14 @@ class WBAbsNode implements WBNode {
         return this.suggestions;
     }
 
-    visit(): void {
-        // Todo: throw unimplemented exception or make abstract
-        return null;
+    visit<T>(fn: (node: WBNode, prev: T[]) => T[], prev: T[]): void {
+        let out = fn(this, prev);
+        if (out) {
+            prev.concat(out);
+        }
+        this.getChildren().forEach(c => {
+            c.visit(fn, prev);
+        });
     }
 }
 
@@ -162,3 +168,19 @@ class WBSegment extends WBAbsNode {
         return "return_nothing_when_used_by_accident";
     }
 }
+
+function suggestionVisitor(node: WBNode, prev: WBSuggestion[]): WBSuggestion[] {
+    if (node! instanceof WBParagraph && node! instanceof WBLine) {
+        return prev
+    }
+    const suggestions: WBSuggestion[] = writeGood(node.getText());
+    // Only add suggestion if it has not been added.
+    suggestions.forEach(s => {
+        if (prev.find(v => v.text == s.text)) {
+            return;
+        }
+        prev.push(s);
+    });
+    return prev;
+}
+
