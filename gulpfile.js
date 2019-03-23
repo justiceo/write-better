@@ -10,7 +10,15 @@ gulp.task("build", function () {
         .bundle()
         .on("error", (err) => {console.error(err)})
         .pipe(sstream('content-script.js'))
-        .pipe(gulp.dest("./bin"));
+        .pipe(gulp.dest("./bin")) 
+        &&
+        browserify()
+        .add("background.ts")
+        .plugin(tsify, { noImplicitAny: true })
+        .bundle()
+        .on("error", (err) => {console.error(err)})
+        .pipe(sstream('background.js'))
+        .pipe(gulp.dest("./bin")) 
 });
 
 
