@@ -1,5 +1,5 @@
 import finder from '@medv/finder';
-import writeGood from 'write-good';
+const writeGood: (input: string) => WBSuggestion[] = require('write-good');
 
 class WBSuggestion {
     start: number
@@ -173,7 +173,7 @@ function suggestionVisitor(node: WBNode, prev: WBSuggestion[]): WBSuggestion[] {
     if (node! instanceof WBParagraph && node! instanceof WBLine) {
         return prev
     }
-    const suggestions: WBSuggestion[] = writeGood(node.getText());
+    const suggestions = writeGood(node.getText());
     // Only add suggestion if it has not been added.
     suggestions.forEach(s => {
         if (prev.find(v => v.text == s.text)) {
