@@ -13,9 +13,11 @@
     "write-good": "^1.0.1"
   },
   "devDependencies": {
+    "@types/node": "^11.11.6",
+    "browserify": "^16.2.3",
     "gulp": "^3.9.1",
-    "gulp-browserify": "^0.5.1",
-    "gulp-rename": "^1.4.0",
-    "tsify": "^4.0.1"
+    "tsify": "^4.0.1",
+    "typescript": "^3.3.4000",
+    "vinyl-source-stream": "^2.0.0"
   }
 }

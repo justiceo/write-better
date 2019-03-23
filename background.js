@@ -44,8 +44,8 @@ function injectCode(tab, callback) {
     chrome.tabs.insertCSS(tab.id, { file: 'ext.css', allFrames: true }, (res) => {
         console.log('injectCode: added css file', res)
     });
-    chrome.tabs.executeScript(tab.id, { file: 'content-script/bin/content-script.js', allFrames: true }, (res) => {
-        console.log('injectCode: added content-script/bin/content-script.js file', res);
+    chrome.tabs.executeScript(tab.id, { file: 'bin/content-script.js', allFrames: true }, (res) => {
+        console.log('injectCode: added bin/content-script.js file', res);
         callback();
     });
     
