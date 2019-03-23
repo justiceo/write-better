@@ -1,6 +1,5 @@
-import 'chrome';
 
-const writeGood: (input: string) => [{index:number, offset:number, suggestion:string}] = require('write-good');
+const writeGood: (input: string) => [{ index: number, offset: number, suggestion: string }] = require('write-good');
 
 chrome.runtime.onMessage.addListener((
     msg: string,
@@ -11,7 +10,7 @@ chrome.runtime.onMessage.addListener((
             let allPages: Element = document.querySelector('.kix-paginateddocumentplugin');
 
             let txts = textNodes(allPages);
-            let nodeMap = {};
+            let nodeMap: any = {};
             for (let i = 0; i < txts.length; i++) {
                 let txt = txts[i].textContent;
                 if (txt.trim() == "") {

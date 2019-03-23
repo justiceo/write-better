@@ -1,21 +1,19 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-const writeGood = require('write-good');
-
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+var writeGood = require('write-good');
 chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
     console.log('runtime.onMessage fired', msg);
-    if (msg.text === 'analyze_doc') {
-        let allPages = document.querySelector('.kix-paginateddocumentplugin');
-
-        let txts = textNodes(allPages);
-        let nodeMap = {};
-        for (let i = 0; i < txts.length; i++) {
-            let txt = txts[i].textContent;
+    if (msg === 'analyze_doc') {
+        var allPages = document.querySelector('.kix-paginateddocumentplugin');
+        var txts = textNodes(allPages);
+        var nodeMap = {};
+        for (var i = 0; i < txts.length; i++) {
+            var txt = txts[i].textContent;
             if (txt.trim() == "") {
                 continue;
             }
-            const suggestions = writeGood(txt);
-            for (let j = suggestions.length - 1; j >= 0; j--) {
-                const s = suggestions[j];
+            var suggestions = writeGood(txt);
+            for (var j = suggestions.length - 1; j >= 0; j--) {
+                var s = suggestions[j];
                 txt = txt.substring(0, s.index) + '<strong>' + txt.substring(s.index, s.index + s.offset) + '</strong>' + txt.substring(s.index + s.offset);
             }
             nodeMap[txts[i].textContent] = txt;
@@ -24,16 +22,19 @@ chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
         callback('success');
     }
 });
-
 function textNodes(node) {
-    if (!node) return [];
-    let all = [];
+    if (!node)
+        return [];
+    var all = [];
     for (node = node.firstChild; node; node = node.nextSibling) {
-        if (node.nodeType == 3) all.push(node);
-        else all = all.concat(textNodes(node));
+        if (node.nodeType == 3)
+            all.push(node);
+        else
+            all = all.concat(textNodes(node));
     }
     return all;
 }
+
 },{"write-good":15}],2:[function(require,module,exports){
 const adverbs = [
   'absolutel',
@@ -1022,8 +1023,8 @@ module.exports = function clichesMatcher(text) {
 };
 
 },{"./matcher":6}],6:[function(require,module,exports){
-module.exports=require(3)
-},{}],7:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],7:[function(require,module,exports){
 var irregulars = [
   'awoken',
   'been',
@@ -1231,8 +1232,8 @@ function constructByRe () {
 }
 
 },{}],8:[function(require,module,exports){
-module.exports=require(3)
-},{}],9:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],9:[function(require,module,exports){
 const matcher = require('./matcher');
 
 const wordyWords = [
@@ -1735,4 +1736,4 @@ module.exports = function writeGood(text, opts = {}) {
 
 module.exports.annotate = require('./lib/annotate');
 
-},{"./lib/annotate":11,"./lib/lexical-illusions":12,"./lib/starts-with-so":13,"./lib/there-is":14,"adverb-where":2,"e-prime":4,"no-cliches":5,"passive-voice":7,"too-wordy":9,"weasel-words":10}]},{},[1])
+},{"./lib/annotate":11,"./lib/lexical-illusions":12,"./lib/starts-with-so":13,"./lib/there-is":14,"adverb-where":2,"e-prime":4,"no-cliches":5,"passive-voice":7,"too-wordy":9,"weasel-words":10}]},{},[1]);
