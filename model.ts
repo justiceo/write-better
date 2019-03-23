@@ -1,13 +1,13 @@
 import finder from '@medv/finder';
 const writeGood: (input: string) => WBSuggestion[] = require('write-good');
 
-class WBSuggestion {
+export class WBSuggestion {
     start: number
     offset: number
     text: string
 }
 
-interface WBNode {
+export interface WBNode {
     getUniqueSelector: () => string;
     getQuerySelector: () => string;
     getText: () => string;
@@ -17,7 +17,7 @@ interface WBNode {
     visit: <T>(fn: (node: WBNode, prev: T[]) => T[], prev: T[]) => void
 }
 
-class WBAbsNode implements WBNode {
+export class WBAbsNode implements WBNode {
     uniqueSelector: string;
     text: string;
     element: HTMLElement;
@@ -64,8 +64,8 @@ class WBAbsNode implements WBNode {
     }
 }
 
-class WBDoc extends WBAbsNode {
-    static QuerySelector: string = 'kix-document';
+export class WBDoc extends WBAbsNode {
+    static QuerySelector: string = '.kix-paginateddocumentplugin';
     children: WBParagraph[] = [];
 
     constructor(elem: HTMLElement) {
@@ -73,7 +73,7 @@ class WBDoc extends WBAbsNode {
         this.element = elem;
         this.uniqueSelector = finder(elem);
         this.text = elem.textContent;
-        let children: NodeListOf<Element> = document.querySelectorAll(WBParagraph.QuerySelector);
+        let children: NodeListOf<Element> = this.element.querySelectorAll(WBParagraph.QuerySelector);
         children.forEach((e: Element) => {
             this.children.push(new WBParagraph(e as HTMLElement));
         });
@@ -88,8 +88,8 @@ class WBDoc extends WBAbsNode {
     }
 }
 
-class WBParagraph extends WBAbsNode {
-    static QuerySelector: string = 'kix-paragraph';
+export class WBParagraph extends WBAbsNode {
+    static QuerySelector: string = '.kix-paragraphrenderer';
     children: WBLine[] = [];
 
     constructor(elem: HTMLElement) {
@@ -97,7 +97,7 @@ class WBParagraph extends WBAbsNode {
         this.element = elem;
         this.uniqueSelector = finder(elem);
         this.text = elem.textContent;
-        let children: NodeListOf<Element> = document.querySelectorAll(WBLine.QuerySelector);
+        let children: NodeListOf<Element> = this.element.querySelectorAll(WBLine.QuerySelector);
         children.forEach((e: Element) => {
             this.children.push(new WBLine(e as HTMLElement));
         });
@@ -112,8 +112,8 @@ class WBParagraph extends WBAbsNode {
     }
 }
 
-class WBLine extends WBAbsNode {
-    static QuerySelector: string = 'kix-line';
+export class WBLine extends WBAbsNode {
+    static QuerySelector: string = '.kix-lineview';
     children: WBSegment[] = [];
 
     constructor(elem: HTMLElement) {
@@ -149,7 +149,7 @@ class WBLine extends WBAbsNode {
 
 // WBSegment is the immediate parent of a text node. 
 // Its only child is the text node.
-class WBSegment extends WBAbsNode {
+export class WBSegment extends WBAbsNode {
     constructor(elem: HTMLElement) {
         super();
         this.element = elem;
@@ -169,7 +169,7 @@ class WBSegment extends WBAbsNode {
     }
 }
 
-function suggestionVisitor(node: WBNode, prev: WBSuggestion[]): WBSuggestion[] {
+export function suggestionVisitor(node: WBNode, prev: WBSuggestion[]): WBSuggestion[] {
     if (node! instanceof WBParagraph && node! instanceof WBLine) {
         return prev
     }
