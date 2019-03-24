@@ -117,9 +117,9 @@ export class WBLine extends WBAbsNode {
         this.element = elem;
         // this.uniqueSelector = finder(elem);
         let children = this.textNodes(elem);
-        children.forEach((e: Element) => {
-            if ((e as HTMLElement).innerText.trim()) {
-            this.children.push(new WBSegment(e.parentElement));
+        children.forEach((e: Text) => {
+            if (e.textContent) {
+                this.children.push(new WBSegment(e.parentElement));
             }
         });
     }
@@ -132,15 +132,14 @@ export class WBLine extends WBAbsNode {
         return WBLine.QuerySelector;
     }
 
-    // https://developer.mozilla.org/en-US/docs/Web/API/Element
-    textNodes(node: Element): Element[] {
-        if (!node) return [];
-        let all: Element[] = [];
-        for (node = node.firstChild as Element; node; node = node.nextSibling as Element) {
-            if (node.nodeType == 3) all.push(node);
-            else all = all.concat(this.textNodes(node));
+    textNodes(el: HTMLElement): Text[] {
+        const textNodes: Text[] = [];
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+        let n: Node;
+        while (n = walker.nextNode()) {
+            textNodes.push(n as Text);
         }
-        return all;
+        return textNodes;
     }
 }
 
