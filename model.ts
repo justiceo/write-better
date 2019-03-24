@@ -204,8 +204,28 @@ export class WBSegment extends WBAbsNode {
     }
 
     applySuggestion(suggestion: WBSuggestion): void {
+        let selector = '';
+        try {
+            selector = finder(this.element, { threshold: 2 });
+        } catch (err) {
+            console.error(`applySuggestion: error applying suggestion: ${suggestion}; err: ${err}`);
+            return;
+        }
+        css.innerHTML += `${selector} {
+                border-bottom: 2px solid red !important;
+            }`;
+        
         console.log("applied suggestion", suggestion, "on text: ", this.getText());
     }
+}
+
+// TODO: move to a singleton
+const css = insertCSS();
+function insertCSS(): HTMLStyleElement {
+    const css = document.createElement("style");
+    css.type = "text/css";
+    document.body.appendChild(css);
+    return css;
 }
 
 export function suggestionVisitor(node: WBNode, prev: WBSuggestion[]): WBSuggestion[] {
