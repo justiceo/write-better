@@ -93,7 +93,9 @@ export class WBParagraph extends WBAbsNode {
         // this.uniqueSelector = finder(elem);
         let children: NodeListOf<Element> = this.element.querySelectorAll(WBLine.QuerySelector);
         children.forEach((e: Element) => {
+            if ((e as HTMLElement).innerText.trim()) {
             this.children.push(new WBLine(e as HTMLElement));
+            }
         });
     }
 
@@ -116,7 +118,9 @@ export class WBLine extends WBAbsNode {
         // this.uniqueSelector = finder(elem);
         let children = this.textNodes(elem);
         children.forEach((e: Element) => {
+            if ((e as HTMLElement).innerText.trim()) {
             this.children.push(new WBSegment(e.parentElement));
+            }
         });
     }
 
