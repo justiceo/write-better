@@ -230,7 +230,7 @@ export namespace WriteBetter {
             console.log(`removed css file from document: ${this.css.id}`)
         }
 
-        underline(node: Node, range: { index: number, offset: number }): void {
+        underline(node: Node, suggestion: Suggestion): void {
             let selector = '';
             try {
                 selector = finder(node.getElement(), { threshold: 2 });
@@ -239,11 +239,21 @@ export namespace WriteBetter {
                 return;
             }
             const width = node.getText().length;
-            const start = Math.floor(100 * range.index / width);
-            const end = start + Math.ceil(100 * range.offset / width);
-            this.css.innerHTML += `${selector} {
-                        background-image: linear-gradient(to right, transparent ${start}%, yellow ${start}%, yellow ${end}%, transparent ${end}%); 
-                    }`;
+            const start = Math.floor(100 * suggestion.index / width);
+            const end = start + Math.ceil(100 * suggestion.offset / width);
+            this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([ 
+                ['#selector', selector],
+                ['#start', start.toString()],
+                ['#end', end.toString()],
+                ['#reason', suggestion.reason],
+            ]));
+        }
+
+        replaceAll(input: string, pairs: Map<string, string>): string {
+            pairs.forEach((newValue: string, oldValue: string) => {
+                input = input.replace(new RegExp(oldValue, 'g'), newValue);
+            })
+            return input;
         }
 
         registerHover(node: Node, suggestion: Suggestion): void {
@@ -263,5 +273,70 @@ export namespace WriteBetter {
                 }
             });
         }
+
+        static cssTemplate: string = `
+        #selector {
+            position: relative;
+            padding-bottom: 4px;
+            background-position-y: 10px; /* programmatically set to 0px on hover */
+            background-repeat: no-repeat;
+            background-color: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important; 
+            background-image: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important; 
+        }
+
+        #selector:hover {
+            background-position-y: 0px;
+        }
+
+        #selector:before,
+        #selector:after {
+            display: block;
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            z-index: 100000;
+        }
+        
+        #selector:after {
+            /* The Arrow below the tooltip */
+            border-right: 6px solid transparent;
+            border-top: 10px solid #eee; 
+            border-left: 6px solid transparent;
+            content: '';
+            height: 0px;
+            width: 0px;
+            bottom: 20px;
+            left: 20px;
+            transform: translate3d(0, 6px, 0);
+            transition: all .1s ease-in-out;
+        }
+        
+        #selector:before {
+            /* The tooltip box */
+            background: rgba(255, 255, 255, .95);
+            border: 1px solid #ddd;
+            box-shadow: 3px 3px #eee;
+            border-radius: 5px;
+            color: black;
+            content: '#reason';
+            font-size: 14px;
+            padding: 10px 15px;
+            bottom: 30px;
+            white-space: nowrap;
+            transform: scale3d(.2, .2, 1);
+            transition: all .2s ease-in-out;
+        }
+        
+        /* hover needs to be triggered programmatically */
+        #selector:hover:before,
+        #selector:hover:after {
+            opacity: 1;
+            transform: scale3d(1, 1, 1);
+        }
+        
+        #selector:hover:after {
+            transition: all .2s .1s ease-in-out;
+        }         
+        `
     }
 }
