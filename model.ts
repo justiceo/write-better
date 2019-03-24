@@ -1,24 +1,25 @@
 import finder from '@medv/finder';
-const writeGood: (input: string) => WriteBetter.WBSuggestion[] = require('write-good');
+const writeGood: (input: string) => WriteBetter.Suggestion[] = require('write-good');
+type xNode = Node;
 
 export namespace WriteBetter {
-    export class WBSuggestion {
+    export class Suggestion {
         index: number
         offset: number
         reason: string
     }
 
-    export interface WBNode {
+    export interface Node {
         getQuerySelector: () => string;
         getText: () => string;
         getElement: () => HTMLElement;
-        getChildren: () => WBNode[];
-        getSuggestions: () => WBSuggestion[];
-        visit: <T>(fn: (node: WBNode, prev: T[]) => T[], prev: T[]) => void
-        propagateSuggestion: (suggestion: WBSuggestion) => void
+        getChildren: () => Node[];
+        getSuggestions: () => Suggestion[];
+        visit: <T>(fn: (node: Node, prev: T[]) => T[], prev: T[]) => void
+        propagateSuggestion: (suggestion: Suggestion) => void
     }
 
-    export abstract class WBAbsNode implements WBNode {
+    export abstract class AbsNode implements Node {
         element: HTMLElement;
 
         getText(): string {
@@ -32,11 +33,11 @@ export namespace WriteBetter {
             return this.element;
         }
 
-        getSuggestions(): WBSuggestion[] {
+        getSuggestions(): Suggestion[] {
             return writeGood(this.getText());
         }
 
-        visit<T>(fn: (node: WBNode, prev: T[]) => T[], prev: T[]): void {
+        visit<T>(fn: (node: Node, prev: T[]) => T[], prev: T[]): void {
             let out = fn(this, prev);
             if (out) {
                 prev.concat(out);
@@ -46,7 +47,7 @@ export namespace WriteBetter {
             });
         }
 
-        wrap(child: WBNode, suggestion: WBSuggestion): boolean {
+        wrap(child: Node, suggestion: Suggestion): boolean {
             const index = this.getText().search(child.getText());
             if (index === -1) {
                 console.error(`wrap: could not find child ${child.getElement().nodeName} in ${this.getElement().nodeName} with text: ${child.getText()}`);
@@ -55,7 +56,7 @@ export namespace WriteBetter {
             return suggestion.index >= index && (suggestion.index + suggestion.offset <= index + child.getText().length);
         }
 
-        relPosition(child: WBNode, suggestion: WBSuggestion): WBSuggestion {
+        relPosition(child: Node, suggestion: Suggestion): Suggestion {
             if (!this.wrap(child, suggestion)) {
                 throw "relPosition: cannot get relative position of suggestion that is not wrapped by node."
             }
@@ -63,9 +64,9 @@ export namespace WriteBetter {
             return { index: suggestion.index - index, offset: suggestion.offset, reason: suggestion.reason };
         }
 
-        propagateSuggestion(suggestion: WBSuggestion): void {
-            if (this instanceof WBSegment) {
-                (this as WBSegment).applySuggestion(suggestion);
+        propagateSuggestion(suggestion: Suggestion): void {
+            if (this instanceof Segment) {
+                (this as Segment).applySuggestion(suggestion);
                 return;
             }
 
@@ -80,37 +81,37 @@ export namespace WriteBetter {
             matches[0].propagateSuggestion(this.relPosition(matches[0], suggestion));
         }
 
-        abstract getChildren(): WBNode[];
+        abstract getChildren(): Node[];
 
         abstract getQuerySelector(): string;
     }
 
-    export class WBDoc extends WBAbsNode {
+    export class Doc extends AbsNode {
         static QuerySelector: string = '.kix-paginateddocumentplugin';
-        children: WBParagraph[] = [];
+        children: Paragraph[] = [];
 
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
             // this.uniqueSelector = finder(elem, {threshold: 10}); // TODO: finder can make page freeze.
-            let children: NodeListOf<Element> = this.element.querySelectorAll(WBParagraph.QuerySelector);
+            let children: NodeListOf<Element> = this.element.querySelectorAll(Paragraph.QuerySelector);
             children.forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
-                    this.children.push(new WBParagraph(e as HTMLElement));
+                    this.children.push(new Paragraph(e as HTMLElement));
                 }
             });
         }
 
-        static create(): WBDoc {
-            return new WBDoc(document.querySelector(WBDoc.QuerySelector));
+        static create(): Doc {
+            return new Doc(document.querySelector(Doc.QuerySelector));
         }
 
-        getChildren(): WBNode[] {
+        getChildren(): Node[] {
             return this.children;
         }
 
         getQuerySelector(): string {
-            return WBDoc.QuerySelector;
+            return Doc.QuerySelector;
         }
 
         propagateSuggestions(): void {
@@ -118,34 +119,34 @@ export namespace WriteBetter {
         }
     }
 
-    export class WBParagraph extends WBAbsNode {
+    export class Paragraph extends AbsNode {
         static QuerySelector: string = '.kix-paragraphrenderer';
-        children: WBLine[] = [];
+        children: Line[] = [];
 
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
             // this.uniqueSelector = finder(elem);
-            let children: NodeListOf<Element> = this.element.querySelectorAll(WBLine.QuerySelector);
+            let children: NodeListOf<Element> = this.element.querySelectorAll(Line.QuerySelector);
             children.forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
-                    this.children.push(new WBLine(e as HTMLElement));
+                    this.children.push(new Line(e as HTMLElement));
                 }
             });
         }
 
-        getChildren(): WBNode[] {
+        getChildren(): Node[] {
             return this.children;
         }
 
         getQuerySelector(): string {
-            return WBParagraph.QuerySelector;
+            return Paragraph.QuerySelector;
         }
     }
 
-    export class WBLine extends WBAbsNode {
+    export class Line extends AbsNode {
         static QuerySelector: string = '.kix-lineview';
-        children: WBSegment[] = [];
+        children: Segment[] = [];
 
         constructor(elem: HTMLElement) {
             super();
@@ -153,23 +154,23 @@ export namespace WriteBetter {
             let children = this.textNodes(elem);
             children.forEach((e: Text) => {
                 if (e.textContent) {
-                    this.children.push(new WBSegment(e.parentElement));
+                    this.children.push(new Segment(e.parentElement));
                 }
             });
         }
 
-        getChildren(): WBNode[] {
+        getChildren(): Node[] {
             return this.children;
         }
 
         getQuerySelector(): string {
-            return WBLine.QuerySelector;
+            return Line.QuerySelector;
         }
 
         textNodes(el: HTMLElement): Text[] {
             const textNodes: Text[] = [];
             const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-            let n: Node;
+            let n: xNode;
             while (n = walker.nextNode()) {
                 textNodes.push(n as Text);
             }
@@ -177,18 +178,18 @@ export namespace WriteBetter {
         }
     }
 
-    // WBSegment is the immediate parent of a text node. 
+    // Segment is the immediate parent of a text node. 
     // Its only child is the text node and it should be treated as a textnode.
-    export class WBSegment extends WBAbsNode {
+    export class Segment extends AbsNode {
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
             if (elem.childElementCount != 1) {
-                console.error(`WBSegment.constructor: segment has ${elem.childElementCount} children expected 1.`);
+                console.error(`Segment.constructor: segment has ${elem.childElementCount} children expected 1.`);
             }
         }
 
-        getChildren(): WBNode[] {
+        getChildren(): Node[] {
             throw 'getChildren: unimplemented exception - base node is intended to be used as text node.'
         }
 
@@ -196,7 +197,7 @@ export namespace WriteBetter {
             throw 'getQuerySelector: unimplemented exception - base node is intended to be used as text node.'
         }
 
-        applySuggestion(suggestion: WBSuggestion): void {
+        applySuggestion(suggestion: Suggestion): void {
             let selector = '';
             try {
                 selector = finder(this.element, { threshold: 2 });
