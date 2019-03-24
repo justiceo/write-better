@@ -17,7 +17,7 @@ export interface WBNode {
     visit: <T>(fn: (node: WBNode, prev: T[]) => T[], prev: T[]) => void
 }
 
-export class WBAbsNode implements WBNode {
+export abstract class WBAbsNode implements WBNode {
     uniqueSelector: string;
     element: HTMLElement;
 
@@ -36,15 +36,6 @@ export class WBAbsNode implements WBNode {
         return this.element;
     }
 
-    getChildren(): WBNode[] {
-        // Todo: throw unimplemented exception or make abstract
-        return null;
-    }
-    getQuerySelector(): string {
-        // Todo: throw unimplemented exception or make abstract
-        return null;
-    }
-
     getSuggestions(): WBSuggestion[] {
         return writeGood(this.getText());
     }
@@ -58,6 +49,9 @@ export class WBAbsNode implements WBNode {
             c.visit(fn, prev);
         });
     }
+
+    abstract getChildren(): WBNode[];
+    abstract getQuerySelector(): string;
 }
 
 export class WBDoc extends WBAbsNode {
