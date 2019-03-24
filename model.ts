@@ -15,6 +15,7 @@ export interface WBNode {
     getChildren: () => WBNode[];
     getSuggestions: () => WBSuggestion[];
     visit: <T>(fn: (node: WBNode, prev: T[]) => T[], prev: T[]) => void
+    propagateSuggestion: (suggestion: WBSuggestion) => void
 }
 
 export abstract class WBAbsNode implements WBNode {
@@ -50,6 +51,41 @@ export abstract class WBAbsNode implements WBNode {
         });
     }
 
+    wrap(child: WBNode, suggestion: WBSuggestion): boolean {
+        const index = this.getText().search(child.getText());
+        if (index === -1) {
+            console.error(`wrap: could not find child ${child.getElement().nodeName} in ${this.getElement().nodeName} with text: ${child.getText()}`);
+            return false;
+        }
+        return suggestion.index >= index && (suggestion.index + suggestion.offset <= index + child.getText().length);
+    }
+
+    relPosition(child: WBNode, suggestion: WBSuggestion): WBSuggestion {
+        if (!this.wrap(child, suggestion)) {
+            throw "relPosition: cannot get relative position of suggestion that is not wrapped by node."
+        }
+        const index = this.getText().search(child.getText());
+        return { index: suggestion.index - index, offset: suggestion.offset, reason: suggestion.reason };
+    }
+
+    propagateSuggestion(suggestion: WBSuggestion): void {
+        if (this instanceof WBSegment) {
+            (this as WBSegment).applySuggestion(suggestion);
+            return;
+        }
+
+        let matches = this.getChildren().filter(c => this.wrap(c, suggestion));
+        if (matches.length > 1) {
+            console.error(`propagateSuggestion: only one child should wrap a suggestion, got ${matches.length}`);
+        }
+        if (matches.length == 0) {
+            console.error("propagateSuggestion: no child wraipped the suggestion, potentially a cross-boundary match: ", this, suggestion);
+            return;
+        }
+        matches[0].propagateSuggestion(this.relPosition(matches[0], suggestion));
+    }
+
+
     abstract getChildren(): WBNode[];
     abstract getQuerySelector(): string;
 }
@@ -80,6 +116,10 @@ export class WBDoc extends WBAbsNode {
 
     getQuerySelector(): string {
         return WBDoc.QuerySelector;
+    }
+
+    propagateSuggestions(): void {
+        this.getSuggestions().forEach(s => this.propagateSuggestion(s));
     }
 }
 
@@ -161,6 +201,10 @@ export class WBSegment extends WBAbsNode {
 
     getQuerySelector(): string {
         return "return_nothing_when_used_by_accident";
+    }
+
+    applySuggestion(suggestion: WBSuggestion): void {
+        console.log("applied suggestion", suggestion, "on text: ", this.getText());
     }
 }
 
