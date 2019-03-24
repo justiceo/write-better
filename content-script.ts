@@ -10,7 +10,8 @@ chrome.runtime.onMessage.addListener((
     console.log('runtime.onMessage fired', msg);
     if (msg === 'analyze_doc') {
         let doc = WBDoc.create();
-        console.log("suggestions: ", doc.getText(), doc.getQuerySelector(), doc.getUniqueSelector(), doc.getSuggestions());
+        console.log("doc info: ", doc, doc.getQuerySelector(), doc.getUniqueSelector(), doc.getSuggestions());
+        doc.propagateSuggestions();
         
         let allPages: Element = document.querySelector('.kix-paginateddocumentplugin');
         let txts = textNodes(allPages);
