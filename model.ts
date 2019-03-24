@@ -200,29 +200,43 @@ export namespace WriteBetter {
         }
 
         applySuggestion(suggestion: Suggestion): void {
-            let selector = '';
-            try {
-                selector = finder(this.element, { threshold: 2 });
-            } catch (err) {
-                console.error(`applySuggestion: error applying suggestion: ${suggestion}; err: ${err}`);
-                return;
-            }
-            const width = this.getText().length;
-            const start = Math.floor(100 * suggestion.index / width);
-            const end = start + Math.ceil(100 * suggestion.offset / width);
-            css.innerHTML += `${selector} {
-            background-image: linear-gradient(to right, transparent ${start}%, yellow ${start}%, yellow ${end}%, transparent ${end}%); 
-        }`;
+            Style.getInstance().highlight(this, suggestion);
             console.log("applied suggestion", suggestion, "on text: ", this.getText());
         }
     }
 
-    // TODO: move to a singleton
-    const css = insertCSS();
-    function insertCSS(): HTMLStyleElement {
-        const css = document.createElement("style");
-        css.type = "text/css";
-        document.body.appendChild(css);
-        return css;
+    export class Style {
+        static _instance: Style;
+        css: HTMLStyleElement;
+
+        private constructor() {
+            this.css = document.createElement("style");
+            this.css.type = "text/css";
+            document.body.appendChild(this.css);
+        }
+
+        static getInstance() {
+            return this._instance || (this._instance = new this());
+        }
+
+        highlight(node: Node, suggestion: Suggestion): void {
+            this.underline(node, suggestion);
+        }
+
+        underline(node: Node, range: {index:number, offset:number}): void {
+            let selector = '';
+            try {
+                selector = finder(node.getElement(), { threshold: 2 });
+            } catch (err) {
+                console.error(`underline: error getting unique selector: ${err}`);
+                return;
+            }
+            const width = node.getText().length;
+            const start = Math.floor(100 * range.index / width);
+            const end = start + Math.ceil(100 * range.offset / width);
+            this.css.innerHTML += `${selector} {
+                        background-image: linear-gradient(to right, transparent ${start}%, yellow ${start}%, yellow ${end}%, transparent ${end}%); 
+                    }`;
+        }
     }
 }
