@@ -203,10 +203,12 @@ export class WBSegment extends WBAbsNode {
             console.error(`applySuggestion: error applying suggestion: ${suggestion}; err: ${err}`);
             return;
         }
+        const width = this.getText().length;
+        const start = Math.floor(100*suggestion.index/width);
+        const end = start + Math.ceil(100*suggestion.offset/width);
         css.innerHTML += `${selector} {
-                background-color: yellow !important;
-            }`;
-
+            background-image: linear-gradient(to right, transparent ${start}%, yellow ${start}%, yellow ${end}%, transparent ${end}%); 
+        }`;
         console.log("applied suggestion", suggestion, "on text: ", this.getText());
     }
 }
