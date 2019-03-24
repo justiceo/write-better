@@ -1,4 +1,4 @@
-import { WBDoc } from './model';
+import { WriteBetter } from './model';
 
 chrome.runtime.onMessage.addListener((
     msg: string,
@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener((
     callback: (response?: any) => void) => {
     console.log('runtime.onMessage fired', msg);
     if (msg === 'analyze_doc') {
-        let doc = WBDoc.create();
+        let doc = WriteBetter.WBDoc.create();
         console.log("doc info: ", doc, doc.getQuerySelector(), doc.getSuggestions());
         doc.propagateSuggestions();
         callback('success');
