@@ -149,7 +149,6 @@ export class WBLine extends WBAbsNode {
     constructor(elem: HTMLElement) {
         super();
         this.element = elem;
-        // this.uniqueSelector = finder(elem);
         let children = this.textNodes(elem);
         children.forEach((e: Text) => {
             if (e.textContent) {
@@ -178,7 +177,7 @@ export class WBLine extends WBAbsNode {
 }
 
 // WBSegment is the immediate parent of a text node. 
-// Its only child is the text node.
+// Its only child is the text node and it should be treated as a textnode.
 export class WBSegment extends WBAbsNode {
     constructor(elem: HTMLElement) {
         super();
@@ -189,11 +188,11 @@ export class WBSegment extends WBAbsNode {
     }
 
     getChildren(): WBNode[] {
-        return [];
+        throw 'getChildren: unimplemented exception - base node is intended to be used as text node.'
     }
 
     getQuerySelector(): string {
-        return "return_nothing_when_used_by_accident";
+        throw 'getQuerySelector: unimplemented exception - base node is intended to be used as text node.'
     }
 
     applySuggestion(suggestion: WBSuggestion): void {
@@ -205,7 +204,7 @@ export class WBSegment extends WBAbsNode {
             return;
         }
         css.innerHTML += `${selector} {
-                border-bottom: 2px solid red !important;
+                background-color: yellow !important;
             }`;
 
         console.log("applied suggestion", suggestion, "on text: ", this.getText());
