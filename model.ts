@@ -2,7 +2,7 @@ import finder from '@medv/finder';
 const writeGood: (input: string) => WBSuggestion[] = require('write-good');
 
 export class WBSuggestion {
-    start: number
+    index: number
     offset: number
     text: string
 }
@@ -29,7 +29,7 @@ export abstract class WBAbsNode implements WBNode {
         // InnerText appproximates the rendered text of the element 
         // Text is just a concatenation of the text nodes. Not away of breaks etc.
         // See why you should always use innerText https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText#Result
-        return this.element.innerText.replace('\n', ' ');
+        return this.element.innerText;
     }
 
     getElement(): HTMLElement {
