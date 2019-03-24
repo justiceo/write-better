@@ -9,12 +9,10 @@ chrome.runtime.onMessage.addListener((
     callback: (response?: any) => void) => {
     console.log('runtime.onMessage fired', msg);
     if (msg === 'analyze_doc') {
+        let doc = WBDoc.create();
+        console.log("suggestions: ", doc.getText(), doc.getQuerySelector(), doc.getUniqueSelector(), doc.getSuggestions());
+        
         let allPages: Element = document.querySelector('.kix-paginateddocumentplugin');
-        let doc = new WBDoc(allPages as HTMLElement);
-        let sg: WBSuggestion[] = [];
-        doc.visit(suggestionVisitor, sg);
-        console.log("suggestions: ", sg);
-
         let txts = textNodes(allPages);
         let nodeMap: any = {};
         for (let i = 0; i < txts.length; i++) {
@@ -33,7 +31,7 @@ chrome.runtime.onMessage.addListener((
             nodeMap[txts[i].textContent] = txt;
             let selector = "";
             try {
-                selector = finder(txts[i].parentElement as Element);
+                selector = finder(txts[i].parentElement as Element,{threshold: 2});
             } catch (err) {
                 console.log(err, txts[i].nodeType, txts[i].nodeName);
             }

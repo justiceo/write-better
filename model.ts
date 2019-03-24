@@ -20,7 +20,6 @@ export interface WBNode {
 export class WBAbsNode implements WBNode {
     uniqueSelector: string;
     element: HTMLElement;
-    suggestions: WBSuggestion[];
 
     getUniqueSelector(): string {
         return this.uniqueSelector;
@@ -47,7 +46,7 @@ export class WBAbsNode implements WBNode {
     }
 
     getSuggestions(): WBSuggestion[] {
-        return this.suggestions;
+        return writeGood(this.getText());
     }
 
     visit<T>(fn: (node: WBNode, prev: T[]) => T[], prev: T[]): void {
@@ -68,11 +67,17 @@ export class WBDoc extends WBAbsNode {
     constructor(elem: HTMLElement) {
         super();
         this.element = elem;
-        this.uniqueSelector = finder(elem);
+        // this.uniqueSelector = finder(elem, {threshold: 10}); // TODO: finder can make page freeze.
         let children: NodeListOf<Element> = this.element.querySelectorAll(WBParagraph.QuerySelector);
         children.forEach((e: Element) => {
-            this.children.push(new WBParagraph(e as HTMLElement));
+            if ((e as HTMLElement).innerText.trim()) {
+                this.children.push(new WBParagraph(e as HTMLElement));
+            }
         });
+    }
+
+    static create(): WBDoc {
+        return new WBDoc(document.querySelector(WBDoc.QuerySelector));
     }
 
     getChildren(): WBNode[] {
@@ -91,7 +96,7 @@ export class WBParagraph extends WBAbsNode {
     constructor(elem: HTMLElement) {
         super();
         this.element = elem;
-        this.uniqueSelector = finder(elem);
+        // this.uniqueSelector = finder(elem);
         let children: NodeListOf<Element> = this.element.querySelectorAll(WBLine.QuerySelector);
         children.forEach((e: Element) => {
             this.children.push(new WBLine(e as HTMLElement));
@@ -114,7 +119,7 @@ export class WBLine extends WBAbsNode {
     constructor(elem: HTMLElement) {
         super();
         this.element = elem;
-        this.uniqueSelector = finder(elem);
+        // this.uniqueSelector = finder(elem);
         let children = this.textNodes(elem);
         children.forEach((e: Element) => {
             this.children.push(new WBSegment(e.parentElement));
@@ -147,7 +152,7 @@ export class WBSegment extends WBAbsNode {
     constructor(elem: HTMLElement) {
         super();
         this.element = elem;
-        this.uniqueSelector = finder(elem);
+        //this.uniqueSelector = finder(elem);
         if (elem.childElementCount != 1) {
             console.error(`WBSegment.constructor: segment has ${elem.childElementCount} children expected 1.`);
         }
