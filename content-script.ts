@@ -37,7 +37,6 @@ chrome.runtime.onMessage.addListener((
             } catch (err) {
                 console.log(err, txts[i].nodeType, txts[i].nodeName);
             }
-            console.log("unique css", selector);
             document.body.appendChild(stylesheet(`${selector} {
                 border-bottom: 2px solid black;
             }`))

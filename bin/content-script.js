@@ -2,11 +2,16 @@
 "use strict";
 exports.__esModule = true;
 var finder_1 = require("@medv/finder");
+var model_1 = require("./model");
 var writeGood = require('write-good');
 chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
     console.log('runtime.onMessage fired', msg);
     if (msg === 'analyze_doc') {
         var allPages = document.querySelector('.kix-paginateddocumentplugin');
+        var doc = new model_1.WBDoc(allPages);
+        var sg = [];
+        doc.visit(model_1.suggestionVisitor, sg);
+        console.log("suggestions: ", sg);
         var txts = textNodes(allPages);
         var nodeMap = {};
         for (var i = 0; i < txts.length; i++) {
@@ -30,7 +35,6 @@ chrome.runtime.onMessage.addListener(function (msg, sender, callback) {
             catch (err) {
                 console.log(err, txts[i].nodeType, txts[i].nodeName);
             }
-            console.log("unique css", selector);
             document.body.appendChild(stylesheet(selector + " {\n                border-bottom: 2px solid black;\n            }"));
         }
         console.debug('writeGood: ', nodeMap);
@@ -68,7 +72,7 @@ function stylesheet(rules) {
     return css;
 }
 
-},{"@medv/finder":3,"write-good":18}],2:[function(require,module,exports){
+},{"./model":2,"@medv/finder":3,"write-good":18}],2:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -91,6 +95,7 @@ var WBSuggestion = /** @class */ (function () {
     }
     return WBSuggestion;
 }());
+exports.WBSuggestion = WBSuggestion;
 var WBAbsNode = /** @class */ (function () {
     function WBAbsNode() {
     }
@@ -98,12 +103,10 @@ var WBAbsNode = /** @class */ (function () {
         return this.uniqueSelector;
     };
     WBAbsNode.prototype.getText = function () {
-        // TODO: this.text should always be equal to this.element.textContent
-        // What do we do when it's not?
-        if (this.text !== this.element.textContent) {
-            console.error("Element text:" + this.text + " \nnot same as textContent: " + this.element.textContent);
-        }
-        return this.text;
+        // InnerText appproximates the rendered text of the element 
+        // Text is just a concatenation of the text nodes. Not away of breaks etc.
+        // See why you should always use innerText https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText#Result
+        return this.element.innerText.replace('\n', ' ');
     };
     WBAbsNode.prototype.getElement = function () {
         return this.element;
@@ -130,6 +133,7 @@ var WBAbsNode = /** @class */ (function () {
     };
     return WBAbsNode;
 }());
+exports.WBAbsNode = WBAbsNode;
 var WBDoc = /** @class */ (function (_super) {
     __extends(WBDoc, _super);
     function WBDoc(elem) {
@@ -137,8 +141,7 @@ var WBDoc = /** @class */ (function (_super) {
         _this.children = [];
         _this.element = elem;
         _this.uniqueSelector = finder_1["default"](elem);
-        _this.text = elem.textContent;
-        var children = document.querySelectorAll(WBParagraph.QuerySelector);
+        var children = _this.element.querySelectorAll(WBParagraph.QuerySelector);
         children.forEach(function (e) {
             _this.children.push(new WBParagraph(e));
         });
@@ -150,9 +153,10 @@ var WBDoc = /** @class */ (function (_super) {
     WBDoc.prototype.getQuerySelector = function () {
         return WBDoc.QuerySelector;
     };
-    WBDoc.QuerySelector = 'kix-document';
+    WBDoc.QuerySelector = '.kix-paginateddocumentplugin';
     return WBDoc;
 }(WBAbsNode));
+exports.WBDoc = WBDoc;
 var WBParagraph = /** @class */ (function (_super) {
     __extends(WBParagraph, _super);
     function WBParagraph(elem) {
@@ -160,8 +164,7 @@ var WBParagraph = /** @class */ (function (_super) {
         _this.children = [];
         _this.element = elem;
         _this.uniqueSelector = finder_1["default"](elem);
-        _this.text = elem.textContent;
-        var children = document.querySelectorAll(WBLine.QuerySelector);
+        var children = _this.element.querySelectorAll(WBLine.QuerySelector);
         children.forEach(function (e) {
             _this.children.push(new WBLine(e));
         });
@@ -173,9 +176,10 @@ var WBParagraph = /** @class */ (function (_super) {
     WBParagraph.prototype.getQuerySelector = function () {
         return WBParagraph.QuerySelector;
     };
-    WBParagraph.QuerySelector = 'kix-paragraph';
+    WBParagraph.QuerySelector = '.kix-paragraphrenderer';
     return WBParagraph;
 }(WBAbsNode));
+exports.WBParagraph = WBParagraph;
 var WBLine = /** @class */ (function (_super) {
     __extends(WBLine, _super);
     function WBLine(elem) {
@@ -183,7 +187,6 @@ var WBLine = /** @class */ (function (_super) {
         _this.children = [];
         _this.element = elem;
         _this.uniqueSelector = finder_1["default"](elem);
-        _this.text = elem.textContent;
         var children = _this.textNodes(elem);
         children.forEach(function (e) {
             _this.children.push(new WBSegment(e.parentElement));
@@ -209,9 +212,10 @@ var WBLine = /** @class */ (function (_super) {
         }
         return all;
     };
-    WBLine.QuerySelector = 'kix-line';
+    WBLine.QuerySelector = '.kix-lineview';
     return WBLine;
 }(WBAbsNode));
+exports.WBLine = WBLine;
 // WBSegment is the immediate parent of a text node. 
 // Its only child is the text node.
 var WBSegment = /** @class */ (function (_super) {
@@ -220,7 +224,6 @@ var WBSegment = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.element = elem;
         _this.uniqueSelector = finder_1["default"](elem);
-        _this.text = elem.textContent;
         if (elem.childElementCount != 1) {
             console.error("WBSegment.constructor: segment has " + elem.childElementCount + " children expected 1.");
         }
@@ -234,11 +237,12 @@ var WBSegment = /** @class */ (function (_super) {
     };
     return WBSegment;
 }(WBAbsNode));
+exports.WBSegment = WBSegment;
 function suggestionVisitor(node, prev) {
-    if (node instanceof WBParagraph && node instanceof WBLine) {
-        return prev;
-    }
     var suggestions = writeGood(node.getText());
+    if (suggestions.length) {
+        console.log("suggestions for paragraph: ", node.getQuerySelector(), node.getUniqueSelector(), node.getText(), suggestions);
+    }
     // Only add suggestion if it has not been added.
     suggestions.forEach(function (s) {
         if (prev.find(function (v) { return v.text == s.text; })) {
@@ -248,6 +252,7 @@ function suggestionVisitor(node, prev) {
     });
     return prev;
 }
+exports.suggestionVisitor = suggestionVisitor;
 
 },{"@medv/finder":3,"write-good":18}],3:[function(require,module,exports){
 "use strict";

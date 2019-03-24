@@ -19,7 +19,6 @@ export interface WBNode {
 
 export class WBAbsNode implements WBNode {
     uniqueSelector: string;
-    text: string;
     element: HTMLElement;
     suggestions: WBSuggestion[];
 
@@ -28,12 +27,10 @@ export class WBAbsNode implements WBNode {
     }
 
     getText(): string {
-        // TODO: this.text should always be equal to this.element.textContent
-        // What do we do when it's not?
-        if (this.text !== this.element.textContent) {
-            console.error(`Element text:${this.text} \nnot same as textContent: ${this.element.textContent}`);
-        }
-        return this.text;
+        // InnerText appproximates the rendered text of the element 
+        // Text is just a concatenation of the text nodes. Not away of breaks etc.
+        // See why you should always use innerText https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText#Result
+        return this.element.innerText.replace('\n', ' ');
     }
 
     getElement(): HTMLElement {
@@ -72,7 +69,6 @@ export class WBDoc extends WBAbsNode {
         super();
         this.element = elem;
         this.uniqueSelector = finder(elem);
-        this.text = elem.textContent;
         let children: NodeListOf<Element> = this.element.querySelectorAll(WBParagraph.QuerySelector);
         children.forEach((e: Element) => {
             this.children.push(new WBParagraph(e as HTMLElement));
@@ -96,7 +92,6 @@ export class WBParagraph extends WBAbsNode {
         super();
         this.element = elem;
         this.uniqueSelector = finder(elem);
-        this.text = elem.textContent;
         let children: NodeListOf<Element> = this.element.querySelectorAll(WBLine.QuerySelector);
         children.forEach((e: Element) => {
             this.children.push(new WBLine(e as HTMLElement));
@@ -120,7 +115,6 @@ export class WBLine extends WBAbsNode {
         super();
         this.element = elem;
         this.uniqueSelector = finder(elem);
-        this.text = elem.textContent;
         let children = this.textNodes(elem);
         children.forEach((e: Element) => {
             this.children.push(new WBSegment(e.parentElement));
@@ -154,7 +148,6 @@ export class WBSegment extends WBAbsNode {
         super();
         this.element = elem;
         this.uniqueSelector = finder(elem);
-        this.text = elem.textContent;
         if (elem.childElementCount != 1) {
             console.error(`WBSegment.constructor: segment has ${elem.childElementCount} children expected 1.`);
         }
@@ -170,10 +163,11 @@ export class WBSegment extends WBAbsNode {
 }
 
 export function suggestionVisitor(node: WBNode, prev: WBSuggestion[]): WBSuggestion[] {
-    if (node! instanceof WBParagraph && node! instanceof WBLine) {
-        return prev
-    }
+
     const suggestions = writeGood(node.getText());
+    if (suggestions.length) {
+        console.log("suggestions for paragraph: ", node.getQuerySelector(), node.getUniqueSelector(), node.getText(), suggestions);
+    }
     // Only add suggestion if it has not been added.
     suggestions.forEach(s => {
         if (prev.find(v => v.text == s.text)) {
