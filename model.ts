@@ -4,7 +4,7 @@ const writeGood: (input: string) => WBSuggestion[] = require('write-good');
 export class WBSuggestion {
     index: number
     offset: number
-    text: string
+    reason: string
 }
 
 export interface WBNode {
@@ -172,7 +172,7 @@ export function suggestionVisitor(node: WBNode, prev: WBSuggestion[]): WBSuggest
     }
     // Only add suggestion if it has not been added.
     suggestions.forEach(s => {
-        if (prev.find(v => v.text == s.text)) {
+        if (prev.find(v => v.reason == s.reason)) {
             return;
         }
         prev.push(s);
