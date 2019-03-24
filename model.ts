@@ -92,8 +92,10 @@ export namespace WriteBetter {
 
         constructor(elem: HTMLElement) {
             super();
+            if (!elem) {
+                throw "Doc.New: input element cannot be falsy";
+            }
             this.element = elem;
-            // this.uniqueSelector = finder(elem, {threshold: 10}); // TODO: finder can make page freeze.
             let children: NodeListOf<Element> = this.element.querySelectorAll(Paragraph.QuerySelector);
             children.forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
