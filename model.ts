@@ -211,6 +211,7 @@ export namespace WriteBetter {
 
         private constructor() {
             this.css = document.createElement("style");
+            this.css.id = "write-better-css-file";
             this.css.type = "text/css";
             document.body.appendChild(this.css);
         }
@@ -223,7 +224,12 @@ export namespace WriteBetter {
             this.underline(node, suggestion);
         }
 
-        underline(node: Node, range: {index:number, offset:number}): void {
+        clear() {
+            this.css.remove();
+            console.log(`removed css file from document: ${this.css.id}`)
+        }
+
+        underline(node: Node, range: { index: number, offset: number }): void {
             let selector = '';
             try {
                 selector = finder(node.getElement(), { threshold: 2 });
