@@ -1,7 +1,4 @@
-import finder from '@medv/finder'
-import { WBDoc,WBSuggestion, suggestionVisitor } from './model';
-
-const writeGood: (input: string) => [{ index: number, offset: number, suggestion: string }] = require('write-good');
+import { WBDoc } from './model';
 
 chrome.runtime.onMessage.addListener((
     msg: string,
@@ -10,37 +7,8 @@ chrome.runtime.onMessage.addListener((
     console.log('runtime.onMessage fired', msg);
     if (msg === 'analyze_doc') {
         let doc = WBDoc.create();
-        console.log("doc info: ", doc, doc.getQuerySelector(), doc.getUniqueSelector(), doc.getSuggestions());
+        console.log("doc info: ", doc, doc.getQuerySelector(), doc.getSuggestions());
         doc.propagateSuggestions();
-        
-        let allPages: Element = document.querySelector('.kix-paginateddocumentplugin');
-        let txts = textNodes(allPages);
-        let nodeMap: any = {};
-        for (let i = 0; i < txts.length; i++) {
-            let txt = txts[i].textContent;
-            if (txt.trim() == "") {
-                continue;
-            }
-            const suggestions = writeGood(txt);
-            for (let j = suggestions.length - 1; j >= 0; j--) {
-                const s = suggestions[j];
-                txt = txt.substring(0, s.index) + '<strong class="suggestion"s>' + txt.substring(s.index, s.index + s.offset) + '</strong>' + txt.substring(s.index + s.offset);
-            }
-            if (txts[i].textContent.length == txt.length) {
-                continue;
-            }
-            nodeMap[txts[i].textContent] = txt;
-            let selector = "";
-            try {
-                selector = finder(txts[i].parentElement as Element,{threshold: 2});
-            } catch (err) {
-                console.log(err, txts[i].nodeType, txts[i].nodeName);
-            }
-            document.body.appendChild(stylesheet(`${selector} {
-                border-bottom: 2px solid black;
-            }`))
-        }
-        console.debug('writeGood: ', nodeMap);
         callback('success');
     }
 });

@@ -8,7 +8,6 @@ export class WBSuggestion {
 }
 
 export interface WBNode {
-    getUniqueSelector: () => string;
     getQuerySelector: () => string;
     getText: () => string;
     getElement: () => HTMLElement;
@@ -19,12 +18,7 @@ export interface WBNode {
 }
 
 export abstract class WBAbsNode implements WBNode {
-    uniqueSelector: string;
     element: HTMLElement;
-
-    getUniqueSelector(): string {
-        return this.uniqueSelector;
-    }
 
     getText(): string {
         // InnerText appproximates the rendered text of the element 
@@ -85,8 +79,8 @@ export abstract class WBAbsNode implements WBNode {
         matches[0].propagateSuggestion(this.relPosition(matches[0], suggestion));
     }
 
-
     abstract getChildren(): WBNode[];
+
     abstract getQuerySelector(): string;
 }
 
@@ -134,7 +128,7 @@ export class WBParagraph extends WBAbsNode {
         let children: NodeListOf<Element> = this.element.querySelectorAll(WBLine.QuerySelector);
         children.forEach((e: Element) => {
             if ((e as HTMLElement).innerText.trim()) {
-            this.children.push(new WBLine(e as HTMLElement));
+                this.children.push(new WBLine(e as HTMLElement));
             }
         });
     }
@@ -189,7 +183,6 @@ export class WBSegment extends WBAbsNode {
     constructor(elem: HTMLElement) {
         super();
         this.element = elem;
-        //this.uniqueSelector = finder(elem);
         if (elem.childElementCount != 1) {
             console.error(`WBSegment.constructor: segment has ${elem.childElementCount} children expected 1.`);
         }
@@ -214,7 +207,7 @@ export class WBSegment extends WBAbsNode {
         css.innerHTML += `${selector} {
                 border-bottom: 2px solid red !important;
             }`;
-        
+
         console.log("applied suggestion", suggestion, "on text: ", this.getText());
     }
 }
@@ -227,20 +220,3 @@ function insertCSS(): HTMLStyleElement {
     document.body.appendChild(css);
     return css;
 }
-
-export function suggestionVisitor(node: WBNode, prev: WBSuggestion[]): WBSuggestion[] {
-
-    const suggestions = writeGood(node.getText());
-    if (suggestions.length) {
-        console.log("suggestions for paragraph: ", node.getQuerySelector(), node.getUniqueSelector(), node.getText(), suggestions);
-    }
-    // Only add suggestion if it has not been added.
-    suggestions.forEach(s => {
-        if (prev.find(v => v.reason == s.reason)) {
-            return;
-        }
-        prev.push(s);
-    });
-    return prev;
-}
-
