@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener((
     callback: (response?: any) => void) => {
     console.log('runtime.onMessage fired', msg);
     if (msg === 'analyze_doc') {
-        let doc = WriteBetter.WBDoc.create();
+        let doc = WriteBetter.Doc.create();
         console.log("doc info: ", doc, doc.getQuerySelector(), doc.getSuggestions());
         doc.propagateSuggestions();
         callback('success');
