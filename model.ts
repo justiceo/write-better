@@ -222,6 +222,7 @@ export namespace WriteBetter {
 
         highlight(node: Node, suggestion: Suggestion): void {
             this.underline(node, suggestion);
+            this.registerHover(node, suggestion);
         }
 
         clear() {
@@ -243,6 +244,24 @@ export namespace WriteBetter {
             this.css.innerHTML += `${selector} {
                         background-image: linear-gradient(to right, transparent ${start}%, yellow ${start}%, yellow ${end}%, transparent ${end}%); 
                     }`;
+        }
+
+        registerHover(node: Node, suggestion: Suggestion): void {
+            node.getElement().addEventListener("mouseover", (e: MouseEvent) => {
+                const width = node.getText().length;
+                const start = Math.floor(100 * suggestion.index / width);
+                const end = start + Math.ceil(100 * suggestion.offset / width);
+
+                const boxWidth = node.getElement().getBoundingClientRect().width;
+                const boxX = (node.getElement().getBoundingClientRect() as DOMRect).x;
+                const mouseX = e.clientX - boxX;
+                const xstart = start * boxWidth / 100;
+                const xend = end * boxWidth / 100;
+
+                if (mouseX >= xstart && mouseX <= xend) {
+                    console.log("hovered on error");
+                }
+            });
         }
     }
 }
