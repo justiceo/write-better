@@ -240,8 +240,8 @@ export namespace WriteBetter {
             }
             const width = node.getText().length;
             const start = Math.floor(100 * suggestion.index / width);
-            const end = start + Math.ceil(100 * suggestion.offset / width);
-            this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([ 
+            const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
+            this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
                 ['#selector', selector],
                 ['#start', start.toString()],
                 ['#end', end.toString()],
@@ -260,7 +260,7 @@ export namespace WriteBetter {
             node.getElement().addEventListener("mouseover", (e: MouseEvent) => {
                 const width = node.getText().length;
                 const start = Math.floor(100 * suggestion.index / width);
-                const end = start + Math.ceil(100 * suggestion.offset / width);
+                const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
 
                 const boxWidth = node.getElement().getBoundingClientRect().width;
                 const boxX = (node.getElement().getBoundingClientRect() as DOMRect).x;
@@ -278,7 +278,7 @@ export namespace WriteBetter {
         #selector {
             position: relative;
             padding-bottom: 4px;
-            background-position-y: 10px; /* programmatically set to 0px on hover */
+            background-position-y: 12px; /* programmatically set line-height+3px */
             background-repeat: no-repeat;
             background-color: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important; 
             background-image: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important; 
@@ -306,7 +306,7 @@ export namespace WriteBetter {
             height: 0px;
             width: 0px;
             bottom: 20px;
-            left: 20px;
+            left: 100px;
             transform: translate3d(0, 6px, 0);
             transition: all .1s ease-in-out;
         }
@@ -320,8 +320,10 @@ export namespace WriteBetter {
             color: black;
             content: '#reason';
             font-size: 14px;
+            font-family: docs-Consolas;
             padding: 10px 15px;
             bottom: 30px;
+            left: 0px;
             white-space: nowrap;
             transform: scale3d(.2, .2, 1);
             transition: all .2s ease-in-out;
