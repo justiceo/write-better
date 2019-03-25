@@ -1,4 +1,4 @@
-'use strict';
+import {WriteBetter } from './model';
 
 function toggleIcon(tab: chrome.tabs.Tab) {
     if (!tab) {
@@ -32,7 +32,7 @@ function setTabState(tab: chrome.tabs.Tab) {
         chrome.browserAction.setIcon({ path: data[host] ? 'enabled.png' : 'disabled.png' });
         if (data[host]) {
             injectCode(tab, () => {
-                chrome.tabs.sendMessage(tab.id, 'analyze_doc', (resp) => {
+                chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc'} as WriteBetter.Message, (resp) => {
                     console.log('Done analyzing doc:', resp);
                 });
             });

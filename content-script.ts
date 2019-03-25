@@ -1,11 +1,11 @@
 import { WriteBetter } from './model';
 
 chrome.runtime.onMessage.addListener((
-    msg: string,
+    msg: WriteBetter.Message,
     sender: chrome.runtime.MessageSender,
     callback: (response?: any) => void) => {
     console.log('runtime.onMessage fired', msg);
-    if (msg === 'analyze_doc') {
+    if (msg.type === 'analyze_doc') {
         let doc = WriteBetter.Doc.create();
         console.log("doc info: ", doc, doc.getQuerySelector(), doc.getSuggestions());
         doc.propagateSuggestions();
