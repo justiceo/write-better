@@ -58,7 +58,7 @@ export namespace WriteBetter {
 
         relPosition(child: Node, suggestion: Suggestion): Suggestion {
             if (!this.wrap(child, suggestion)) {
-                throw "relPosition: cannot get relative position of suggestion that is not wrapped by node."
+                throw 'relPosition: cannot get relative position of suggestion that is not wrapped by node.'
             }
             const index = this.getText().search(child.getText());
             return { index: suggestion.index - index, offset: suggestion.offset, reason: suggestion.reason };
@@ -75,7 +75,7 @@ export namespace WriteBetter {
                 console.error(`propagateSuggestion: only one child should wrap a suggestion, got ${matches.length}`);
             }
             if (matches.length == 0) {
-                console.error("propagateSuggestion: no child wraipped the suggestion, potentially a cross-boundary match: ", this, suggestion);
+                console.error('propagateSuggestion: no child wraipped the suggestion, potentially a cross-boundary match: ', this, suggestion);
                 return;
             }
             matches[0].propagateSuggestion(this.relPosition(matches[0], suggestion));
@@ -93,7 +93,7 @@ export namespace WriteBetter {
         constructor(elem: HTMLElement) {
             super();
             if (!elem) {
-                throw "Doc.New: input element cannot be falsy";
+                throw 'Doc.New: input element cannot be falsy';
             }
             this.element = elem;
             let children: NodeListOf<Element> = this.element.querySelectorAll(Paragraph.QuerySelector);
@@ -201,7 +201,7 @@ export namespace WriteBetter {
 
         applySuggestion(suggestion: Suggestion): void {
             Style.getInstance().highlight(this, suggestion);
-            console.log("applied suggestion", suggestion, "on text: ", this.getText());
+            console.log('applied suggestion', suggestion, 'on text: ', this.getText());
         }
     }
 
@@ -210,9 +210,9 @@ export namespace WriteBetter {
         css: HTMLStyleElement;
 
         private constructor() {
-            this.css = document.createElement("style");
-            this.css.id = "write-better-css-file";
-            this.css.type = "text/css";
+            this.css = document.createElement('style');
+            this.css.id = 'write-better-css-file';
+            this.css.type = 'text/css';
             document.body.appendChild(this.css);
         }
 
@@ -248,8 +248,8 @@ export namespace WriteBetter {
                 ['#start', start.toString()],
                 ['#end', end.toString()],
                 ['#reason', suggestion.reason],
-                ['box_left_push', (xstart-20).toString()+ "px"],
-                ['arrow_left_push', (xstart+5).toString()+ "px"],
+                ['box_left_push', (xstart-20).toString()+ 'px'],
+                ['arrow_left_push', (xstart+5).toString()+ 'px'],
             ]));
         }
 
@@ -261,7 +261,7 @@ export namespace WriteBetter {
         }
 
         registerHover(node: Node, suggestion: Suggestion): void {
-            node.getElement().addEventListener("mouseover", (e: MouseEvent) => {
+            node.getElement().addEventListener('mouseover', (e: MouseEvent) => {
                 const width = node.getText().length;
                 const start = Math.floor(100 * suggestion.index / width);
                 const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
@@ -273,7 +273,7 @@ export namespace WriteBetter {
                 const xend = end * boxWidth / 100;
 
                 if (mouseX >= xstart && mouseX <= xend) {
-                    console.log("hovered on error");
+                    console.log('hovered on error');
                 }
             });
         }
@@ -347,7 +347,7 @@ export namespace WriteBetter {
     }
 
     export class Message {
-        type: "analyze_doc";
+        type: 'analyze_doc';
         value: any;
     }
 }

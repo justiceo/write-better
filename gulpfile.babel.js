@@ -1,19 +1,19 @@
 import gulp from 'gulp';
 import tsify from 'tsify';
-import browserify from "browserify";
+import browserify from 'browserify';
 import source from 'vinyl-source-stream';
 import del from 'del';
 
-const bgSrc = ["background.ts", "model.ts"];
-const csSrc = ["content-script.ts", "model.ts"];
-const outDir = "./bin";
+const bgSrc = ['background.ts', 'model.ts'];
+const csSrc = ['content-script.ts', 'model.ts'];
+const outDir = './bin';
 
 const compileBgScript = () => {
     return browserify()
         .add(bgSrc)
         .plugin(tsify, { noImplicitAny: true })
         .bundle()
-        .on("error", (err) => { console.error(err) })
+        .on('error', (err) => { console.error(err) })
         .pipe(source('background.js'))
         .pipe(gulp.dest(outDir))
 }
@@ -22,7 +22,7 @@ const compileContentScript = () => {
         .add(csSrc)
         .plugin(tsify, { noImplicitAny: true })
         .bundle()
-        .on("error", (err) => { console.error(err) })
+        .on('error', (err) => { console.error(err) })
         .pipe(source('content-script.js'))
         .pipe(gulp.dest(outDir))
 }
