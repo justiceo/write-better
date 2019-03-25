@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((
     console.log('runtime.onMessage fired', msg);
     if (msg.type === 'analyze_doc') {
         let doc = WriteBetter.Doc.create();
-        console.log("doc info: ", doc, doc.getQuerySelector(), doc.getSuggestions());
+        console.log('doc info: ', doc, doc.getQuerySelector(), doc.getSuggestions());
         doc.propagateSuggestions();
         callback('success');
     }
@@ -37,8 +37,8 @@ function element(html: string): Element {
 }
 
 function stylesheet(rules: string): HTMLStyleElement {
-    var css = document.createElement("style");
-    css.type = "text/css";
+    var css = document.createElement('style');
+    css.type = 'text/css';
     css.innerHTML = rules;
     return css;
 }
