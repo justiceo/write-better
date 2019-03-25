@@ -241,11 +241,15 @@ export namespace WriteBetter {
             const width = node.getText().length;
             const start = Math.floor(100 * suggestion.index / width);
             const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
+            const boxWidth = node.getElement().getBoundingClientRect().width;
+            const xstart = start * boxWidth / 100;
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
                 ['#selector', selector],
                 ['#start', start.toString()],
                 ['#end', end.toString()],
                 ['#reason', suggestion.reason],
+                ['box_left_push', (xstart-20).toString()+ "px"],
+                ['arrow_left_push', (xstart+5).toString()+ "px"],
             ]));
         }
 
@@ -306,7 +310,7 @@ export namespace WriteBetter {
             height: 0px;
             width: 0px;
             bottom: 20px;
-            left: 100px;
+            left: arrow_left_push;
             transform: translate3d(0, 6px, 0);
             transition: all .1s ease-in-out;
         }
@@ -323,7 +327,7 @@ export namespace WriteBetter {
             font-family: docs-Consolas;
             padding: 10px 15px;
             bottom: 30px;
-            left: 0px;
+            left: box_left_push;
             white-space: nowrap;
             transform: scale3d(.2, .2, 1);
             transition: all .2s ease-in-out;
