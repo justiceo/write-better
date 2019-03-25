@@ -21,8 +21,10 @@
     "browserify": "^16.2.3",
     "del": "^4.0.0",
     "gulp": "^4.0.0",
+    "gulp-sourcemaps": "^2.6.5",
     "tsify": "^4.0.1",
     "typescript": "^3.3.4000",
+    "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   }
 }
