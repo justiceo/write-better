@@ -345,4 +345,9 @@ export namespace WriteBetter {
         }         
         `
     }
+
+    export class Message {
+        type: "analyze_doc";
+        value: any;
+    }
 }
