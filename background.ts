@@ -51,6 +51,19 @@ function injectCode(tab: chrome.tabs.Tab, callback: (args?: any) => void) {
 
 }
 
+function loadExtensionFile(fileName: string, callback: (fileContents: string) => void) {
+    const readFile = (file: File) => {
+        const reader = new FileReader();
+        reader.onloadend = function (e) { // "this" is reader.onloadend.
+            callback(this.result as string);
+        };
+        reader.readAsText(file);
+    }
+    const readFileEntry = (e: FileEntry) => e.file(readFile);
+    const readDirEntry = (dirEntry: DirectoryEntry) => dirEntry.getFile(fileName, {}, readFileEntry);
+    chrome.runtime.getPackageDirectoryEntry(readDirEntry);
+}
+
 chrome.runtime.onInstalled.addListener((details: chrome.runtime.InstalledDetails) => {
     console.log('runtime.onInstalled fired:' + details.reason);
 });
