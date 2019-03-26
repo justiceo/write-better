@@ -31,24 +31,11 @@ function setTabState(tab: chrome.tabs.Tab) {
         console.log('setTabState: state of', host, 'is', data[host])
         chrome.browserAction.setIcon({ path: data[host] ? 'enabled.png' : 'disabled.png' });
         if (data[host]) {
-            injectCode(tab, () => {
-                chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc' } as WriteBetter.Message, (resp) => {
-                    console.log('Done analyzing doc:', resp);
-                });
+            chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc' } as WriteBetter.Message, (resp) => {
+                console.log('Done analyzing doc:', resp);
             });
         }
     });
-}
-
-function injectCode(tab: chrome.tabs.Tab, callback: (args?: any) => void) {
-    chrome.tabs.insertCSS(tab.id, { file: 'ext.css', allFrames: true }, () => {
-        console.log('injectCode: added css file')
-    });
-    chrome.tabs.executeScript(tab.id, { file: 'bin/content-script.js', allFrames: true }, (res: any[]) => {
-        console.log('injectCode: added bin/content-script.js file', res);
-        callback();
-    });
-
 }
 
 function loadExtensionFile(fileName: string, callback: (fileContents: string) => void) {

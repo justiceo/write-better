@@ -8,13 +8,22 @@
         "activeTab",
         "tabs",
         "storage",
-        "http://*/",
-        "https://*/"
+        "https://docs.google.com/*"
     ],
     "browser_action": {
         "name": "Click to enable/disable grammar checks",
         "default_icon": "disabled.png"
     },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://docs.google.com/*"
+            ],
+            "js": [
+                "bin/content-script.js"
+            ]
+        }
+    ],
     "options_page": "options.html",
     "background": {
         "scripts": [
