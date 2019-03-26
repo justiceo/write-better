@@ -1,4 +1,4 @@
-import { WriteBetter } from './model';
+import { Message } from './content-script';
 
 function toggleIcon(tab: chrome.tabs.Tab) {
     if (!tab) {
@@ -31,7 +31,7 @@ function setTabState(tab: chrome.tabs.Tab) {
         console.log('setTabState: state of', host, 'is', data[host])
         chrome.browserAction.setIcon({ path: data[host] ? 'enabled.png' : 'disabled.png' });
         if (data[host]) {
-            chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc' } as WriteBetter.Message, (resp) => {
+            chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc' } as Message, (resp) => {
                 console.log('Done analyzing doc:', resp);
             });
         }
