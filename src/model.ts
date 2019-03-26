@@ -187,7 +187,7 @@ export namespace WriteBetter {
             super();
             this.element = elem;
             if (elem.childElementCount != 1) {
-                console.error(`Segment.constructor: segment has ${elem.childElementCount} children expected 1.`);
+                console.debug(`Segment.constructor: segment has ${elem.childElementCount} children expected 1.`);
             }
         }
 
@@ -243,6 +243,9 @@ export namespace WriteBetter {
             const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
             const boxWidth = node.getElement().getBoundingClientRect().width;
             const xstart = start * boxWidth / 100;
+            if(!Style.cssTemplate) {
+                return console.error('template is still empty');
+            }
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
                 ['#selector', selector],
                 ['#start', start.toString()],
@@ -278,71 +281,6 @@ export namespace WriteBetter {
             });
         }
 
-        static cssTemplate: string = `
-        #selector {
-            position: relative;
-            padding-bottom: 4px;
-            background-position-y: 12px; /* programmatically set line-height+3px */
-            background-repeat: no-repeat;
-            background-color: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important; 
-            background-image: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important; 
-        }
-
-        #selector:hover {
-            background-position-y: 0px;
-        }
-
-        #selector:before,
-        #selector:after {
-            display: block;
-            opacity: 0;
-            pointer-events: none;
-            position: absolute;
-            z-index: 100000;
-        }
-        
-        #selector:after {
-            /* The Arrow below the tooltip */
-            border-right: 6px solid transparent;
-            border-top: 10px solid #eee; 
-            border-left: 6px solid transparent;
-            content: '';
-            height: 0px;
-            width: 0px;
-            bottom: 20px;
-            left: arrow_left_push;
-            transform: translate3d(0, 6px, 0);
-            transition: all .1s ease-in-out;
-        }
-        
-        #selector:before {
-            /* The tooltip box */
-            background: rgba(255, 255, 255, .95);
-            border: 1px solid #ddd;
-            box-shadow: 3px 3px #eee;
-            border-radius: 5px;
-            color: black;
-            content: '#reason';
-            font-size: 14px;
-            font-family: docs-Consolas;
-            padding: 10px 15px;
-            bottom: 30px;
-            left: box_left_push;
-            white-space: nowrap;
-            transform: scale3d(.2, .2, 1);
-            transition: all .2s ease-in-out;
-        }
-        
-        /* hover needs to be triggered programmatically */
-        #selector:hover:before,
-        #selector:hover:after {
-            opacity: 1;
-            transform: scale3d(1, 1, 1);
-        }
-        
-        #selector:hover:after {
-            transition: all .2s .1s ease-in-out;
-        }         
-        `
+        static cssTemplate: string = '';
     }
 }

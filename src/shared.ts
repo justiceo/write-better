@@ -4,6 +4,7 @@ export class Message {
 }
 
 const gDocsUrl = 'docs.google.com';
+const templateCSS = 'template.css';
 
 export const EnableOnDocs = (callback: () => void) => {
     let save: any = {}
@@ -20,4 +21,15 @@ export const IsEnabledOnDocs = (callback: (isEnabled: boolean) => void) => {
             callback(false);
         }
     })
+}
+
+export const GetTemplateCSS = (callback: (template: string) => void) => {
+    chrome.storage.sync.get(templateCSS, (data) => {
+        if (data[templateCSS]) {
+            callback(data[templateCSS]);
+        } else {
+            console.log("need to load template.css from local file");
+            callback('');
+        }
+    });
 }

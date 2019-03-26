@@ -1,5 +1,5 @@
 import { WriteBetter } from './model';
-import { IsEnabledOnDocs, Message } from './shared';
+import { IsEnabledOnDocs,GetTemplateCSS, Message } from './shared';
 
 const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
     console.debug('content-script received message: ', msg.type);
@@ -10,9 +10,12 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
 }
 
 const analyze = () => {
-    let doc = WriteBetter.Doc.create();
-    console.debug('doc info: ', doc, doc.getSuggestions());
-    doc.propagateSuggestions();
+    GetTemplateCSS((template: string)=> {
+        WriteBetter.Style.cssTemplate = template;
+        let doc = WriteBetter.Doc.create();
+        console.debug('doc info: ', doc, doc.getSuggestions());
+        doc.propagateSuggestions();
+    });
 }
 
 chrome.runtime.onMessage.addListener(onMessage);
