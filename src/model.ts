@@ -262,8 +262,8 @@ export namespace WriteBetter {
                 ['#start', start.toString()],
                 ['#end', end.toString()],
                 ['#reason', suggestion.reason],
-                ['box_left_push', (xstart-20).toString()+ 'px'],
-                ['arrow_left_push', (xstart+5).toString()+ 'px'],
+                ['box_left_push', (xstart - 20).toString() + 'px'],
+                ['arrow_left_push', (xstart + 5).toString() + 'px'],
             ]));
         }
 
@@ -296,9 +296,9 @@ export namespace WriteBetter {
 
     export const unregisterHandlers = (node: Node, prev: string[]) => {
         if (node instanceof Segment) {
-            node.getElement().removeEventListener('mouseover',node.handler)
+            node.getElement().removeEventListener('mouseover', node.handler)
         }
         return prev;
     }
-    
+
 }
