@@ -1,4 +1,4 @@
-import { Message } from './content-script';
+import { EnableOnDocs, Message } from './shared';
 
 function toggleIcon(tab: chrome.tabs.Tab) {
     if (!tab) {
@@ -60,6 +60,8 @@ chrome.runtime.onInstalled.addListener((details: chrome.runtime.InstalledDetails
             console.log('saved template.css file to storage');
         });
     });
+
+    EnableOnDocs(() => console.log('enabled extensions on gdocs.'));
 });
 
 // Called when the user clicks on the browser action.

@@ -4,8 +4,8 @@ import browserify from 'browserify';
 import source from 'vinyl-source-stream';
 import del from 'del';
 
-const bgSrc = ['background.ts', 'model.ts'];
-const csSrc = ['content-script.ts', 'model.ts'];
+const bgSrc = ['background.ts', 'shared.ts'];
+const csSrc = ['content-script.ts', 'model.ts', 'shared.ts'];
 const outDir = './bin';
 
 const compileBgScript = () => {

@@ -1,19 +1,25 @@
 import { WriteBetter } from './model';
+import { IsEnabledOnDocs, Message } from './shared';
 
-export class Message {
-    type: 'analyze_doc';
-    value: any;
+const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
+    console.debug('content-script received message: ', msg.type);
+    if (msg.type === 'analyze_doc') {
+        analyze();
+        callback(true);
+    }
 }
 
-chrome.runtime.onMessage.addListener((
-    msg: Message,
-    sender: chrome.runtime.MessageSender,
-    callback: (response?: any) => void) => {
-    console.log('runtime.onMessage fired', msg);
-    if (msg.type === 'analyze_doc') {
-        let doc = WriteBetter.Doc.create();
-        console.log('doc info: ', doc, doc.getQuerySelector(), doc.getSuggestions());
-        doc.propagateSuggestions();
-        callback('success');
+const analyze = () => {
+    let doc = WriteBetter.Doc.create();
+    console.debug('doc info: ', doc, doc.getSuggestions());
+    doc.propagateSuggestions();
+}
+
+chrome.runtime.onMessage.addListener(onMessage);
+
+// Run the script once added to the doc and user enabled it.
+IsEnabledOnDocs(isEnabled => {
+    if (isEnabled) {
+        analyze();
     }
-});
+})
