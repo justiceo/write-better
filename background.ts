@@ -1,4 +1,4 @@
-import {WriteBetter } from './model';
+import { WriteBetter } from './model';
 
 function toggleIcon(tab: chrome.tabs.Tab) {
     if (!tab) {
@@ -32,7 +32,7 @@ function setTabState(tab: chrome.tabs.Tab) {
         chrome.browserAction.setIcon({ path: data[host] ? 'enabled.png' : 'disabled.png' });
         if (data[host]) {
             injectCode(tab, () => {
-                chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc'} as WriteBetter.Message, (resp) => {
+                chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc' } as WriteBetter.Message, (resp) => {
                     console.log('Done analyzing doc:', resp);
                 });
             });
@@ -66,6 +66,13 @@ function loadExtensionFile(fileName: string, callback: (fileContents: string) =>
 
 chrome.runtime.onInstalled.addListener((details: chrome.runtime.InstalledDetails) => {
     console.log('runtime.onInstalled fired:' + details.reason);
+    loadExtensionFile('template.css', (content: string) => {
+        let save: any = {}
+        save['template.css'] = content
+        chrome.storage.sync.set(save, () => {
+            console.log('saved template.css file to storage');
+        });
+    });
 });
 
 // Called when the user clicks on the browser action.
