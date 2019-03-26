@@ -42,6 +42,7 @@
     box-shadow: 3px 3px #eee;
     border-radius: 5px;
     color: black;
+    /* TODO: single quote must be escaped from reason in order to not break css. */
     content: '#reason';
     font-size: 14px;
     font-family: docs-Consolas;

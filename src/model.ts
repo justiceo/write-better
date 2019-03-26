@@ -48,6 +48,7 @@ export namespace WriteBetter {
         }
 
         wrap(child: Node, suggestion: Suggestion): boolean {
+            // TODO: String.search uses a regex that can throw exception, excape text first.
             const index = this.getText().search(child.getText());
             if (index === -1) {
                 console.error(`wrap: could not find child ${child.getElement().nodeName} in ${this.getElement().nodeName} with text: ${child.getText()}`);
