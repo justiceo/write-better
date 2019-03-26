@@ -55,14 +55,3 @@ chrome.tabs.onActivated.addListener((active: chrome.tabs.TabActiveInfo) => {
     console.log('tabs.onActivated fired: ', active);
     chrome.tabs.get(active.tabId, setTabState);
 });
-
-
-// TODO: Figure out how to make initial tab active if it was already active.
-// chrome.tabs.getCurrent((tab) => {
-//     console.log('tabs.getCurrent: current tab', tab)
-//     setTabState(tab);
-// });
-
-// Note on chrome.storage:
-// Refreshing the extension from the chrome extensions page doesn't reset data in storage.
-// Removing the plugin and reloading it resets the storage.

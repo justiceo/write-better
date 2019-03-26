@@ -208,6 +208,7 @@ export namespace WriteBetter {
     export class Style {
         static _instance: Style;
         css: HTMLStyleElement;
+        static cssTemplate: string = '';
 
         private constructor() {
             this.css = document.createElement('style');
@@ -280,7 +281,5 @@ export namespace WriteBetter {
                 }
             });
         }
-
-        static cssTemplate: string = '';
     }
 }

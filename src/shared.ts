@@ -14,7 +14,6 @@ export const EnableOnDocs = (callback: () => void) => {
 
 export const IsEnabledOnDocs = (callback: (isEnabled: boolean) => void) => {
     chrome.storage.sync.get(gDocsUrl, (data) => {
-        console.log("is enabled on docs?", data);
         if (data[gDocsUrl]) {
             callback(true);
         } else {
