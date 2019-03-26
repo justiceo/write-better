@@ -20,14 +20,14 @@
                 "https://docs.google.com/*"
             ],
             "js": [
-                "bin/content-script.js"
+                "content-script.js"
             ]
         }
     ],
     "options_page": "options.html",
     "background": {
         "scripts": [
-            "bin/background.js"
+            "background.js"
         ],
         "persistent": false
     }

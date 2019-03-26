@@ -4,9 +4,10 @@ import browserify from 'browserify';
 import source from 'vinyl-source-stream';
 import del from 'del';
 
-const bgSrc = ['background.ts', 'shared.ts'];
-const csSrc = ['content-script.ts', 'model.ts', 'shared.ts'];
-const outDir = './bin';
+const bgSrc = ['src/background.ts', 'src/shared.ts'];
+const csSrc = ['src/content-script.ts', 'src/model.ts', 'src/shared.ts'];
+const assets = ['assets/*'];
+const outDir = './extension';
 
 const compileBgScript = () => {
     return browserify()
@@ -27,6 +28,11 @@ const compileContentScript = () => {
         .pipe(gulp.dest(outDir))
 }
 
+export const copyAssets = () => {
+    return gulp.src(assets)
+        .pipe(gulp.dest(outDir));
+}
+
 const watchBackgroundScript = () => {
     gulp.watch(bgSrc, gulp.parallel(compileBgScript));
 }
@@ -34,10 +40,10 @@ const watchContentScript = () => {
     gulp.watch(csSrc, gulp.parallel(compileContentScript));
 }
 
-export const clean = () => del([ outDir ]);
+export const clean = () => del([outDir]);
 clean.description = 'clean the output directory'
 
-export const build = gulp.parallel(compileBgScript, compileContentScript)
+export const build = gulp.parallel(copyAssets, compileBgScript, compileContentScript)
 build.description = 'compile all sources'
 
 const defaultTask = gulp.series(clean, build, gulp.parallel(watchBackgroundScript, watchContentScript))
