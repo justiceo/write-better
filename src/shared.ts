@@ -1,5 +1,5 @@
 export class Message {
-    type: 'analyze_doc';
+    type: 'analyze_doc' | 'cleanup';
     value: any;
 }
 

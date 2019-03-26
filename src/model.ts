@@ -221,6 +221,12 @@ export namespace WriteBetter {
             return this._instance || (this._instance = new this());
         }
 
+        setTemplate(template: string): void {
+            Style.cssTemplate = template;
+            this.css.remove();
+            document.body.appendChild(this.css);
+        }
+
         highlight(node: Node, suggestion: Suggestion): void {
             this.underline(node, suggestion);
             this.registerHover(node, suggestion);

@@ -31,8 +31,12 @@ function setTabState(tab: chrome.tabs.Tab) {
         console.log('setTabState: state of', host, 'is', data[host])
         chrome.browserAction.setIcon({ path: data[host] ? 'enabled.png' : 'disabled.png' });
         if (data[host]) {
-            chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc' } as Message, (resp) => {
-                console.log('Done analyzing doc:', resp);
+            chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc' } as Message, () => {
+                console.log('Done analyzing doc');
+            });
+        } else {
+            chrome.tabs.sendMessage(tab.id, { type: 'cleanup' } as Message, () => {
+                console.log('Done cleaning up');
             });
         }
     });
@@ -54,4 +58,8 @@ chrome.browserAction.onClicked.addListener((tab: chrome.tabs.Tab) => {
 chrome.tabs.onActivated.addListener((active: chrome.tabs.TabActiveInfo) => {
     console.log('tabs.onActivated fired: ', active);
     chrome.tabs.get(active.tabId, setTabState);
+});
+
+chrome.runtime.onSuspend.addListener(() => {
+    // TODO: more cleanup.
 });

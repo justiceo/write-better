@@ -6,12 +6,14 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
     if (msg.type === 'analyze_doc') {
         analyze();
         callback(true);
+    } else if (msg.type === 'cleanup') {
+        WriteBetter.Style.getInstance().clear();
     }
 }
 
 const analyze = () => {
     GetTemplateCSS((template: string)=> {
-        WriteBetter.Style.cssTemplate = template;
+        WriteBetter.Style.getInstance().setTemplate(template);
         let doc = WriteBetter.Doc.create();
         console.debug('doc info: ', doc, doc.getSuggestions());
         doc.propagateSuggestions();
