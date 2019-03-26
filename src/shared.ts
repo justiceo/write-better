@@ -23,13 +23,35 @@ export const IsEnabledOnDocs = (callback: (isEnabled: boolean) => void) => {
     })
 }
 
+export const LoadTemplateCSS = ( callback: (fileContents: string) => void) => {
+    LoadExtensionFile(templateCSS, (content: string) => {
+        let save: any = {}
+        save[templateCSS] = content
+        chrome.storage.sync.set(save, () => callback(content));
+    });
+}
+
+export const LoadExtensionFile = (fileName: string, callback: (fileContents: string) => void) => {
+    const readFile = (file: File) => {
+        const reader = new FileReader();
+        reader.onloadend = function (e) { // "this" is reader.onloadend.
+            callback(this.result as string);
+        };
+        reader.readAsText(file);
+    }
+    const readFileEntry = (e: FileEntry) => e.file(readFile);
+    const readDirEntry = (dirEntry: DirectoryEntry) => dirEntry.getFile(fileName, {}, readFileEntry);
+    chrome.runtime.getPackageDirectoryEntry(readDirEntry);
+}
+
 export const GetTemplateCSS = (callback: (template: string) => void) => {
     chrome.storage.sync.get(templateCSS, (data) => {
         if (data[templateCSS]) {
             callback(data[templateCSS]);
         } else {
-            console.log("need to load template.css from local file");
-            callback('');
+            LoadTemplateCSS((content: string) => {
+                callback(content);
+            });
         }
     });
 }

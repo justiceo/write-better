@@ -1,4 +1,4 @@
-import { EnableOnDocs, Message } from './shared';
+import { EnableOnDocs, Message, LoadTemplateCSS } from './shared';
 
 function toggleIcon(tab: chrome.tabs.Tab) {
     if (!tab) {
@@ -38,29 +38,9 @@ function setTabState(tab: chrome.tabs.Tab) {
     });
 }
 
-function loadExtensionFile(fileName: string, callback: (fileContents: string) => void) {
-    const readFile = (file: File) => {
-        const reader = new FileReader();
-        reader.onloadend = function (e) { // "this" is reader.onloadend.
-            callback(this.result as string);
-        };
-        reader.readAsText(file);
-    }
-    const readFileEntry = (e: FileEntry) => e.file(readFile);
-    const readDirEntry = (dirEntry: DirectoryEntry) => dirEntry.getFile(fileName, {}, readFileEntry);
-    chrome.runtime.getPackageDirectoryEntry(readDirEntry);
-}
-
 chrome.runtime.onInstalled.addListener((details: chrome.runtime.InstalledDetails) => {
     console.log('runtime.onInstalled fired:' + details.reason);
-    loadExtensionFile('template.css', (content: string) => {
-        let save: any = {}
-        save['template.css'] = content
-        chrome.storage.sync.set(save, () => {
-            console.log('saved template.css file to storage');
-        });
-    });
-
+    LoadTemplateCSS(() => console.log('saved template.css file to storage'));
     EnableOnDocs(() => console.log('enabled extensions on gdocs.'));
 });
 
