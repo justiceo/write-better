@@ -8,13 +8,15 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
         callback(true);
     } else if (msg.type === 'cleanup') {
         WriteBetter.Style.getInstance().clear();
+        let doc = WriteBetter.Doc.getInstance();
+        doc.visit<string>(WriteBetter.unregisterHandlers, []);
     }
 }
 
 const analyze = () => {
     GetTemplateCSS((template: string)=> {
         WriteBetter.Style.getInstance().setTemplate(template);
-        let doc = WriteBetter.Doc.create();
+        let doc = WriteBetter.Doc.getInstance();
         console.debug('doc info: ', doc, doc.getSuggestions());
         doc.propagateSuggestions();
     });

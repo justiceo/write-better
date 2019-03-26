@@ -89,6 +89,7 @@ export namespace WriteBetter {
     export class Doc extends AbsNode {
         static QuerySelector: string = '.kix-paginateddocumentplugin';
         children: Paragraph[] = [];
+        static _instance: Doc;
 
         constructor(elem: HTMLElement) {
             super();
@@ -104,8 +105,8 @@ export namespace WriteBetter {
             });
         }
 
-        static create(): Doc {
-            return new Doc(document.querySelector(Doc.QuerySelector));
+        static getInstance(): Doc {
+            return this._instance || (this._instance = new this(document.querySelector(Doc.QuerySelector)));
         }
 
         getChildren(): Node[] {
@@ -183,6 +184,7 @@ export namespace WriteBetter {
     // Segment is the immediate parent of a text node. 
     // Its only child is the text node and it should be treated as a textnode.
     export class Segment extends AbsNode {
+        handler: (e: MouseEvent) => void;
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
@@ -192,11 +194,13 @@ export namespace WriteBetter {
         }
 
         getChildren(): Node[] {
-            throw 'getChildren: unimplemented exception - base node is intended to be used as text node.'
+            // TODO: throw 'getChildren: unimplemented exception - base node is intended to be used as text node.'
+            return []
         }
 
         getQuerySelector(): string {
-            throw 'getQuerySelector: unimplemented exception - base node is intended to be used as text node.'
+            // TODO: throw 'getQuerySelector: unimplemented exception - base node is intended to be used as text node.'
+            return 'this_is_the_end_of_the_road_until_I_fix_it'
         }
 
         applySuggestion(suggestion: Suggestion): void {
@@ -227,7 +231,7 @@ export namespace WriteBetter {
             document.body.appendChild(this.css);
         }
 
-        highlight(node: Node, suggestion: Suggestion): void {
+        highlight(node: Segment, suggestion: Suggestion): void {
             this.underline(node, suggestion);
             this.registerHover(node, suggestion);
         }
@@ -237,7 +241,7 @@ export namespace WriteBetter {
             console.log(`removed css file from document: ${this.css.id}`)
         }
 
-        underline(node: Node, suggestion: Suggestion): void {
+        underline(node: Segment, suggestion: Suggestion): void {
             let selector = '';
             try {
                 selector = finder(node.getElement(), { threshold: 2 });
@@ -250,7 +254,7 @@ export namespace WriteBetter {
             const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
             const boxWidth = node.getElement().getBoundingClientRect().width;
             const xstart = start * boxWidth / 100;
-            if(!Style.cssTemplate) {
+            if (!Style.cssTemplate) {
                 return console.error('template is still empty');
             }
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
@@ -270,8 +274,8 @@ export namespace WriteBetter {
             return input;
         }
 
-        registerHover(node: Node, suggestion: Suggestion): void {
-            node.getElement().addEventListener('mouseover', (e: MouseEvent) => {
+        registerHover(node: Segment, suggestion: Suggestion): void {
+            node.handler = (e: MouseEvent) => {
                 const width = node.getText().length;
                 const start = Math.floor(100 * suggestion.index / width);
                 const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
@@ -285,7 +289,16 @@ export namespace WriteBetter {
                 if (mouseX >= xstart && mouseX <= xend) {
                     console.log('hovered on error');
                 }
-            });
+            }
+            node.getElement().addEventListener('mouseover', node.handler);
         }
     }
+
+    export const unregisterHandlers = (node: Node, prev: string[]) => {
+        if (node instanceof Segment) {
+            node.getElement().removeEventListener('mouseover',node.handler)
+        }
+        return prev;
+    }
+    
 }
