@@ -278,8 +278,7 @@ export namespace WriteBetter {
             }
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
                 ['#selector', selector],
-                ['#start', h.start.toString()],
-                ['#end', h.end.toString()],
+                ['background_gradient', this.bgGradient([h])],
                 ['#reason', this.replaceAll(suggestion.reason, new Map([[`'`, ``]]))],
                 ['box_left_push', (h.startPx - 20).toString() + 'px'],
                 ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
@@ -304,6 +303,15 @@ export namespace WriteBetter {
                 }
             }
             node.getElement().addEventListener('mouseover', node.handler);
+        }
+
+        bgGradient(highlights: Highlight[]): string {
+            let bg = "linear-gradient(to right" // transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important;"
+            highlights.forEach(h => {
+                bg += `, transparent ${h.start}%, yellow ${h.start}%, yellow ${h.end}%, transparent ${h.end}%`
+            });
+            bg += `) !important`            
+            return bg;
         }
     }
 

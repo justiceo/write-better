@@ -4,7 +4,7 @@
     background-position-y: 12px;
     /* programmatically set line-height+3px */
     background-repeat: no-repeat;
-    background-image: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important;
+    background-image: background_gradient;
 }
 
 #selector:hover {
