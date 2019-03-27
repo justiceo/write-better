@@ -187,12 +187,24 @@ export namespace WriteBetter {
     // Its only child is the text node and it should be treated as a textnode.
     export class Segment extends AbsNode {
         handler: (e: MouseEvent) => void;
+        selector = '';
+        highlights: Highlight[] = [];
+
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
             if (elem.childElementCount != 1) {
                 console.debug(`Segment.constructor: segment has ${elem.childElementCount} children expected 1.`);
             }
+
+            let selector = '';
+            try {
+                selector = finder(this.getElement(), { threshold: 2 });
+            } catch (err) {
+                console.error(`new Segment(): error getting unique selector: ${err}`);
+                return;
+            }
+            this.selector = selector;
         }
 
         getChildren(): Node[] {
@@ -206,6 +218,7 @@ export namespace WriteBetter {
         }
 
         applySuggestion(suggestion: Suggestion): void {
+            this.highlights.push(Highlight.of(this, suggestion));
             Style.getInstance().highlight(this, suggestion);
             console.log('applied suggestion', suggestion, 'on text: ', this.getText());
         }
@@ -265,19 +278,12 @@ export namespace WriteBetter {
         }
 
         underline(node: Segment, suggestion: Suggestion): void {
-            let selector = '';
-            try {
-                selector = finder(node.getElement(), { threshold: 2 });
-            } catch (err) {
-                console.error(`underline: error getting unique selector: ${err}`);
-                return;
-            }
-            const h = Highlight.of(node, suggestion);
+            const h = node.highlights[0];
             if (!Style.cssTemplate) {
                 return console.error('template is still empty');
             }
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
-                ['#selector', selector],
+                ['#selector', node.selector],
                 ['background_gradient', this.bgGradient([h])],
                 ['#reason', this.replaceAll(suggestion.reason, new Map([[`'`, ``]]))],
                 ['box_left_push', (h.startPx - 20).toString() + 'px'],
@@ -294,7 +300,7 @@ export namespace WriteBetter {
 
         registerHover(node: Segment, suggestion: Suggestion): void {
             node.handler = (e: MouseEvent) => {
-                const h = Highlight.of(node, suggestion);
+                const h = node.highlights[0];
                 const boxX = (node.getElement().getBoundingClientRect() as DOMRect).x;
                 const mouseX = e.clientX - boxX;
 
