@@ -1,4 +1,4 @@
-import { EnableOnDocs, Message, LoadTemplateCSS } from './shared';
+import { EnableOnDocs, Message, GetExtensionFile } from './shared';
 
 function toggleIcon(tab: chrome.tabs.Tab) {
     if (!tab) {
@@ -44,7 +44,9 @@ function setTabState(tab: chrome.tabs.Tab) {
 
 chrome.runtime.onInstalled.addListener((details: chrome.runtime.InstalledDetails) => {
     console.log('runtime.onInstalled fired:' + details.reason);
-    LoadTemplateCSS(() => console.log('saved template.css file to storage'));
+    GetExtensionFile('template.css', () => console.log('saved template.css file to storage'));
+    GetExtensionFile('underline.css', () => console.log('saved underline.css file to storage'));
+    GetExtensionFile('hover.css', () => console.log('saved hover.css file to storage'));
     EnableOnDocs(() => console.log('enabled extensions on gdocs.'));
 });
 

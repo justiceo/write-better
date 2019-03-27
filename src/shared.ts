@@ -22,14 +22,6 @@ export const IsEnabledOnDocs = (callback: (isEnabled: boolean) => void) => {
     })
 }
 
-export const LoadTemplateCSS = ( callback: (fileContents: string) => void) => {
-    LoadExtensionFile(templateCSS, (content: string) => {
-        let save: any = {}
-        save[templateCSS] = content
-        chrome.storage.sync.set(save, () => callback(content));
-    });
-}
-
 export const LoadExtensionFile = (fileName: string, callback: (fileContents: string) => void) => {
     const readFile = (file: File) => {
         const reader = new FileReader();
@@ -43,14 +35,16 @@ export const LoadExtensionFile = (fileName: string, callback: (fileContents: str
     chrome.runtime.getPackageDirectoryEntry(readDirEntry);
 }
 
-export const GetTemplateCSS = (callback: (template: string) => void) => {
-    chrome.storage.sync.get(templateCSS, (data) => {
-        if (data[templateCSS]) {
-            callback(data[templateCSS]);
+export const GetExtensionFile = (fileName: string, callback: (template: string) => void) => {
+    chrome.storage.sync.get(fileName, (data) => {
+        if (data[fileName]) {
+            callback(data[fileName]);
         } else {
-            LoadTemplateCSS((content: string) => {
-                callback(content);
-            });
+            LoadExtensionFile(fileName, (content: string) => {
+                let save: any = {}
+                save[fileName] = content
+                chrome.storage.sync.set(save, () => callback(content));
+            })
         }
     });
 }

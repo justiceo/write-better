@@ -1,5 +1,5 @@
 import { WriteBetter } from './model';
-import { IsEnabledOnDocs,GetTemplateCSS, Message } from './shared';
+import { IsEnabledOnDocs, GetExtensionFile, Message } from './shared';
 
 const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
     console.debug('content-script received message: ', msg.type);
@@ -14,7 +14,7 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
 }
 
 const analyze = () => {
-    GetTemplateCSS((template: string)=> {
+    GetExtensionFile('template.css', (template: string) => {
         WriteBetter.Style.getInstance().setTemplate(template);
         let doc = WriteBetter.Doc.getInstance();
         console.debug('doc info: ', doc, doc.getSuggestions());
