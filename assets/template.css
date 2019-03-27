@@ -4,7 +4,6 @@
     background-position-y: 12px;
     /* programmatically set line-height+3px */
     background-repeat: no-repeat;
-    background-color: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important;
     background-image: linear-gradient(to right, transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important;
 }
 
@@ -42,7 +41,6 @@
     box-shadow: 3px 3px #eee;
     border-radius: 5px;
     color: black;
-    /* TODO: single quote must be escaped from reason in order to not break css. */
     content: '#reason';
     font-size: 14px;
     font-family: docs-Consolas;

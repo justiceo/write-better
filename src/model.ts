@@ -280,7 +280,7 @@ export namespace WriteBetter {
                 ['#selector', selector],
                 ['#start', h.start.toString()],
                 ['#end', h.end.toString()],
-                ['#reason', suggestion.reason],
+                ['#reason', this.replaceAll(suggestion.reason, new Map([[`'`, ``]]))],
                 ['box_left_push', (h.startPx - 20).toString() + 'px'],
                 ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
             ]));
