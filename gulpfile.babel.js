@@ -40,12 +40,16 @@ const watchContentScript = () => {
     gulp.watch(csSrc, gulp.parallel(compileContentScript));
 }
 
+const watchAssets = () => {
+    gulp.watch(assets, copyAssets);
+}
+
 export const clean = () => del([outDir]);
 clean.description = 'clean the output directory'
 
 export const build = gulp.parallel(copyAssets, compileBgScript, compileContentScript)
 build.description = 'compile all sources'
 
-const defaultTask = gulp.series(clean, build, gulp.parallel(watchBackgroundScript, watchContentScript))
+const defaultTask = gulp.series(clean, build, gulp.parallel(watchBackgroundScript, watchContentScript, watchAssets))
 defaultTask.description = 'start watching for changes to all source'
 export default defaultTask
