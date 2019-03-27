@@ -49,12 +49,13 @@ export namespace WriteBetter {
 
         wrap(child: Node, suggestion: Suggestion): boolean {
             // TODO: String.search uses a regex that can throw exception, excape text first.
+            // Also, if there are multiple instances of child text in parent? We have a duplicates problem.
             const index = this.getText().search(child.getText());
             if (index === -1) {
                 console.error(`wrap: could not find child ${child.getElement().nodeName} in ${this.getElement().nodeName} with text: ${child.getText()}`);
                 return false;
             }
-            return suggestion.index >= index && (suggestion.index + suggestion.offset <= index + child.getText().length);
+            return suggestion.index >= index && (suggestion.index + suggestion.offset <= index /* lower index in dup is used */ + child.getText().length);
         }
 
         relPosition(child: Node, suggestion: Suggestion): Suggestion {
@@ -210,6 +211,27 @@ export namespace WriteBetter {
         }
     }
 
+    class Highlight {
+        suggestion: Suggestion;
+        start: number;
+        end: number;
+        boxWidth: number;
+        startPx : number;
+        endPx : number;
+
+        static of(node: Segment, suggestion: Suggestion): Highlight {
+            let h = new Highlight();
+            h.suggestion = suggestion;
+            const chars = node.getText().length;
+            h.start = 100 * suggestion.index / chars;
+            h.end = h.start + 100 * (suggestion.offset+1) / chars;
+            h.boxWidth = node.getElement().getBoundingClientRect().width;
+            h.startPx = h.start * h.boxWidth / 100;
+            h.endPx = h.end * h.boxWidth / 100;
+            return h;
+        }
+    }
+
     export class Style {
         static _instance: Style;
         css: HTMLStyleElement;
@@ -250,21 +272,17 @@ export namespace WriteBetter {
                 console.error(`underline: error getting unique selector: ${err}`);
                 return;
             }
-            const width = node.getText().length;
-            const start = Math.floor(100 * suggestion.index / width);
-            const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
-            const boxWidth = node.getElement().getBoundingClientRect().width;
-            const xstart = start * boxWidth / 100;
+            const h = Highlight.of(node, suggestion);
             if (!Style.cssTemplate) {
                 return console.error('template is still empty');
             }
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
                 ['#selector', selector],
-                ['#start', start.toString()],
-                ['#end', end.toString()],
+                ['#start', h.start.toString()],
+                ['#end', h.end.toString()],
                 ['#reason', suggestion.reason],
-                ['box_left_push', (xstart - 20).toString() + 'px'],
-                ['arrow_left_push', (xstart + 5).toString() + 'px'],
+                ['box_left_push', (h.startPx - 20).toString() + 'px'],
+                ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
             ]));
         }
 
@@ -277,17 +295,11 @@ export namespace WriteBetter {
 
         registerHover(node: Segment, suggestion: Suggestion): void {
             node.handler = (e: MouseEvent) => {
-                const width = node.getText().length;
-                const start = Math.floor(100 * suggestion.index / width);
-                const end = start + Math.ceil(100 * suggestion.offset / width) + 1;
-
-                const boxWidth = node.getElement().getBoundingClientRect().width;
+                const h = Highlight.of(node, suggestion);
                 const boxX = (node.getElement().getBoundingClientRect() as DOMRect).x;
                 const mouseX = e.clientX - boxX;
-                const xstart = start * boxWidth / 100;
-                const xend = end * boxWidth / 100;
 
-                if (mouseX >= xstart && mouseX <= xend) {
+                if (mouseX >= h.startPx && mouseX <= h.endPx) {
                     console.log('hovered on error');
                 }
             }
