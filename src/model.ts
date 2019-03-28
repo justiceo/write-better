@@ -16,7 +16,6 @@ export namespace WriteBetter {
         getChildren: () => Node[];
         getSuggestions: () => Suggestion[];
         visit: <T>(fn: (node: Node, prev: T[]) => T[], prev: T[]) => void
-        propagateSuggestion: (suggestion: Suggestion) => void
     }
 
     export abstract class AbsNode implements Node {
@@ -47,41 +46,6 @@ export namespace WriteBetter {
             });
         }
 
-        wrap(child: Node, suggestion: Suggestion): boolean {
-            // Also, if there are multiple instances of child text in parent? We have a duplicates problem.
-            const index = this.getText().indexOf(child.getText());
-            if (index === -1) {
-                console.error(`wrap: could not find child ${child.getElement().nodeName} in ${this.getElement().nodeName} with text: ${child.getText()}`);
-                return false;
-            }
-            return suggestion.index >= index && (suggestion.index + suggestion.offset <= index /* lower index in dup is used */ + child.getText().length);
-        }
-
-        relPosition(child: Node, suggestion: Suggestion): Suggestion {
-            if (!this.wrap(child, suggestion)) {
-                throw 'relPosition: cannot get relative position of suggestion that is not wrapped by node.'
-            }
-            const index = this.getText().search(child.getText());
-            return { index: suggestion.index - index, offset: suggestion.offset, reason: suggestion.reason };
-        }
-
-        propagateSuggestion(suggestion: Suggestion): void {
-            if (this instanceof Segment) {
-                (this as Segment).applySuggestion(suggestion);
-                return;
-            }
-
-            let matches = this.getChildren().filter(c => this.wrap(c, suggestion));
-            if (matches.length > 1) {
-                console.error(`propagateSuggestion: only one child should wrap a suggestion, got ${matches.length}`);
-            }
-            if (matches.length == 0) {
-                console.error('propagateSuggestion: no child wraipped the suggestion, potentially a cross-boundary match: ', this, suggestion);
-                return;
-            }
-            matches[0].propagateSuggestion(this.relPosition(matches[0], suggestion));
-        }
-
         abstract getChildren(): Node[];
     }
 
@@ -110,10 +74,6 @@ export namespace WriteBetter {
 
         getChildren(): Node[] {
             return this.children;
-        }
-
-        propagateSuggestions(): void {
-            this.getSuggestions().forEach(s => this.propagateSuggestion(s));
         }
     }
 
