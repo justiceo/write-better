@@ -10,7 +10,6 @@ export namespace WriteBetter {
     }
 
     export interface Node {
-        getQuerySelector: () => string;
         getText: () => string;
         getElement: () => HTMLElement;
         getChildren: () => Node[];
@@ -83,8 +82,6 @@ export namespace WriteBetter {
         }
 
         abstract getChildren(): Node[];
-
-        abstract getQuerySelector(): string;
     }
 
     export class Doc extends AbsNode {
@@ -114,10 +111,6 @@ export namespace WriteBetter {
             return this.children;
         }
 
-        getQuerySelector(): string {
-            return Doc.QuerySelector;
-        }
-
         propagateSuggestions(): void {
             this.getSuggestions().forEach(s => this.propagateSuggestion(s));
         }
@@ -141,10 +134,6 @@ export namespace WriteBetter {
 
         getChildren(): Node[] {
             return this.children;
-        }
-
-        getQuerySelector(): string {
-            return Paragraph.QuerySelector;
         }
     }
 
@@ -209,11 +198,6 @@ export namespace WriteBetter {
         getChildren(): Node[] {
             // TODO: throw 'getChildren: unimplemented exception - base node is intended to be used as text node.'
             return []
-        }
-
-        getQuerySelector(): string {
-            // TODO: throw 'getQuerySelector: unimplemented exception - base node is intended to be used as text node.'
-            return 'this_is_the_end_of_the_road_until_I_fix_it'
         }
 
         applySuggestion(suggestion: Suggestion): void {
