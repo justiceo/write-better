@@ -276,7 +276,7 @@ export namespace WriteBetter {
 
         private constructor() {
             this.css = document.createElement('style');
-            this.css.id = 'write-better-css-file';
+            this.css.title = 'write-better-css-file';
             this.css.type = 'text/css';
             document.body.appendChild(this.css);
         }
@@ -340,12 +340,24 @@ export namespace WriteBetter {
                     ['box_left_push', (h.startPx - 20).toString() + 'px'],
                     ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
                 ]));
-                this.css.innerHTML += " " + rule
+                this.css.innerHTML += " " + rule;
             }
 
             let mouseoutHandler = (e: MouseEvent) => {
                 // TODO: stop listening to mousemove
                 // TODO: remove css from stylesheet
+                let sheet = this.getSheet();
+                // sheet.insertRule adds new sheet at index 0 by default
+                // it is our best bet on CSS wrangling since reformating by engine makes find/replace impossible.
+                // it'll best be implemented after we've moved out this class.
+                for (let i = 0; i < sheet.rules.length; i++) {
+                    if (sheet.rules[i].type == CSSRule.STYLE_RULE) { // https://developer.mozilla.org/en-US/docs/Web/API/CSSRule#Type_constants
+                        let sr = sheet.rules[i] as CSSStyleRule;
+                        if (sr.selectorText == node.selector) {
+                            // found matching selector
+                        }
+                    }
+                }
             }
 
             // One handler is enough for all the highlights.
@@ -353,6 +365,17 @@ export namespace WriteBetter {
                 node.getElement().addEventListener('mouseover', node.handler);
                 node.getElement().addEventListener('mouseout', mouseoutHandler);
             }
+        }
+
+        getSheet(): CSSStyleSheet {
+            for (var i = document.styleSheets.length - 1; i >= 0; i--) {
+                var sheet = document.styleSheets[i] as CSSStyleSheet;
+                if (sheet.title == this.css.title) {
+                    return sheet;
+                }
+            }
+            console.error('getSheet: no sheet found')
+            return null;
         }
 
         bgGradient(highlights: Highlight[]): string {
