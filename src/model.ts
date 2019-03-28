@@ -225,7 +225,7 @@ export namespace WriteBetter {
     }
 
     class Highlight {
-        suggestion: Suggestion;
+        reason: string;
         start: number;
         end: number;
         boxWidth: number;
@@ -234,7 +234,7 @@ export namespace WriteBetter {
 
         static of(node: Segment, suggestion: Suggestion): Highlight {
             let h = new Highlight();
-            h.suggestion = suggestion;
+            h.reason = suggestion.reason;
             const chars = node.getText().length;
             h.start = 100 * suggestion.index / chars;
             h.end = h.start + 100 * (suggestion.offset+1) / chars;
@@ -285,7 +285,7 @@ export namespace WriteBetter {
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
                 ['#selector', node.selector],
                 ['background_gradient', this.bgGradient([h])],
-                ['#reason', this.replaceAll(suggestion.reason, new Map([[`'`, ``]]))],
+                ['#reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
                 ['box_left_push', (h.startPx - 20).toString() + 'px'],
                 ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
             ]));
@@ -300,15 +300,26 @@ export namespace WriteBetter {
 
         registerHover(node: Segment, suggestion: Suggestion): void {
             node.handler = (e: MouseEvent) => {
-                const h = node.highlights[0];
                 const boxX = (node.getElement().getBoundingClientRect() as DOMRect).x;
                 const mouseX = e.clientX - boxX;
-
-                if (mouseX >= h.startPx && mouseX <= h.endPx) {
-                    console.log('hovered on error');
+                const h = node.highlights.find(h => mouseX >= h.startPx && mouseX <= h.endPx);
+                if (!h) {
+                    return;
                 }
+                console.log('hovered on error');
+                this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
+                    ['#selector', node.selector],
+                    ['background_gradient', this.bgGradient([h])],
+                    ['#reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
+                    ['box_left_push', (h.startPx - 20).toString() + 'px'],
+                    ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
+                ]));
             }
-            node.getElement().addEventListener('mouseover', node.handler);
+
+            // One handler is enough for all the highlights.
+            if (node.highlights.length == 1) {
+                node.getElement().addEventListener('mouseover', node.handler);
+            }
         }
 
         bgGradient(highlights: Highlight[]): string {
