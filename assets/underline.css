@@ -23,7 +23,6 @@
     height: 0px;
     width: 0px;
     bottom: 20px;
-    left: arrow_left_push;
     transform: translate3d(0, 6px, 0);
     transition: all .1s ease-in-out;
 }
@@ -35,12 +34,12 @@
     box-shadow: 3px 3px #eee;
     border-radius: 5px;
     color: black;
-    content: '#reason';
+    content: '';
     font-size: 14px;
     font-family: docs-Consolas;
     padding: 10px 15px;
     bottom: 30px;
-    left: box_left_push;
+    left: 0px;
     white-space: nowrap;
     transform: scale3d(.2, .2, 1);
     transition: all .2s ease-in-out;

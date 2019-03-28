@@ -249,6 +249,30 @@ export namespace WriteBetter {
         static _instance: Style;
         css: HTMLStyleElement;
         static cssTemplate: string = '';
+        static hoverTemplate = `
+        #selector:hover {    
+            background-repeat: no-repeat;
+            background-image: background_gradient;
+        }
+        
+        #selector:after {
+            left: arrow_left_push;
+        }
+        
+        #selector:before {
+            content: '#reason';
+            left: box_left_push;
+        }
+        
+        #selector:hover:before,
+        #selector:hover:after {
+            opacity: 1;
+            transform: scale3d(1, 1, 1);
+        }
+        
+        #selector:hover:after {
+            transition: all .2s .1s ease-in-out;
+        }`
 
         private constructor() {
             this.css = document.createElement('style');
@@ -307,7 +331,7 @@ export namespace WriteBetter {
                     return;
                 }
                 console.log('hovered on error');
-                this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
+                this.css.innerHTML += this.replaceAll(Style.hoverTemplate, new Map([
                     ['#selector', node.selector],
                     ['background_gradient', this.bgGradient([h])],
                     ['#reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],

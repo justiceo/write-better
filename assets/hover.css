@@ -3,6 +3,15 @@
     background-image: background_gradient;
 }
 
+#selector:after {
+    left: arrow_left_push;
+}
+
+#selector:before {
+    content: '#reason';
+    left: box_left_push;
+}
+
 #selector:hover:before,
 #selector:hover:after {
     opacity: 1;

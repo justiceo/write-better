@@ -14,7 +14,7 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
 }
 
 const analyze = () => {
-    GetExtensionFile('template.css', (template: string) => {
+    GetExtensionFile('underline.css', (template: string) => {
         WriteBetter.Style.getInstance().setTemplate(template);
         let doc = WriteBetter.Doc.getInstance();
         console.debug('doc info: ', doc, doc.getSuggestions());
