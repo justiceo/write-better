@@ -1,4 +1,5 @@
 import { WriteBetter } from './model';
+import { WriteBetterUI } from './ui';
 import { IsEnabledOnDocs, GetExtensionFile, Message } from './shared';
 
 const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
@@ -7,15 +8,15 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
         analyze();
         callback(true);
     } else if (msg.type === 'cleanup') {
-        WriteBetter.Style.getInstance().clear();
+        WriteBetterUI.Style.getInstance().clear();
         let doc = WriteBetter.Doc.getInstance();
-        doc.visit<string>(WriteBetter.unregisterHandlers, []);
+        doc.visit<string>(WriteBetterUI.unregisterHandlers, []);
     }
 }
 
 const analyze = () => {
     GetExtensionFile('underline.css', (template: string) => {
-        WriteBetter.Style.getInstance().setTemplate(template);
+        WriteBetterUI.Style.getInstance().setTemplate(template);
         let doc = WriteBetter.Doc.getInstance();
         console.debug('doc info: ', doc, doc.getSuggestions());
         doc.propagateSuggestions();

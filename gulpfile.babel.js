@@ -5,7 +5,7 @@ import source from 'vinyl-source-stream';
 import del from 'del';
 
 const bgSrc = ['src/background.ts', 'src/shared.ts'];
-const csSrc = ['src/content-script.ts', 'src/model.ts', 'src/shared.ts'];
+const csSrc = ['src/content-script.ts', 'src/model.ts', 'src/shared.ts', 'src/ui.ts'];
 const assets = ['assets/*'];
 const outDir = './extension';
 
