@@ -48,9 +48,8 @@ export namespace WriteBetter {
         }
 
         wrap(child: Node, suggestion: Suggestion): boolean {
-            // TODO: String.search uses a regex that can throw exception, excape text first.
             // Also, if there are multiple instances of child text in parent? We have a duplicates problem.
-            const index = this.getText().search(child.getText());
+            const index = this.getText().indexOf(child.getText());
             if (index === -1) {
                 console.error(`wrap: could not find child ${child.getElement().nodeName} in ${this.getElement().nodeName} with text: ${child.getText()}`);
                 return false;
@@ -326,7 +325,7 @@ export namespace WriteBetter {
                 const mouseX = e.clientX - boxX;
                 const h = node.highlights.find(h => mouseX >= h.startPx && mouseX <= h.endPx);
                 if (!h) {
-                    // TODO: consider setting to nearest neighbor.
+                    // TODO: consider setting to nearest neighbor. Especially given that hover can be tricky
                     return;
                 }
                 console.log('hovered on error');
@@ -359,6 +358,7 @@ export namespace WriteBetter {
 
             // One handler is enough for all the highlights.
             if (node.highlights.length == 1) {
+                // Bug: mouseover doesn't trigger when error is a link text.
                 node.getElement().addEventListener('mouseover', node.handler);
                 node.getElement().addEventListener('mouseout', mouseoutHandler);
             }
@@ -387,7 +387,7 @@ export namespace WriteBetter {
         borderGradient(highlights: Highlight[]): string {
             let bg = "linear-gradient(to right"; // linear-gradient( to right, transparent 20%, red 20%, red 40%, transparent 40%) 1 !important;
             highlights.forEach(h => {
-                bg += `, transparent ${h.start}%, #ddd ${h.start}%, #ddd ${h.end}%, transparent ${h.end}%`
+                bg += `, transparent ${h.start}%, #ffc578 ${h.start}%, #ffc578 ${h.end}%, transparent ${h.end}%`
             });
             bg += `) 1 !important`
             
