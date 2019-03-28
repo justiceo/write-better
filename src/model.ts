@@ -229,15 +229,15 @@ export namespace WriteBetter {
         start: number;
         end: number;
         boxWidth: number;
-        startPx : number;
-        endPx : number;
+        startPx: number;
+        endPx: number;
 
         static of(node: Segment, suggestion: Suggestion): Highlight {
             let h = new Highlight();
             h.reason = suggestion.reason;
             const chars = node.getText().length;
             h.start = 100 * suggestion.index / chars;
-            h.end = h.start + 100 * (suggestion.offset+1) / chars;
+            h.end = h.start + 100 * (suggestion.offset + 1) / chars;
             h.boxWidth = node.getElement().getBoundingClientRect().width;
             h.startPx = h.start * h.boxWidth / 100;
             h.endPx = h.end * h.boxWidth / 100;
@@ -323,7 +323,9 @@ export namespace WriteBetter {
         }
 
         registerHover(node: Segment, suggestion: Suggestion): void {
+            let rule = ''
             node.handler = (e: MouseEvent) => {
+                // TODO: start listening for mousemove
                 const boxX = (node.getElement().getBoundingClientRect() as DOMRect).x;
                 const mouseX = e.clientX - boxX;
                 const h = node.highlights.find(h => mouseX >= h.startPx && mouseX <= h.endPx);
@@ -331,18 +333,25 @@ export namespace WriteBetter {
                     return;
                 }
                 console.log('hovered on error');
-                this.css.innerHTML += this.replaceAll(Style.hoverTemplate, new Map([
+                rule = this.replaceAll(Style.hoverTemplate, new Map([
                     ['#selector', node.selector],
                     ['background_gradient', this.bgGradient([h])],
                     ['#reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
                     ['box_left_push', (h.startPx - 20).toString() + 'px'],
                     ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
                 ]));
+                this.css.innerHTML += " " + rule
+            }
+
+            let mouseoutHandler = (e: MouseEvent) => {
+                // TODO: stop listening to mousemove
+                // TODO: remove css from stylesheet
             }
 
             // One handler is enough for all the highlights.
             if (node.highlights.length == 1) {
                 node.getElement().addEventListener('mouseover', node.handler);
+                node.getElement().addEventListener('mouseout', mouseoutHandler);
             }
         }
 
@@ -351,7 +360,7 @@ export namespace WriteBetter {
             highlights.forEach(h => {
                 bg += `, transparent ${h.start}%, yellow ${h.start}%, yellow ${h.end}%, transparent ${h.end}%`
             });
-            bg += `) !important`            
+            bg += `) !important`
             return bg;
         }
     }
