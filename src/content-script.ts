@@ -19,7 +19,7 @@ const analyze = () => {
         WriteBetterUI.Style.getInstance().setTemplate(template);
         let doc = WriteBetter.Doc.getInstance();
         console.debug('doc info: ', doc, doc.getSuggestions());
-        doc.propagateSuggestions();
+        WriteBetter.propagateSuggestions(doc, doc.getSuggestions());
     });
 }
 

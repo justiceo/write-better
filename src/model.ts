@@ -207,4 +207,26 @@ export namespace WriteBetter {
             console.log('applied suggestion', suggestion, 'on text: ', this.getText());
         }
     }
+
+    export const propagateSuggestions = (node: Node, suggestions: Suggestion[]) => {
+        if (node instanceof Segment) {
+            suggestions.forEach(s => node.applySuggestion(s));
+            return;
+        }
+
+        node.getChildren().forEach(c => {
+            const childSuggestions: Suggestion[] = []
+            suggestions.forEach(s => {
+                const index = node.getText().indexOf(c.getText(), 0);
+                if (index === -1) {
+                    console.debug(`propagateSuggestions: could not find child ${c.getElement().nodeName} in ${node.getElement().nodeName} with text: ${c.getText()}`);
+                    return;
+                }
+                if (s.index >= index && (s.index + s.offset <= index + c.getText().length)) {
+                    childSuggestions.push({ index: s.index - index, offset: s.offset, reason: s.reason });
+                }
+            });
+            propagateSuggestions(c, childSuggestions);
+        });
+    }
 }
