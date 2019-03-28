@@ -1,6 +1,5 @@
 #selector {
     position: relative;
-    padding-bottom: 4px; /* remove? */
     border-bottom: 3px solid;
     border-image: border_gradient;
 }

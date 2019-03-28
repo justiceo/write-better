@@ -237,7 +237,7 @@ export namespace WriteBetter {
             h.reason = suggestion.reason;
             const chars = node.getText().length;
             h.start = 100 * suggestion.index / chars;
-            h.end = h.start + 100 * (suggestion.offset + 1) / chars;
+            h.end = h.start + 100 * (suggestion.offset) / chars;
             h.boxWidth = node.getElement().getBoundingClientRect().width;
             h.startPx = h.start * h.boxWidth / 100;
             h.endPx = h.end * h.boxWidth / 100;
@@ -302,16 +302,12 @@ export namespace WriteBetter {
         }
 
         underline(node: Segment, suggestion: Suggestion): void {
-            const h = node.highlights[0];
             if (!Style.cssTemplate) {
                 return console.error('template is still empty');
             }
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
                 ['#selector', node.selector],
-                ['background_gradient', this.bgGradient([h])],
-                ['#reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
-                ['box_left_push', (h.startPx - 20).toString() + 'px'],
-                ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
+                ['border_gradient', this.borderGradient(node.highlights)],
             ]));
         }
 
@@ -330,6 +326,7 @@ export namespace WriteBetter {
                 const mouseX = e.clientX - boxX;
                 const h = node.highlights.find(h => mouseX >= h.startPx && mouseX <= h.endPx);
                 if (!h) {
+                    // TODO: consider setting to nearest neighbor.
                     return;
                 }
                 console.log('hovered on error');
@@ -381,9 +378,19 @@ export namespace WriteBetter {
         bgGradient(highlights: Highlight[]): string {
             let bg = "linear-gradient(to right" // transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important;"
             highlights.forEach(h => {
-                bg += `, transparent ${h.start}%, yellow ${h.start}%, yellow ${h.end}%, transparent ${h.end}%`
+                bg += `, transparent ${h.start}%, #f0f0f0 ${h.start}%, #f0f0f0 ${h.end}%, transparent ${h.end}%`
             });
             bg += `) !important`
+            return bg;
+        }
+
+        borderGradient(highlights: Highlight[]): string {
+            let bg = "linear-gradient(to right"; // linear-gradient( to right, transparent 20%, red 20%, red 40%, transparent 40%) 1 !important;
+            highlights.forEach(h => {
+                bg += `, transparent ${h.start}%, #ddd ${h.start}%, #ddd ${h.end}%, transparent ${h.end}%`
+            });
+            bg += `) 1 !important`
+            
             return bg;
         }
     }
