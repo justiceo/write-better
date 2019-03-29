@@ -117,7 +117,7 @@ export namespace WriteBetterUI {
             if (node.highlights.length == 1) {
                 // Bug: mouseover doesn't trigger when error is a link text.
                 node.getElement().addEventListener('mouseover', node.handler);
-                node.getElement().addEventListener('mouseout', mouseoutHandler);
+                // node.getElement().addEventListener('mouseout', mouseoutHandler);
             }
         }
 
