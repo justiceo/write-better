@@ -29,15 +29,13 @@ function setTabState(tab: chrome.tabs.Tab) {
     }
     chrome.storage.sync.get(host, (data) => {
         console.log('setTabState: state of', host, 'is', data[host])
-        chrome.browserAction.setIcon({ path: data[host] ? 'quill-orange.png' : 'quill-gray.png' });
+        chrome.browserAction.setIcon({ path: data[host] ? 'quill-orange32.png' : 'quill-gray32.png' });
         if (data[host]) {
             chrome.tabs.sendMessage(tab.id, { type: 'analyze_doc' } as Message, () => {
                 console.log('Done analyzing doc');
             });
         } else {
-            chrome.tabs.sendMessage(tab.id, { type: 'cleanup' } as Message, () => {
-                console.log('Done cleaning up');
-            });
+            chrome.tabs.sendMessage(tab.id, { type: 'cleanup' } as Message);
         }
     });
 }
