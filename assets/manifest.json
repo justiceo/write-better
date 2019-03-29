@@ -24,6 +24,11 @@
             ]
         }
     ],
+    "icons": { 
+        "16": "quill-orange16.png",
+        "48": "quill-orange48.png",
+       "128": "quill-orange128.png" 
+    },
     "options_page": "options.html",
     "background": {
         "scripts": [
