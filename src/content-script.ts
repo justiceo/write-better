@@ -19,6 +19,7 @@ let resizeTask: any = null;
 
 const init = () => {
     analyze();
+    // TODO: scroll event is not fired in docs, need to implement a watch on page's top position.
     window.addEventListener('resize', () => {
         if (resizeTask !== null) {
             window.clearTimeout(resizeTask);
