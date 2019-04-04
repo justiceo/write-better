@@ -168,7 +168,7 @@ export namespace WriteBetter {
 
             let selector = '';
             try {
-                selector = finder(this.getElement(), { threshold: 2 });
+                selector = finder(this.getElement(), { threshold: 2, tagName: () => false });
             } catch (err) {
                 console.error(`new Segment(): error getting unique selector: ${err}`);
                 return;
