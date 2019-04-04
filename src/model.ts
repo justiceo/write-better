@@ -51,7 +51,7 @@ export namespace WriteBetter {
 
     export class Doc extends AbsNode {
         static QuerySelector: string = '.kix-paginateddocumentplugin';
-        children: Paragraph[] = [];
+        children: Page[] = [];
         static _instance: Doc;
 
         constructor(elem: HTMLElement) {
@@ -60,10 +60,10 @@ export namespace WriteBetter {
                 throw 'Doc.New: input element cannot be falsy';
             }
             this.element = elem;
-            let children: NodeListOf<Element> = this.element.querySelectorAll(Paragraph.QuerySelector);
+            let children: NodeListOf<Element> = this.element.querySelectorAll(Page.QuerySelector);
             children.forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
-                    this.children.push(new Paragraph(e as HTMLElement));
+                    this.children.push(new Page(e as HTMLElement));
                 }
             });
         }
@@ -77,8 +77,28 @@ export namespace WriteBetter {
         }
     }
 
+    export class Page extends AbsNode {
+        static QuerySelector: string = ':scope .kix-page-content-wrapper';
+        children: Paragraph[] = [];
+
+        constructor(elem: HTMLElement) {
+            super();
+            this.element = elem;
+            let children: NodeListOf<Element> = this.element.querySelectorAll(Paragraph.QuerySelector);
+            children.forEach((e: Element) => {
+                if ((e as HTMLElement).innerText.trim()) {
+                    this.children.push(new Paragraph(e as HTMLElement));
+                }
+            });
+        }
+
+        getChildren(): Node[] {
+            return this.children;
+        }
+    }
+
     export class Paragraph extends AbsNode {
-        static QuerySelector: string = '.kix-paragraphrenderer';
+        static QuerySelector: string = ':scope .kix-paragraphrenderer';
         children: Line[] = [];
 
         constructor(elem: HTMLElement) {
@@ -99,7 +119,7 @@ export namespace WriteBetter {
     }
 
     export class Line extends AbsNode {
-        static QuerySelector: string = '.kix-lineview';
+        static QuerySelector: string = ':scope .kix-lineview';
         children: Segment[] = [];
 
         constructor(elem: HTMLElement) {
