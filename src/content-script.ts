@@ -5,13 +5,30 @@ import { IsEnabledOnDocs, GetExtensionFile, Message } from './shared';
 const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
     console.debug('content-script received message: ', msg.type);
     if (msg.type === 'analyze_doc') {
-        analyze();
+        init();
         callback(true);
     } else if (msg.type === 'cleanup') {
         WriteBetterUI.Style.getInstance().clear();
         let doc = WriteBetter.Doc.getInstance();
         doc.visit<string>(WriteBetterUI.unregisterHandlers, []);
+        window.removeEventListener('resize', resizeTask);
     }
+}
+
+let resizeTask: any = null;
+
+const init = () => {
+    analyze();
+    window.addEventListener('resize', () => {
+        if (resizeTask !== null) {
+            window.clearTimeout(resizeTask);
+        }
+
+        resizeTask = setTimeout(() => {
+            resizeTask = null;
+            analyze();
+        }, 1000);
+    });
 }
 
 const analyze = () => {
@@ -28,6 +45,6 @@ chrome.runtime.onMessage.addListener(onMessage);
 // Run the script once added to the doc and user enabled it.
 IsEnabledOnDocs(isEnabled => {
     if (isEnabled) {
-        analyze();
+        init();
     }
 })
