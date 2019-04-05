@@ -163,7 +163,7 @@ export namespace WriteBetter {
             super();
             this.element = elem;
             if (elem.childElementCount != 1) {
-                console.debug(`Segment.constructor: segment has ${elem.childElementCount} children expected 1.`);
+                console.warn(`Segment.constructor: segment has ${elem.childElementCount} children expected 1.`);
             }
 
             let selector = '';
@@ -184,7 +184,7 @@ export namespace WriteBetter {
         applySuggestion(suggestion: Suggestion): void {
             this.highlights.push(WriteBetterUI.Highlight.of(this, suggestion));
             WriteBetterUI.Style.getInstance().highlight(this);
-            console.log('applied suggestion', suggestion, 'on text: ', this.getText());
+            console.info('applied suggestion', suggestion, 'on text: ', this.getText());
         }
     }
 
@@ -200,7 +200,7 @@ export namespace WriteBetter {
                 // TODO: need to handle case when there are multiple matches.
                 const index = node.getText().indexOf(c.getText(), 0);
                 if (index === -1) {
-                    console.debug(`propagateSuggestions: could not find child ${c.getElement().nodeName} in ${node.getElement().nodeName} with text: ${c.getText()}`);
+                    console.warn(`propagateSuggestions: could not find child ${c.getElement().nodeName} in ${node.getElement().nodeName} with text: ${c.getText()}`);
                     return;
                 }
                 if (s.index >= index && (s.index + s.offset <= index + c.getText().length)) {

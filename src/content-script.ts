@@ -47,8 +47,10 @@ const analyze = () => {
     GetExtensionFile('underline.css', (template: string) => {
         WriteBetterUI.Style.getInstance().setTemplate(template);
         let doc = WriteBetter.Doc.getInstance();
+        console.groupCollapsed();
         console.debug('doc info: ', doc, doc.getSuggestions());
         WriteBetter.propagateSuggestions(doc, doc.getSuggestions());
+        console.groupEnd();
     });
 }
 
