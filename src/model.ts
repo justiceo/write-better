@@ -183,7 +183,7 @@ export namespace WriteBetter {
 
         applySuggestion(suggestion: Suggestion): void {
             this.highlights.push(WriteBetterUI.Highlight.of(this, suggestion));
-            WriteBetterUI.Style.getInstance().highlight(this, suggestion);
+            WriteBetterUI.Style.getInstance().highlight(this);
             console.log('applied suggestion', suggestion, 'on text: ', this.getText());
         }
     }
@@ -197,6 +197,7 @@ export namespace WriteBetter {
         node.getChildren().forEach(c => {
             const childSuggestions: Suggestion[] = []
             suggestions.forEach(s => {
+                // TODO: need to handle case when there are multiple matches.
                 const index = node.getText().indexOf(c.getText(), 0);
                 if (index === -1) {
                     console.debug(`propagateSuggestions: could not find child ${c.getElement().nodeName} in ${node.getElement().nodeName} with text: ${c.getText()}`);

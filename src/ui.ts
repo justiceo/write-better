@@ -47,17 +47,7 @@ export namespace WriteBetterUI {
             document.body.appendChild(this.css);
         }
 
-        highlight(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): void {
-            this.underline(node, suggestion);
-            this.registerHover(node, suggestion);
-        }
-
-        clear() {
-            this.css.remove();
-            console.log(`removed css file from document: ${this.css.id}`)
-        }
-
-        underline(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): void {
+        highlight(node: WriteBetter.Segment): void {
             if (!Style.cssTemplate) {
                 return console.error('template is still empty');
             }
@@ -65,16 +55,7 @@ export namespace WriteBetterUI {
                 ['#selector', node.selector],
                 ['border_gradient', this.borderGradient(node.highlights)],
             ]));
-        }
 
-        replaceAll(input: string, pairs: Map<string, string>): string {
-            pairs.forEach((newValue: string, oldValue: string) => {
-                input = input.replace(new RegExp(oldValue, 'g'), newValue);
-            })
-            return input;
-        }
-
-        registerHover(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): void {
             let rule = ''
             node.handler = (e: MouseEvent) => {
                 // TODO: start listening for mousemove
@@ -121,6 +102,18 @@ export namespace WriteBetterUI {
             }
         }
 
+        clear() {
+            this.css.remove();
+            console.log(`removed css file from document: ${this.css.id}`)
+        }
+
+        replaceAll(input: string, pairs: Map<string, string>): string {
+            pairs.forEach((newValue: string, oldValue: string) => {
+                input = input.replace(new RegExp(oldValue, 'g'), newValue);
+            })
+            return input;
+        }
+
         getSheet(): CSSStyleSheet {
             for (var i = document.styleSheets.length - 1; i >= 0; i--) {
                 var sheet = document.styleSheets[i] as CSSStyleSheet;
@@ -154,6 +147,8 @@ export namespace WriteBetterUI {
 
     export class Highlight {
         reason: string;
+        index: number;
+        offset: number;
         start: number;
         end: number;
         boxWidth: number;
@@ -163,9 +158,11 @@ export namespace WriteBetterUI {
         static of(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): Highlight {
             let h = new Highlight();
             h.reason = suggestion.reason;
+            h.index = suggestion.index;
+            h.offset = suggestion.offset;
             const chars = node.getText().length;
-            h.start = 100 * suggestion.index / chars;
-            h.end = h.start + 100 * (suggestion.offset) / chars;
+            h.start = 100 * h.index / chars;
+            h.end = h.start + 100 * (h.offset) / chars;
             h.boxWidth = node.getElement().getBoundingClientRect().width;
             h.startPx = h.start * h.boxWidth / 100;
             h.endPx = h.end * h.boxWidth / 100;
