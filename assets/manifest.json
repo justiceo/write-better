@@ -10,10 +10,36 @@
         "storage",
         "https://docs.google.com/*"
     ],
-    "browser_action": {
-        "name": "Click to enable/disable grammar checks",
-        "default_icon": "images/quill-orange.png"
+    "page_action": {
+        "default_icon": {
+            "16": "images/quill-orange16.png",
+            "24": "images/quill-orange32.png",
+            "32": "images/quill-orange32.png"
+        },
+        "default_title": "Write Better",
+        "default_popup": ""
     },
+    "event_rules": [
+        {
+            "event": "declarativeContent.onPageChanged",
+            "actions": [
+                {
+                    "type": "declarativeContent.ShowPageAction"
+                }
+            ],
+            "conditions": [
+                {
+                    "type": "declarativeContent.PageStateMatcher",
+                    "pageUrl": {
+                        "hostEquals": "docs.google.com",
+                        "schemes": [
+                            "https"
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
     "content_scripts": [
         {
             "matches": [
@@ -24,10 +50,11 @@
             ]
         }
     ],
-    "icons": { 
+    "icons": {
         "16": "images/quill-orange16.png",
+        "32": "images/quill-orange32.png",
         "48": "images/quill-orange48.png",
-       "128": "images/quill-orange128.png" 
+        "128": "images/quill-orange128.png"
     },
     "options_page": "options.html",
     "background": {
