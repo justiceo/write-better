@@ -12,7 +12,7 @@
     ],
     "browser_action": {
         "name": "Click to enable/disable grammar checks",
-        "default_icon": "quill-orange.png"
+        "default_icon": "images/quill-orange.png"
     },
     "content_scripts": [
         {
@@ -25,9 +25,9 @@
         }
     ],
     "icons": { 
-        "16": "quill-orange16.png",
-        "48": "quill-orange48.png",
-       "128": "quill-orange128.png" 
+        "16": "images/quill-orange16.png",
+        "48": "images/quill-orange48.png",
+       "128": "images/quill-orange128.png" 
     },
     "options_page": "options.html",
     "background": {
