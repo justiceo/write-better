@@ -30,6 +30,17 @@ const init = () => {
             analyze();
         }, 1000);
     });
+
+    // TODO: needs a ways to stop this when plugin is disabled (though disabling not part of v1.).
+    let prevContent = '';
+    setInterval(() => {
+        const curr = WriteBetter.Doc.getInstance().getText();
+        if(curr != prevContent) {
+            console.log('content changed: re-analyzing doc.')
+            prevContent = curr
+            analyze();
+        }
+    }, 1000)
 }
 
 const analyze = () => {
