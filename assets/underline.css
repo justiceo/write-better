@@ -43,6 +43,7 @@
     white-space: nowrap;
     transform: scale3d(.2, .2, 1);
     transition: all .2s ease-in-out;
+    content: 'reason';
 }
 
 #selector:hover {

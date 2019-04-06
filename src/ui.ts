@@ -5,11 +5,6 @@ export namespace WriteBetterUI {
         static _instance: Style;
         css: HTMLStyleElement;
         static cssTemplate: string = '';
-        static hoverTemplate = `  
-        #selector:before {
-            content: '#reason';
-            left: -20px; /* override programmatically when text is near edge */
-        }`
 
         private constructor() {
             this.css = document.createElement('style');
@@ -43,19 +38,11 @@ export namespace WriteBetterUI {
             el.innerText = h.fullText.substring(h.index, h.index + h.offset);
             el.id = this.uniqueID();
 
-            // wire up css and js events to this element.
+            // add the css rules for this highlight.
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
                 ['selector', el.id],
+                ['reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
             ]));
-
-            const hoverHandler = (e: MouseEvent) => {
-                let rule = this.replaceAll(Style.hoverTemplate, new Map([
-                    ['selector', el.id],
-                    ['#reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
-                ]));
-                this.css.innerHTML += " " + rule;
-            };
-            el.addEventListener('mouseover', hoverHandler);
 
             // append this element to the dom.
             let p = node.getElement();
