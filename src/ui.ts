@@ -38,18 +38,21 @@ export namespace WriteBetterUI {
             el.innerText = h.fullText.substring(h.index, h.index + h.offset);
             el.id = this.uniqueID();
 
-            // add the css rules for this highlight.
-            this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
-                ['selector', el.id],
-                ['reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
-            ]));
-
             // append this element to the dom.
             let p = node.getElement();
             p.removeChild(p.firstChild);
             p.prepend(document.createTextNode(h.fullText.substring(h.index + h.offset, h.fullText.length - 1))); // Include end to avoid zero-width char &#8203;
             p.prepend(el);
-            p.prepend(document.createTextNode(h.fullText.substring(0, h.index)))
+            p.prepend(document.createTextNode(h.fullText.substring(0, h.index)));
+
+            // add the css rules for this highlight.
+            const d = WriteBetter.Doc.getInstance().getElement().getBoundingClientRect();
+            const pos = 100 * el.getBoundingClientRect().left / (d.left + d.width);
+            this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
+                ['selector', el.id],
+                ['reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
+                ['direction', pos > 70 ? 'right' : 'left'],
+            ]));
         }
 
         clear() {
