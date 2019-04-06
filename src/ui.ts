@@ -88,25 +88,6 @@ export namespace WriteBetterUI {
             return null;
         }
 
-        bgGradient(highlights: Highlight[]): string {
-            let bg = "linear-gradient(to right" // transparent #start%, yellow #start%, yellow #end%, transparent #end%) !important;"
-            highlights.forEach(h => {
-                bg += `, transparent ${h.start}%, #f0f0f0 ${h.start}%, #f0f0f0 ${h.end}%, transparent ${h.end}%`
-            });
-            bg += `) !important`
-            return bg;
-        }
-
-        borderGradient(highlights: Highlight[]): string {
-            let bg = "linear-gradient(to right"; // linear-gradient( to right, transparent 20%, red 20%, red 40%, transparent 40%) 1 !important;
-            highlights.forEach(h => {
-                bg += `, transparent ${h.start}%, #ffc578 ${h.start}%, #ffc578 ${h.end}%, transparent ${h.end}%`
-            });
-            bg += `) 1 !important`
-
-            return bg;
-        }
-
         uniqueID(): string { // TODO: test for uniqueness.
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
             let id = '';
@@ -121,11 +102,6 @@ export namespace WriteBetterUI {
         reason: string;
         index: number;
         offset: number;
-        start: number;
-        end: number;
-        boxWidth: number;
-        startPx: number;
-        endPx: number;
         fullText: string;
 
         static of(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): Highlight {
@@ -134,12 +110,6 @@ export namespace WriteBetterUI {
             h.index = suggestion.index;
             h.offset = suggestion.offset;
             h.fullText = node.getText();
-            const chars = node.getText().length;
-            h.start = 100 * h.index / chars;
-            h.end = h.start + 100 * (h.offset) / chars;
-            h.boxWidth = node.getElement().getBoundingClientRect().width;
-            h.startPx = h.start * h.boxWidth / 100;
-            h.endPx = h.end * h.boxWidth / 100;
             return h;
         }
     }
