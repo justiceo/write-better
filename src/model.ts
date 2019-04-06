@@ -189,8 +189,11 @@ export namespace WriteBetter {
     }
 
     export const propagateSuggestions = (node: Node, suggestions: Suggestion[]) => {
+        console.groupCollapsed();
+        console.debug('processing: node', node, 'suggestions', suggestions);
         if (node instanceof Segment) {
             suggestions.forEach(s => node.applySuggestion(s));
+            console.groupEnd();
             return;
         }
 
@@ -209,5 +212,6 @@ export namespace WriteBetter {
             });
             propagateSuggestions(c, childSuggestions);
         });
+        console.groupEnd();
     }
 }
