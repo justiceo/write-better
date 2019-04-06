@@ -1,7 +1,6 @@
 #selector {
     position: relative;
-    border-bottom: 3px solid;
-    border-image: border_gradient;
+    border-bottom: 3px solid #ffc578;
 }
 
 #selector:before,
@@ -10,6 +9,7 @@
     opacity: 0;
     pointer-events: none;
     position: absolute;
+    /* TODO:wrapping div has an overflow:hidden attribute, so high numbers are not enough */
     z-index: 100000;
 }
 
@@ -22,6 +22,7 @@
     height: 0px;
     width: 0px;
     bottom: 20px;
+    left: 5px;
     transform: translate3d(0, 6px, 0);
     transition: all .1s ease-in-out;
 }
@@ -38,8 +39,22 @@
     font-family: docs-Consolas;
     padding: 10px 15px;
     bottom: 30px;
-    left: 0px;
+    left: -20px;
     white-space: nowrap;
     transform: scale3d(.2, .2, 1);
     transition: all .2s ease-in-out;
+}
+
+#selector:hover {
+    background: #f0f0f0;
+}
+
+#selector:hover:before,
+#selector:hover:after {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+}
+
+#selector:hover:after {
+    transition: all .2s .1s ease-in-out;
 }

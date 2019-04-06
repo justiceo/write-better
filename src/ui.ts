@@ -5,29 +5,10 @@ export namespace WriteBetterUI {
         static _instance: Style;
         css: HTMLStyleElement;
         static cssTemplate: string = '';
-        static hoverTemplate = `
-        #selector:hover {    
-            background-repeat: no-repeat;
-            background-image: background_gradient;
-        }
-        
-        #selector:after {
-            left: arrow_left_push;
-        }
-        
+        static hoverTemplate = `  
         #selector:before {
             content: '#reason';
-            left: box_left_push;
-        }
-        
-        #selector:hover:before,
-        #selector:hover:after {
-            opacity: 1;
-            transform: scale3d(1, 1, 1);
-        }
-        
-        #selector:hover:after {
-            transition: all .2s .1s ease-in-out;
+            left: -20px; /* override programmatically when text is near edge */
         }`
 
         private constructor() {
@@ -51,55 +32,37 @@ export namespace WriteBetterUI {
             if (!Style.cssTemplate) {
                 return console.error('template is still empty');
             }
+
+            if (node.highlights.length > 1) {
+                return;
+            }
+            let h = node.highlights[0];
+
+            // create an element that wraps the suggestion.
+            let el = document.createElement('span');
+            el.innerText = h.fullText.substring(h.index, h.index + h.offset);
+            el.id = this.uniqueID();
+
+            // wire up css and js events to this element.
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
-                ['#selector', node.selector],
-                ['border_gradient', this.borderGradient(node.highlights)],
+                ['selector', el.id],
             ]));
 
-            let rule = ''
-            node.handler = (e: MouseEvent) => {
-                // TODO: start listening for mousemove
-                const boxX = (node.getElement().getBoundingClientRect() as DOMRect).x;
-                const mouseX = e.clientX - boxX;
-                const h = node.highlights.find(h => mouseX >= h.startPx && mouseX <= h.endPx);
-                if (!h) {
-                    // TODO: consider setting to nearest neighbor. Especially given that hover can be tricky
-                    return;
-                }
-                console.log('hovered on error');
-                rule = this.replaceAll(Style.hoverTemplate, new Map([
-                    ['#selector', node.selector],
-                    ['background_gradient', this.bgGradient([h])],
+            const hoverHandler = (e: MouseEvent) => {
+                let rule = this.replaceAll(Style.hoverTemplate, new Map([
+                    ['selector', el.id],
                     ['#reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
-                    ['box_left_push', (h.startPx - 20).toString() + 'px'],
-                    ['arrow_left_push', (h.startPx + 5).toString() + 'px'],
                 ]));
                 this.css.innerHTML += " " + rule;
-            }
+            };
+            el.addEventListener('mouseover', hoverHandler);
 
-            let mouseoutHandler = (e: MouseEvent) => {
-                // TODO: stop listening to mousemove
-                // TODO: remove css from stylesheet
-                let sheet = this.getSheet();
-                // sheet.insertRule adds new sheet at index 0 by default
-                // it is our best bet on CSS wrangling since reformating by engine makes find/replace impossible.
-                // it'll best be implemented after we've moved out this class.
-                for (let i = 0; i < sheet.rules.length; i++) {
-                    if (sheet.rules[i].type == CSSRule.STYLE_RULE) { // https://developer.mozilla.org/en-US/docs/Web/API/CSSRule#Type_constants
-                        let sr = sheet.rules[i] as CSSStyleRule;
-                        if (sr.selectorText == node.selector) {
-                            // found matching selector
-                        }
-                    }
-                }
-            }
-
-            // One handler is enough for all the highlights.
-            if (node.highlights.length == 1) {
-                // Bug: mouseover doesn't trigger when error is a link text.
-                node.getElement().addEventListener('mouseover', node.handler);
-                // node.getElement().addEventListener('mouseout', mouseoutHandler);
-            }
+            // append this element to the dom.
+            let p = node.getElement();
+            p.removeChild(p.firstChild);
+            p.prepend(document.createTextNode(h.fullText.substring(h.index + h.offset, h.fullText.length - 1))); // Include end to avoid zero-width char &#8203;
+            p.prepend(el);
+            p.prepend(document.createTextNode(h.fullText.substring(0, h.index)))
         }
 
         clear() {
@@ -143,6 +106,15 @@ export namespace WriteBetterUI {
 
             return bg;
         }
+
+        uniqueID(): string { // TODO: test for uniqueness.
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let id = '';
+            for (let i = 0; i < 20; i++) {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return id;
+        }
     }
 
     export class Highlight {
@@ -154,12 +126,14 @@ export namespace WriteBetterUI {
         boxWidth: number;
         startPx: number;
         endPx: number;
+        fullText: string;
 
         static of(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): Highlight {
             let h = new Highlight();
             h.reason = suggestion.reason;
             h.index = suggestion.index;
             h.offset = suggestion.offset;
+            h.fullText = node.getText();
             const chars = node.getText().length;
             h.start = 100 * h.index / chars;
             h.end = h.start + 100 * (h.offset) / chars;
