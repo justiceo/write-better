@@ -9,14 +9,13 @@
   "author": "Justice Ogbonna",
   "license": "MIT",
   "dependencies": {
-    "@medv/finder": "^1.1.1",
-    "@types/chrome": "0.0.81",
     "write-good": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
     "@babel/register": "^7.4.0",
+    "@types/chrome": "0.0.81",
     "@types/node": "^11.11.6",
     "browserify": "^16.2.3",
     "del": "^4.0.0",

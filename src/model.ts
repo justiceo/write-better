@@ -1,4 +1,3 @@
-import finder from '@medv/finder';
 import { WriteBetterUI } from './ui';
 const writeGood: (input: string) => WriteBetter.Suggestion[] = require('write-good');
 type xNode = Node;
@@ -104,7 +103,6 @@ export namespace WriteBetter {
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
-            // this.uniqueSelector = finder(elem);
             let children: NodeListOf<Element> = this.element.querySelectorAll(Line.QuerySelector);
             children.forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
@@ -165,15 +163,6 @@ export namespace WriteBetter {
             if (elem.childElementCount != 1) {
                 console.warn(`Segment.constructor: segment has ${elem.childElementCount} children expected 1.`);
             }
-
-            let selector = '';
-            try {
-                selector = finder(this.getElement(), { threshold: 2, tagName: () => false });
-            } catch (err) {
-                console.error(`new Segment(): error getting unique selector: ${err}`);
-                return;
-            }
-            this.selector = selector;
         }
 
         getChildren(): Node[] {
