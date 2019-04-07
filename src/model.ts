@@ -153,8 +153,6 @@ export namespace WriteBetter {
     // Segment is the immediate parent of a text node. 
     // Its only child is the text node and it should be treated as a textnode.
     export class Segment extends AbsNode {
-        handler: (e: MouseEvent) => void;
-        selector = '';
         highlights: WriteBetterUI.Highlight[] = [];
 
         constructor(elem: HTMLElement) {

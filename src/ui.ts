@@ -106,11 +106,4 @@ export namespace WriteBetterUI {
             return h;
         }
     }
-
-    export const unregisterHandlers = (node: WriteBetter.Node, prev: string[]) => {
-        if (node instanceof WriteBetter.Segment) {
-            node.getElement().removeEventListener('mouseover', node.handler)
-        }
-        return prev;
-    }
 }

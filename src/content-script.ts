@@ -9,8 +9,6 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
         callback(true);
     } else if (msg.type === 'cleanup') {
         WriteBetterUI.Style.getInstance().clear();
-        let doc = WriteBetter.Doc.getInstance();
-        doc.visit<string>(WriteBetterUI.unregisterHandlers, []);
         window.removeEventListener('resize', resizeTask);
     }
 }
@@ -19,7 +17,6 @@ let resizeTask: any = null;
 
 const init = () => {
     analyze();
-    // TODO: scroll event is not fired in docs, need to implement a watch on page's top position.
     window.addEventListener('resize', () => {
         if (resizeTask !== null) {
             window.clearTimeout(resizeTask);
