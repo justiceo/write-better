@@ -31,25 +31,21 @@ export namespace WriteBetterUI {
             if (node.highlights.length > 1) {
                 return;
             }
+            // TODO: use the highlight with lowest recall.
             let h = node.highlights[0];
-
-            // create an element that wraps the suggestion.
-            let el = document.createElement('span');
-            el.innerText = h.fullText.substring(h.index, h.index + h.offset);
-            el.id = this.uniqueID();
 
             // append this element to the dom.
             let p = node.getElement();
             p.removeChild(p.firstChild);
             p.prepend(document.createTextNode(h.fullText.substring(h.index + h.offset, h.fullText.length - 1))); // Include end to avoid zero-width char &#8203;
-            p.prepend(el);
+            p.prepend(h.element);
             p.prepend(document.createTextNode(h.fullText.substring(0, h.index)));
 
             // add the css rules for this highlight.
             const d = WriteBetter.Doc.getInstance().getElement().getBoundingClientRect();
-            const pos = 100 * el.getBoundingClientRect().left / (d.left + d.width);
+            const pos = 100 * h.element.getBoundingClientRect().left / (d.left + d.width);
             this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
-                ['selector', el.id],
+                ['selector', h.element.id],
                 ['reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
                 ['direction', pos > 70 ? 'right' : 'left'],
             ]));
@@ -78,7 +74,7 @@ export namespace WriteBetterUI {
             return null;
         }
 
-        uniqueID(): string { // TODO: test for uniqueness.
+        static uniqueID(): string { // TODO: test for uniqueness.
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
             let id = '';
             for (let i = 0; i < 20; i++) {
@@ -93,6 +89,7 @@ export namespace WriteBetterUI {
         index: number;
         offset: number;
         fullText: string;
+        element: HTMLSpanElement;
 
         static of(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): Highlight {
             let h = new Highlight();
@@ -100,6 +97,12 @@ export namespace WriteBetterUI {
             h.index = suggestion.index;
             h.offset = suggestion.offset;
             h.fullText = node.getText();
+
+            // create an element that wraps the suggestion.
+            let el = document.createElement('span');
+            el.innerText = h.fullText.substring(h.index, h.index + h.offset);
+            el.id = Style.uniqueID();
+            h.element = el;
             return h;
         }
     }
