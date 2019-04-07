@@ -13,7 +13,7 @@
     "page_action": {
         "default_icon": {
             "16": "images/quill-orange16.png",
-            "24": "images/quill-orange32.png",
+            "24": "images/quill-orange24.png",
             "32": "images/quill-orange32.png"
         },
         "default_title": "Write Better",
