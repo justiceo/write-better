@@ -1,6 +1,6 @@
 {
     "src_folders": [
-        "tests"
+        "tests_output"
     ],
     "webdriver": {
         "start_process": true,
