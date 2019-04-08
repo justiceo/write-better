@@ -4,7 +4,11 @@ export namespace WriteBetterUI {
     export class Style {
         static _instance: Style;
         css: HTMLStyleElement;
-        static cssTemplate: string = '';
+        static readonly cssTemplate: string = `
+            #selector:before {
+                content: 'reason';
+                direction: -20px;
+            } `;
 
         private constructor() {
             this.css = document.createElement('style');
@@ -17,17 +21,7 @@ export namespace WriteBetterUI {
             return this._instance || (this._instance = new this());
         }
 
-        setTemplate(template: string): void {
-            Style.cssTemplate = template;
-            this.css.remove();
-            document.body.appendChild(this.css);
-        }
-
         highlight(node: WriteBetter.Segment): void {
-            if (!Style.cssTemplate) {
-                return console.error('template is still empty');
-            }
-
             if (node.highlights.length > 1) {
                 return;
             }

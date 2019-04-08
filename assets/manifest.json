@@ -47,6 +47,9 @@
             ],
             "js": [
                 "content-script.js"
+            ],
+            "css": [
+                "highlight.css"
             ]
         }
     ],

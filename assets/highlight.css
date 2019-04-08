@@ -9,7 +9,7 @@ span.writebetter-highlight:after {
     opacity: 0;
     pointer-events: none;
     position: absolute;
-    z-index: 100000;
+    z-index: 1000;
 }
 
 span.writebetter-highlight:after {
@@ -56,9 +56,4 @@ span.writebetter-highlight:hover:after {
 
 span.writebetter-highlight:hover:after {
     transition: all .2s .1s ease-in-out;
-}
-
-#selector:before {
-    content: 'reason';
-    direction: -20px;
 }
