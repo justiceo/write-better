@@ -1,10 +1,10 @@
-#selector {
+span.writebetter-highlight {
     position: relative;
     border-bottom: 3px solid #ffc578;
 }
 
-#selector:before,
-#selector:after {
+span.writebetter-highlight:before,
+span.writebetter-highlight:after {
     display: block;
     opacity: 0;
     pointer-events: none;
@@ -12,7 +12,7 @@
     z-index: 100000;
 }
 
-#selector:after {
+span.writebetter-highlight:after {
     /* The Arrow below the tooltip */
     border-right: 6px solid transparent;
     border-top: 10px solid #eee;
@@ -26,7 +26,7 @@
     transition: all .1s ease-in-out;
 }
 
-#selector:before {
+span.writebetter-highlight:before {
     /* The tooltip box */
     background: rgba(255, 255, 255, .95);
     border: 1px solid #ddd;
@@ -38,23 +38,27 @@
     font-family: docs-Consolas;
     padding: 10px 15px;
     bottom: 30px;
-    direction: -20px;
+    left: -20px;
     white-space: nowrap;
     transform: scale3d(.2, .2, 1);
     transition: all .2s ease-in-out;
-    content: 'reason';
 }
 
-#selector:hover {
+span.writebetter-highlight:hover {
     background: #f0f0f0;
 }
 
-#selector:hover:before,
-#selector:hover:after {
+span.writebetter-highlight:hover:before,
+span.writebetter-highlight:hover:after {
     opacity: 1;
     transform: scale3d(1, 1, 1);
 }
 
-#selector:hover:after {
+span.writebetter-highlight:hover:after {
     transition: all .2s .1s ease-in-out;
+}
+
+#selector:before {
+    content: 'reason';
+    direction: -20px;
 }

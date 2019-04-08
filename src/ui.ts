@@ -74,13 +74,13 @@ export namespace WriteBetterUI {
             return null;
         }
 
-        static uniqueID(): string { // TODO: test for uniqueness.
+        static uniqueSelector(): string { // TODO: test for uniqueness.
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
             let id = '';
             for (let i = 0; i < 20; i++) {
                 id += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-            return id;
+            return 'writebetter-' + id;
         }
     }
 
@@ -101,7 +101,8 @@ export namespace WriteBetterUI {
             // create an element that wraps the suggestion.
             let el = document.createElement('span');
             el.innerText = h.fullText.substring(h.index, h.index + h.offset);
-            el.id = Style.uniqueID();
+            el.id = Style.uniqueSelector();
+            el.classList.add('writebetter-highlight');
             h.element = el;
             return h;
         }
