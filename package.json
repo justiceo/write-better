@@ -18,8 +18,10 @@
     "@types/chrome": "0.0.81",
     "@types/node": "^11.11.6",
     "browserify": "^16.2.3",
+    "chromedriver": "^2.46.0",
     "del": "^4.0.0",
     "gulp": "^4.0.0",
+    "nightwatch": "^1.0.19",
     "tsify": "^4.0.1",
     "typescript": "^3.3.4000",
     "vinyl-source-stream": "^2.0.0"
