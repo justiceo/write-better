@@ -10,7 +10,14 @@
     "test_settings": {
         "default": {
             "desiredCapabilities": {
-                "browserName": "chrome"
+                "browserName": "chrome",
+                "javascriptEnabled": true,
+                "acceptSslCerts": true,
+                "chromeOptions": {
+                    "args": [
+                        "--load-extension=/Users/justiceo/code/chrome/write-better/extension"
+                    ]
+                }
             }
         }
     }
