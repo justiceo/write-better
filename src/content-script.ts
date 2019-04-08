@@ -1,6 +1,6 @@
 import { WriteBetter } from './model';
 import { WriteBetterUI } from './ui';
-import { IsEnabledOnDocs, GetExtensionFile, Message } from './shared';
+import { Message } from './shared';
 
 const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
     console.debug('content-script received message: ', msg.type);
@@ -32,7 +32,7 @@ const init = () => {
     let prevContent = '';
     setInterval(() => {
         const curr = WriteBetter.Doc.getInstance().getText();
-        if(curr != prevContent) {
+        if (curr != prevContent) {
             console.log('content changed: re-analyzing doc.')
             prevContent = curr
             analyze();
@@ -51,8 +51,4 @@ const analyze = () => {
 chrome.runtime.onMessage.addListener(onMessage);
 
 // Run the script once added to the doc and user enabled it.
-IsEnabledOnDocs(isEnabled => {
-    if (isEnabled) {
-        init();
-    }
-})
+init();

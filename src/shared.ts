@@ -4,7 +4,6 @@ export class Message {
 }
 
 const gDocsUrl = 'docs.google.com';
-const templateCSS = 'template.css';
 
 export const EnableOnDocs = (callback: () => void) => {
     let save: any = {}
