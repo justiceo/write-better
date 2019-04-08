@@ -5,13 +5,13 @@ export class Message {
 
 const gDocsUrl = 'docs.google.com';
 
-export const EnableOnDocs = (callback: () => void) => {
+export const enableOnDocs = (callback: () => void) => {
     let save: any = {}
     save[gDocsUrl] = true
     chrome.storage.sync.set(save, callback);
 }
 
-export const IsEnabledOnDocs = (callback: (isEnabled: boolean) => void) => {
+export const isEnabledOnDocs = (callback: (isEnabled: boolean) => void) => {
     chrome.storage.sync.get(gDocsUrl, (data) => {
         if (data[gDocsUrl]) {
             callback(true);
@@ -21,7 +21,7 @@ export const IsEnabledOnDocs = (callback: (isEnabled: boolean) => void) => {
     })
 }
 
-export const LoadExtensionFile = (fileName: string, callback: (fileContents: string) => void) => {
+export const loadExtensionFile = (fileName: string, callback: (fileContents: string) => void) => {
     const readFile = (file: File) => {
         const reader = new FileReader();
         reader.onloadend = function (e) { // "this" is reader.onloadend.
@@ -34,12 +34,12 @@ export const LoadExtensionFile = (fileName: string, callback: (fileContents: str
     chrome.runtime.getPackageDirectoryEntry(readDirEntry);
 }
 
-export const GetExtensionFile = (fileName: string, callback: (template: string) => void) => {
+export const getExtensionFile = (fileName: string, callback: (template: string) => void) => {
     chrome.storage.sync.get(fileName, (data) => {
         if (data[fileName]) {
             callback(data[fileName]);
         } else {
-            LoadExtensionFile(fileName, (content: string) => {
+            loadExtensionFile(fileName, (content: string) => {
                 let save: any = {}
                 save[fileName] = content
                 chrome.storage.sync.set(save, () => callback(content));

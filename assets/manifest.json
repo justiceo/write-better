@@ -5,9 +5,6 @@
     "manifest_version": 2,
     "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg/wAu86aayfkDEvVAGgdtl8FS2/axn1JqdDl9awFDUdSLZrCNJ/7vMJBEUp3IpgzBMF+qFH9UZFQJIuyo2vRHnmIXDMVXEfYLmIJ9WfMYQnu8sUvcTilj7zCzaWSyo1/VqGeahsRX18VZBaMyOc4vauSojZFi66ZkR+dd9JoPhbxFFAMrcZkYeoIL27+ofKRy01gCBN/p3kQtowfvQtxGA+5irSqspXPtFIeTY20ZBhGaYR1KXu9wwa9ghtuQPf00Gy8+FyDzFwemawJ3KjlATokTjqEw9Z8ZM1kB6sS0q50xSJUhlbQ+/FMFN0owm7K5UHTSXGOALS8YPnHASeP3wIDAQAB",
     "permissions": [
-        "activeTab",
-        "tabs",
-        "storage",
         "https://docs.google.com/*"
     ],
     "page_action": {
@@ -19,27 +16,6 @@
         "default_title": "Write Better",
         "default_popup": ""
     },
-    "event_rules": [
-        {
-            "event": "declarativeContent.onPageChanged",
-            "actions": [
-                {
-                    "type": "declarativeContent.ShowPageAction"
-                }
-            ],
-            "conditions": [
-                {
-                    "type": "declarativeContent.PageStateMatcher",
-                    "pageUrl": {
-                        "hostEquals": "docs.google.com",
-                        "schemes": [
-                            "https"
-                        ]
-                    }
-                }
-            ]
-        }
-    ],
     "content_scripts": [
         {
             "matches": [
@@ -62,7 +38,6 @@
         "48": "images/quill-orange48.png",
         "128": "images/quill-orange128.png"
     },
-    "options_page": "options.html",
     "background": {
         "scripts": [
             "background.js"
