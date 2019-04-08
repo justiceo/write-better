@@ -45,6 +45,9 @@
             "matches": [
                 "https://docs.google.com/*"
             ],
+            "include_globs": [
+                "https://docs.google.com/document/d/*"
+            ],
             "js": [
                 "content-script.js"
             ],
