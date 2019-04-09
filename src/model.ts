@@ -158,13 +158,19 @@ export namespace WriteBetter {
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
-            if (elem.childElementCount != 1) {
-                console.warn(`Segment.constructor: segment has ${elem.childElementCount} children expected 1.`);
+            let count = 0;
+            elem.childNodes.forEach(c => {
+                if (c.nodeType == 3) {
+                    count++;
+                }
+            })
+            if (count != 1) {
+                console.error(`Segment.constructor: segment has ${elem.childElementCount} text nodes expected 1`);
             }
         }
 
         getChildren(): Node[] {
-            // TODO: throw 'getChildren: unimplemented exception - base node is intended to be used as text node.'
+            console.error('Segment.getChildren: segment is intended to be used as text node and should not have children');
             return []
         }
 
@@ -176,8 +182,7 @@ export namespace WriteBetter {
     }
 
     export const propagateSuggestions = (node: Node, suggestions: Suggestion[]) => {
-        console.groupCollapsed();
-        console.debug('processing: node', node, 'suggestions', suggestions);
+        console.group(node, 'suggestions', suggestions);
         if (node instanceof Segment) {
             suggestions.forEach(s => node.applySuggestion(s));
             console.groupEnd();

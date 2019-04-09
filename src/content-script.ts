@@ -41,9 +41,8 @@ const init = () => {
 }
 
 const analyze = () => {
+    console.groupCollapsed('propagate suggestions:');
     let doc = WriteBetter.Doc.getInstance();
-    console.groupCollapsed();
-    console.debug('doc info: ', doc, doc.getSuggestions());
     WriteBetter.propagateSuggestions(doc, doc.getSuggestions());
     console.groupEnd();
 }
