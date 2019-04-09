@@ -4,7 +4,11 @@ export namespace WriteBetterUI {
     export class Style {
         static _instance: Style;
         css: HTMLStyleElement;
-        static cssTemplate: string = '';
+        static readonly cssTemplate: string = `
+            #selector:before {
+                content: 'reason';
+                direction: -20px;
+            } `;
 
         private constructor() {
             this.css = document.createElement('style');
@@ -17,17 +21,7 @@ export namespace WriteBetterUI {
             return this._instance || (this._instance = new this());
         }
 
-        setTemplate(template: string): void {
-            Style.cssTemplate = template;
-            this.css.remove();
-            document.body.appendChild(this.css);
-        }
-
         highlight(node: WriteBetter.Segment): void {
-            if (!Style.cssTemplate) {
-                return console.error('template is still empty');
-            }
-
             if (node.highlights.length > 1) {
                 return;
             }
@@ -74,13 +68,13 @@ export namespace WriteBetterUI {
             return null;
         }
 
-        static uniqueID(): string { // TODO: test for uniqueness.
+        static uniqueSelector(): string { // TODO: test for uniqueness.
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
             let id = '';
             for (let i = 0; i < 20; i++) {
                 id += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-            return id;
+            return 'writebetter-' + id;
         }
     }
 
@@ -101,7 +95,8 @@ export namespace WriteBetterUI {
             // create an element that wraps the suggestion.
             let el = document.createElement('span');
             el.innerText = h.fullText.substring(h.index, h.index + h.offset);
-            el.id = Style.uniqueID();
+            el.id = Style.uniqueSelector();
+            el.classList.add('writebetter-highlight');
             h.element = el;
             return h;
         }
