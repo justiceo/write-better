@@ -2,7 +2,13 @@ import * as puppeteer from 'puppeteer';
 
 describe("e2e tests", () => {
   it("headless sample", async () => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({      
+        headless: false, // extensions only supported in full chrome.
+        args: [
+          `--disable-extensions-except=/Users/justiceo/code/chrome/write-better/extension`,
+          `--load-extension=/Users/justiceo/code/chrome/write-better/extension`,
+        ]      
+    });
     const page = await browser.newPage();
 
     await page.goto('https://developers.google.com/web/');
