@@ -9,14 +9,13 @@ import decache from 'decache';
 
 const bgSrc = ['src/background.ts', 'src/shared.ts'];
 const csSrc = ['src/content-script.ts', 'src/model.ts', 'src/shared.ts', 'src/ui.ts'];
-const testSrc = ['tests/**/*'];
+const testSrc = ['spec/**/*.ts'];
 const assets = ['assets/**/*'];
 const outDir = './extension';
 const jasmine = new Jasmine();
 
 jasmine.loadConfig({
-    spec_dir: 'tests_output',
-    spec_files: ['**/*.js'],
+    spec_files: ['spec/**/*.js'],
     random: false,
 });
 
@@ -44,7 +43,7 @@ const compileTests = () => {
         .pipe(ts({
             noImplicitAny: true,
         }))
-        .pipe(gulp.dest('tests_output'));
+        .pipe(gulp.dest('spec'));
 }
 
 export const copyAssets = () => {

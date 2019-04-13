@@ -1,4 +1,3 @@
 node_modules/*
 extension/*
-chromedriver.log
-tests_output/*
+spec/**/*.js
