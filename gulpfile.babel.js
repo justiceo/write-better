@@ -76,7 +76,6 @@ const runTest = () => {
                 resolve();
             }
             else {
-                console.log('At least one spec has failed');
                 jasmine.specFiles.forEach(f => decache(f));
                 reject();
             }
