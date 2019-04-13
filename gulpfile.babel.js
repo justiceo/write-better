@@ -5,12 +5,21 @@ import source from 'vinyl-source-stream';
 import del from 'del';
 import nightwatch from 'gulp-nightwatch';
 import ts from 'gulp-typescript';
+import Jasmine from 'jasmine';
+import decache from 'decache';
 
 const bgSrc = ['src/background.ts', 'src/shared.ts'];
 const csSrc = ['src/content-script.ts', 'src/model.ts', 'src/shared.ts', 'src/ui.ts'];
 const testSrc = ['tests/**/*'];
 const assets = ['assets/**/*'];
 const outDir = './extension';
+const jasmine = new Jasmine();
+
+jasmine.loadConfig({
+    spec_dir: 'tests_output',
+    spec_files: ['**/*.js'],
+    random: false,
+});
 
 const compileBgScript = () => {
     return browserify()
@@ -55,11 +64,27 @@ const watchAssets = () => {
     gulp.watch(assets, copyAssets);
 }
 
-const chromeTest = () => {
-    return gulp.src('[tests_output/*.js]')
-        .pipe(nightwatch({
-            configFile: 'nightwatch.json',
-        }));
+export const watchTests = () => {
+    return gulp.watch(testSrc, gulp.series(compileTests, runTest));
+}
+
+const runTest = () => {
+    return new Promise((resolve, reject) => {
+        jasmine.onComplete(passed => {
+            if (passed) {
+                console.log('All specs have passed');
+                // multiple execute calls on jasmine env errors. See https://github.com/jasmine/jasmine/issues/1231#issuecomment-26404527
+                jasmine.specFiles.forEach(f => decache(f));
+                resolve();
+            }
+            else {
+                console.log('At least one spec has failed');
+                jasmine.specFiles.forEach(f => decache(f));
+                reject();
+            }
+        });
+        jasmine.execute();
+    });
 }
 
 export const clean = () => del([outDir]);
@@ -68,7 +93,7 @@ clean.description = 'clean the output directory'
 export const build = gulp.parallel(copyAssets, compileBgScript, compileContentScript);
 build.description = 'compile all sources'
 
-export const test = gulp.series(compileTests, chromeTest);
+export const test = gulp.series(compileTests, runTest);
 
 const defaultTask = gulp.series(clean, build, gulp.parallel(watchBackgroundScript, watchContentScript, watchAssets))
 defaultTask.description = 'start watching for changes to all source'
