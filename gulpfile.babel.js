@@ -3,7 +3,6 @@ import tsify from 'tsify';
 import browserify from 'browserify';
 import source from 'vinyl-source-stream';
 import del from 'del';
-import nightwatch from 'gulp-nightwatch';
 import ts from 'gulp-typescript';
 import Jasmine from 'jasmine';
 import decache from 'decache';
