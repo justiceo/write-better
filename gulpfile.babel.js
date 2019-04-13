@@ -12,12 +12,6 @@ const csSrc = ['src/content-script.ts', 'src/model.ts', 'src/shared.ts', 'src/ui
 const testSrc = ['spec/**/*.ts'];
 const assets = ['assets/**/*'];
 const outDir = './extension';
-const jasmine = new Jasmine();
-
-jasmine.loadConfig({
-    spec_files: ['spec/**/*.js'],
-    random: false,
-});
 
 const compileBgScript = () => {
     return browserify()
@@ -68,17 +62,15 @@ export const watchTests = () => {
 
 const runTest = () => {
     return new Promise((resolve, reject) => {
+        const jasmine = new Jasmine();
+        jasmine.loadConfig({
+            spec_files: ['spec/**/*.js'],
+            random: false,
+        });
         jasmine.onComplete(passed => {
-            if (passed) {
-                console.log('All specs have passed');
-                // multiple execute calls on jasmine env errors. See https://github.com/jasmine/jasmine/issues/1231#issuecomment-26404527
-                jasmine.specFiles.forEach(f => decache(f));
-                resolve();
-            }
-            else {
-                jasmine.specFiles.forEach(f => decache(f));
-                reject();
-            }
+            // multiple execute calls on jasmine env errors. See https://github.com/jasmine/jasmine/issues/1231#issuecomment-26404527
+            jasmine.specFiles.forEach(f => decache(f));
+            passed ? resolve() : reject();
         });
         jasmine.execute();
     });
