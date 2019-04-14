@@ -57,6 +57,21 @@ describe('browser with extension', () => {
       expect(await page.title()).toBe('WriteBetter Test Doc - Google Docs');
       await page.close();
     });
+
+    it('writebetter-highlights', async () => {
+      const page = await browser.newPage();
+      await page.goto('https://docs.google.com/document/d/1KX_6FahTxjSIDIh07LdfIt4dfik0_S1OTzNvQsD3YOc');
+
+      await page.waitFor(1000);
+
+      let count = await page.evaluate(() => {
+        return document.querySelectorAll('span.writebetter-highlight').length
+      });
+
+      expect(count).toBe(6);
+
+      await page.close();
+    }, 10000);
   });
 });
 
