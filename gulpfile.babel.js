@@ -16,7 +16,7 @@ const outDir = './extension';
 const compileBgScript = () => {
     return browserify()
         .add(bgSrc)
-        .plugin(tsify, { noImplicitAny: true })
+        .plugin(tsify, { noImplicitAny: true, target: 'es6' })
         .bundle()
         .on('error', (err) => { console.error(err) })
         .pipe(source('background.js'))
@@ -25,7 +25,7 @@ const compileBgScript = () => {
 const compileContentScript = () => {
     return browserify()
         .add(csSrc)
-        .plugin(tsify, { noImplicitAny: true })
+        .plugin(tsify, { noImplicitAny: true, target: 'es6' })
         .bundle()
         .on('error', (err) => { console.error(err) })
         .pipe(source('content-script.js'))
@@ -36,6 +36,7 @@ const compileTests = () => {
     return gulp.src(testSrc)
         .pipe(ts({
             noImplicitAny: true,
+            target: 'es6',
         }))
         .pipe(gulp.dest('spec'));
 }
@@ -60,7 +61,7 @@ export const watchTests = () => {
     return gulp.watch(testSrc, gulp.series(compileTests, runTest));
 }
 
-const runTest = () => {
+export const runTest = () => {
     return new Promise((resolve, reject) => {
         const jasmine = new Jasmine();
         jasmine.loadConfig({
