@@ -38,7 +38,6 @@ span.writebetter-highlight:before {
     font-family: docs-Consolas;
     padding: 10px 15px;
     bottom: 30px;
-    left: -20px;
     white-space: nowrap;
     transform: scale3d(.2, .2, 1);
     transition: all .2s ease-in-out;
