@@ -25,8 +25,21 @@ export namespace WriteBetterUI {
             if (node.highlights.length == 0) {
                 return;
             }
-            // TODO: use the highlight with lowest recall.
-            let h = node.highlights[0];
+            
+            node.highlights.sort((a, b) => {
+                if (a.index < b.index) return -1;
+                if (a.index > b.index) return 1;
+                return 0;
+            });
+
+            // If their index overlap, display only one of them.
+            for (let i = node.highlights.length - 1; i >= 1; i--) {
+                const h = node.highlights[i];
+                const hprev = node.highlights[i - 1];
+                if (hprev.index + hprev.offset >= h.index) {
+                    node.highlights.splice(i, 1);
+                }
+            }
 
             // append this element to the dom.
             // TODO: assert that p has only one child text node.
@@ -44,19 +57,34 @@ export namespace WriteBetterUI {
                 console.error('could not find child text node for', node);
                 return;
             }
-            p.insertBefore(document.createTextNode(h.fullText.substring(0, h.index)),child);
-            p.insertBefore(h.element, child);
-            p.insertBefore(document.createTextNode(h.fullText.substring(h.index + h.offset, h.fullText.length - 1)), child); // Include end to avoid zero-width char &#8203;
-            p.removeChild(child);
 
-            // add the css rules for this highlight.
             const d = WriteBetter.Doc.getInstance().getElement().getBoundingClientRect();
-            const pos = 100 * h.element.getBoundingClientRect().left / (d.left + d.width);
-            this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
-                ['selector', h.element.id],
-                ['reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
-                ['direction', pos > 70 ? 'right' : 'left'],
-            ]));
+            for (let i = 0; i < node.highlights.length; i++) {
+                const h = node.highlights[i];
+                // Insert the text up till the first highlight
+                if (i == 0) {
+                    p.insertBefore(document.createTextNode(h.fullText.substring(0, h.index)), child);
+                }
+
+                // Insert the highlight;
+                p.insertBefore(h.element, child);
+
+                // Insert the text between this highlight and next
+                if (i < node.highlights.length - 1) {
+                    const hnext = node.highlights[i + 1];
+                    p.insertBefore(document.createTextNode(h.fullText.substring(h.index + h.offset, hnext.index)), child);
+                } else {
+                    p.insertBefore(document.createTextNode(h.fullText.substring(h.index + h.offset, h.fullText.length - 1)), child); // Include end to avoid zero-width char &#8203;
+                }
+                // add the css rules for this highlight.
+                const pos = 100 * h.element.getBoundingClientRect().left / (d.left + d.width);
+                this.css.innerHTML += this.replaceAll(Style.cssTemplate, new Map([
+                    ['selector', h.element.id],
+                    ['reason', this.replaceAll(h.reason, new Map([[`'`, ``]]))],
+                    ['direction', pos > 70 ? 'right' : 'left'],
+                ]));
+            }
+            p.removeChild(child);
         }
 
         clear() {

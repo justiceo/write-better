@@ -66,7 +66,7 @@ describe('browser with extension', () => {
         document.querySelectorAll('span.writebetter-highlight').forEach(e => hs.push(e.textContent))
         return hs;
       });
-      const texts = ['So', 'obviously', 'utilize', 'really', 'been marked', 'It goes without saying'];
+      const texts = ['So', 'There is', 'obviously', 'utilize', 'really', 'been marked', 'It goes without saying'];
       expect(highlights).toEqual(texts);
 
       await page.close();
