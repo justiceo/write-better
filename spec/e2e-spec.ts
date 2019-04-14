@@ -48,7 +48,6 @@ describe('browser with extension', () => {
     });
   });
 
-
   describe('writebetter test doc', () => {
     it('should have writebetter test doc in title', async () => {
       const page = await browser.newPage();
@@ -73,4 +72,22 @@ describe('browser with extension', () => {
       await page.close();
     });
   });
+
+  describe('so the cat was stolen', () => {
+    it('highlights shouldn not start or end with spaces', async () => {
+      const page = await browser.newPage();
+      await page.goto('https://docs.google.com/document/d/1KRKs0GgRej236vk0hAE4CMA_JcC0VWYdIr459V2n25I');
+
+      const highlights: string[] = await page.evaluate(() => {
+        const hs: string[] = [];
+        document.querySelectorAll('span.writebetter-highlight').forEach(e => hs.push(e.textContent))
+        return hs;
+      });
+      highlights.forEach(h => {
+        expect(h).toBe(h.trim());
+      });
+
+      await page.close();
+    });
+  })
 });
