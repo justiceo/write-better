@@ -125,7 +125,7 @@ export namespace WriteBetter {
             this.element = elem;
             let children = this.textNodes(elem);
             children.forEach((e: Text) => {
-                if (e.textContent) {
+                if (e.textContent.trim()) {
                     this.children.push(new Segment(e.parentElement));
                 }
             });
@@ -174,19 +174,23 @@ export namespace WriteBetter {
             return []
         }
 
-        applySuggestion(suggestion: Suggestion): void {
-            this.highlights.push(WriteBetterUI.Highlight.of(this, suggestion));
+        applySuggestions(suggestions: Suggestion[]): void {
+            suggestions.forEach(s => this.highlights.push(WriteBetterUI.Highlight.of(this, s)));
             WriteBetterUI.Style.getInstance().highlight(this);
-            console.info('applied suggestion', suggestion, 'on text: ', this.getText());
+            console.info('applied suggestion', suggestions, 'on text: ', this.getText());
         }
     }
 
     export const propagateSuggestions = (node: Node, suggestions: Suggestion[]) => {
         console.group(node, 'suggestions', suggestions);
         if (node instanceof Segment) {
-            suggestions.forEach(s => node.applySuggestion(s));
+            node.applySuggestions(suggestions);
             console.groupEnd();
             return;
+        }
+
+        if (node instanceof Paragraph) {
+            suggestions = node.getSuggestions();
         }
 
         node.getChildren().forEach(c => {
@@ -202,7 +206,9 @@ export namespace WriteBetter {
                     childSuggestions.push({ index: s.index - index, offset: s.offset, reason: s.reason });
                 }
             });
-            propagateSuggestions(c, childSuggestions);
+            if (childSuggestions.length > 0){
+                propagateSuggestions(c, childSuggestions);
+            }
         });
         console.groupEnd();
     }

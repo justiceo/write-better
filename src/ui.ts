@@ -22,18 +22,32 @@ export namespace WriteBetterUI {
         }
 
         highlight(node: WriteBetter.Segment): void {
-            if (node.highlights.length > 1) {
+            if (node.highlights.length > 1 || node.highlights.length == 0) {
                 return;
             }
             // TODO: use the highlight with lowest recall.
             let h = node.highlights[0];
 
             // append this element to the dom.
+            // TODO: assert that p has only one child text node.
             let p = node.getElement();
-            p.removeChild(p.firstChild);
-            p.prepend(document.createTextNode(h.fullText.substring(h.index + h.offset, h.fullText.length - 1))); // Include end to avoid zero-width char &#8203;
-            p.prepend(h.element);
-            p.prepend(document.createTextNode(h.fullText.substring(0, h.index)));
+
+            // find the textnode and replace it. At its index, insert pre+highlight+post elements
+            let child: ChildNode;
+            for(let c of p.childNodes) {
+                if (c.nodeType == 3) {
+                    child = c
+                    break;
+                }
+            }
+            if(!child) {
+                console.error('could not find child text node for', node);
+                return;
+            }
+            p.insertBefore(document.createTextNode(h.fullText.substring(0, h.index)),child);
+            p.insertBefore(h.element, child);
+            p.insertBefore(document.createTextNode(h.fullText.substring(h.index + h.offset, h.fullText.length - 1)), child); // Include end to avoid zero-width char &#8203;
+            p.removeChild(child);
 
             // add the css rules for this highlight.
             const d = WriteBetter.Doc.getInstance().getElement().getBoundingClientRect();
@@ -91,7 +105,7 @@ export namespace WriteBetterUI {
             h.index = suggestion.index;
             h.offset = suggestion.offset;
             h.fullText = node.getText();
-            h = Highlight.patch(h);
+            // h = Highlight.patch(h);
 
             // create an element that wraps the suggestion.
             let el = document.createElement('span');

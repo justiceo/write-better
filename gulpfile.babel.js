@@ -36,7 +36,6 @@ const compileTests = () => {
     return gulp.src(testSrc)
         .pipe(ts({
             noImplicitAny: true,
-            target: 'es6',
         }))
         .pipe(gulp.dest('spec'));
 }
