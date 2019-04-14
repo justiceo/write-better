@@ -70,7 +70,7 @@ const runTest = () => {
         jasmine.onComplete(passed => {
             // multiple execute calls on jasmine env errors. See https://github.com/jasmine/jasmine/issues/1231#issuecomment-26404527
             jasmine.specFiles.forEach(f => decache(f));
-            passed ? resolve() : reject();
+            resolve();
         });
         jasmine.execute();
     });
