@@ -42,7 +42,7 @@ const init = () => {
 
 const analyze = () => {
     console.groupCollapsed('propagate suggestions:');
-    let doc = WriteBetter.Doc.getInstance();
+    let doc = new WriteBetter.Doc(document.querySelector(WriteBetter.Doc.QuerySelector));
     WriteBetter.propagateSuggestions(doc, doc.getSuggestions());
     console.groupEnd();
 }

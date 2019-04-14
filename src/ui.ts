@@ -22,7 +22,7 @@ export namespace WriteBetterUI {
         }
 
         highlight(node: WriteBetter.Segment): void {
-            if (node.highlights.length > 1 || node.highlights.length == 0) {
+            if (node.highlights.length == 0) {
                 return;
             }
             // TODO: use the highlight with lowest recall.
