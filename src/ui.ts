@@ -91,6 +91,7 @@ export namespace WriteBetterUI {
             h.index = suggestion.index;
             h.offset = suggestion.offset;
             h.fullText = node.getText();
+            h = Highlight.patch(h);
 
             // create an element that wraps the suggestion.
             let el = document.createElement('span');
@@ -98,6 +99,33 @@ export namespace WriteBetterUI {
             el.id = Style.uniqueSelector();
             el.classList.add('writebetter-highlight');
             h.element = el;
+            return h;
+        }
+
+        // TODO: With correct implementation, we should be able to do away with this patch.
+        static patch(h: Highlight): Highlight {
+            const err = h.fullText.substr(h.index, h.offset);
+            if (err === err.trim() && h.reason.startsWith(`"${err}"`)) {
+                return h;
+            }
+
+            if (err.startsWith(' ')) {
+                const err = h.fullText.substr(h.index + 1, h.offset);
+                if (err === err.trim() && h.reason.startsWith(`"${err}"`)) {
+                    h.index++;
+                    return h;
+                }
+            }
+
+            if (err.endsWith(' ')) {
+                const err = h.fullText.substr(h.index - 1, h.offset);
+                if (err === err.trim() && h.reason.startsWith(`"${err}"`)) {
+                    h.index--;
+                    return h;
+                }
+            }
+
+            console.warn('Using potentially bad highlight: ', h);
             return h;
         }
     }
