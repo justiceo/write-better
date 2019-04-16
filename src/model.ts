@@ -20,6 +20,10 @@ export namespace WriteBetter {
     export abstract class AbsNode implements Node {
         element: HTMLElement;
 
+        constructor(elem: HTMLElement) {
+            this.element = elem;
+        }
+
         getText(): string {
             // InnerText appproximates the rendered text of the element 
             // Text is just a concatenation of the text nodes. Not away of breaks etc.
@@ -52,30 +56,7 @@ export namespace WriteBetter {
         static QuerySelector: string = '.kix-paginateddocumentplugin';
 
         constructor() {
-            super();
-            this.element = document.querySelector(Doc.QuerySelector);
-            if (!this.element) {
-                throw 'Doc.New: input element cannot be falsy';
-            }
-        }
-
-        getChildren(): Node[] {
-            let children = [];
-            this.element.querySelectorAll(Page.QuerySelector).forEach((e: Element) => {
-                if ((e as HTMLElement).innerText.trim()) {
-                    children.push(new Page(e as HTMLElement));
-                }
-            });
-            return children;
-        }
-    }
-
-    export class Page extends AbsNode {
-        static QuerySelector: string = ':scope .kix-page-content-wrapper';
-
-        constructor(elem: HTMLElement) {
-            super();
-            this.element = elem;
+            super(document.querySelector(Doc.QuerySelector));
         }
 
         getChildren(): Node[] {
@@ -92,11 +73,6 @@ export namespace WriteBetter {
     export class Paragraph extends AbsNode {
         static QuerySelector: string = ':scope .kix-paragraphrenderer';
 
-        constructor(elem: HTMLElement) {
-            super();
-            this.element = elem;
-        }
-
         getChildren(): Node[] {
             let children: Line[] = [];
             this.element.querySelectorAll(Line.QuerySelector).forEach((e: Element) => {
@@ -111,14 +87,9 @@ export namespace WriteBetter {
     export class Line extends AbsNode {
         static QuerySelector: string = ':scope .kix-lineview';
 
-        constructor(elem: HTMLElement) {
-            super();
-            this.element = elem;
-        }
-
         getChildren(): Node[] {
             let children: Segment[] = [];
-            this.textNodes(this.element).forEach((e: Text) => {
+            Line.textNodes(this.element).forEach((e: Text) => {
                 if (e.textContent.trim()) {
                     children.push(new Segment(e.parentElement));
                 }
@@ -126,11 +97,7 @@ export namespace WriteBetter {
             return children;
         }
 
-        getQuerySelector(): string {
-            return Line.QuerySelector;
-        }
-
-        textNodes(el: HTMLElement): Text[] {
+        static textNodes(el: HTMLElement): Text[] {
             const textNodes: Text[] = [];
             const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
             let n: xNode;
@@ -147,8 +114,7 @@ export namespace WriteBetter {
         highlights: WriteBetterUI.Highlight[] = [];
 
         constructor(elem: HTMLElement) {
-            super();
-            this.element = elem;
+            super(elem);
             let count = 0;
             elem.childNodes.forEach(c => {
                 if (c.nodeType == 3) {
