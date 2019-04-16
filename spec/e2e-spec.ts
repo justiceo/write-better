@@ -19,7 +19,7 @@ describe('browser with extension', () => {
   describe('writebetter test doc', () => {
     it('writebetter-highlights', async () => {
       const page = await browser.newPage();
-      await page.setViewport({width: 1200, height: 900});
+      await page.setViewport({ width: 1200, height: 900 });
       await page.goto('https://docs.google.com/document/d/1KX_6FahTxjSIDIh07LdfIt4dfik0_S1OTzNvQsD3YOc');
 
       expect(await page.title()).toBe('WriteBetter Test Doc - Google Docs');
@@ -35,12 +35,21 @@ describe('browser with extension', () => {
 
       await page.close();
     }, 10000);
+
+    xit('should take screenshot', async () => {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1200, height: 900 });
+      await page.goto('https://docs.google.com/document/d/1KX_6FahTxjSIDIh07LdfIt4dfik0_S1OTzNvQsD3YOc');
+      await page.waitFor(1000);
+      await page.screenshot({ path: 'assets/images/screenshot.png' });
+      await page.close();
+    }, 10000);
   });
 
   describe('so the cat was stolen', () => {
     it('highlights shouldn not start or end with spaces', async () => {
       const page = await browser.newPage();
-      await page.setViewport({width: 1200, height: 400});
+      await page.setViewport({ width: 1200, height: 400 });
       await page.goto('https://docs.google.com/document/d/1KRKs0GgRej236vk0hAE4CMA_JcC0VWYdIr459V2n25I');
 
       const highlights: string[] = await page.evaluate(() => {
@@ -54,7 +63,7 @@ describe('browser with extension', () => {
 
       // Increase the viewport hieight to simulate a scroll event that exposes more content at bottom. 
       // Actually event fired is a resize event but that works too.
-      await page.setViewport({width: 1200, height: 1900});
+      await page.setViewport({ width: 1200, height: 1900 });
       await page.waitFor(2000);
 
       const moreHiglights: string[] = await page.evaluate(() => {
