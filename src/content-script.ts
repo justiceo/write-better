@@ -31,7 +31,7 @@ const init = () => {
     // TODO: needs a ways to stop this when plugin is disabled (though disabling not part of v1.).
     let prevContent = '';
     setInterval(() => {
-        const curr = WriteBetter.Doc.getInstance().getText();
+        const curr = new WriteBetter.Doc().getText();
         if (curr != prevContent) {
             console.log('content changed: re-analyzing doc.')
             prevContent = curr
@@ -42,7 +42,7 @@ const init = () => {
 
 const analyze = () => {
     console.groupCollapsed('propagate suggestions:');
-    let doc = new WriteBetter.Doc(document.querySelector(WriteBetter.Doc.QuerySelector));
+    let doc = new WriteBetter.Doc();
     WriteBetter.propagateSuggestions(doc, doc.getSuggestions());
     console.groupEnd();
 }

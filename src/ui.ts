@@ -25,7 +25,7 @@ export namespace WriteBetterUI {
             if (node.highlights.length == 0) {
                 return;
             }
-            
+
             node.highlights.sort((a, b) => {
                 if (a.index < b.index) return -1;
                 if (a.index > b.index) return 1;
@@ -47,18 +47,18 @@ export namespace WriteBetterUI {
 
             // find the textnode and replace it. At its index, insert pre+highlight+post elements
             let child: ChildNode;
-            for(let c of p.childNodes) {
+            for (let c of p.childNodes) {
                 if (c.nodeType == 3) {
                     child = c
                     break;
                 }
             }
-            if(!child) {
+            if (!child) {
                 console.error('could not find child text node for', node);
                 return;
             }
 
-            const d = WriteBetter.Doc.getInstance().getElement().getBoundingClientRect();
+            const d = new WriteBetter.Doc().getElement().getBoundingClientRect();
             for (let i = 0; i < node.highlights.length; i++) {
                 const h = node.highlights[i];
                 // Insert the text up till the first highlight

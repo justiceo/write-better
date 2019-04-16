@@ -50,36 +50,28 @@ export namespace WriteBetter {
 
     export class Doc extends AbsNode {
         static QuerySelector: string = '.kix-paginateddocumentplugin';
-        children: Page[] = [];
-        static _instance: Doc;
 
-        constructor(elem: HTMLElement) {
+        constructor() {
             super();
-            if (!elem) {
+            this.element = document.querySelector(Doc.QuerySelector);
+            if (!this.element) {
                 throw 'Doc.New: input element cannot be falsy';
             }
-            this.element = elem;
-        }
-
-        static getInstance(): Doc {
-            return this._instance || (this._instance = new this(document.querySelector(Doc.QuerySelector)));
         }
 
         getChildren(): Node[] {
-            this.children = [];
-            let children: NodeListOf<Element> = this.element.querySelectorAll(Page.QuerySelector);
-            children.forEach((e: Element) => {
+            let children = [];
+            this.element.querySelectorAll(Page.QuerySelector).forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
-                    this.children.push(new Page(e as HTMLElement));
+                    children.push(new Page(e as HTMLElement));
                 }
             });
-            return this.children;
+            return children;
         }
     }
 
     export class Page extends AbsNode {
         static QuerySelector: string = ':scope .kix-page-content-wrapper';
-        children: Paragraph[] = [];
 
         constructor(elem: HTMLElement) {
             super();
@@ -87,20 +79,18 @@ export namespace WriteBetter {
         }
 
         getChildren(): Node[] {
-            this.children = [];
-            let children: NodeListOf<Element> = this.element.querySelectorAll(Paragraph.QuerySelector);
-            children.forEach((e: Element) => {
+            let children = [];
+            this.element.querySelectorAll(Paragraph.QuerySelector).forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
-                    this.children.push(new Paragraph(e as HTMLElement));
+                    children.push(new Paragraph(e as HTMLElement));
                 }
             });
-            return this.children;
+            return children;
         }
     }
 
     export class Paragraph extends AbsNode {
         static QuerySelector: string = ':scope .kix-paragraphrenderer';
-        children: Line[] = [];
 
         constructor(elem: HTMLElement) {
             super();
@@ -108,20 +98,18 @@ export namespace WriteBetter {
         }
 
         getChildren(): Node[] {
-            this.children = [];
-            let children: NodeListOf<Element> = this.element.querySelectorAll(Line.QuerySelector);
-            children.forEach((e: Element) => {
+            let children: Line[] = [];
+            this.element.querySelectorAll(Line.QuerySelector).forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
-                    this.children.push(new Line(e as HTMLElement));
+                    children.push(new Line(e as HTMLElement));
                 }
             });
-            return this.children;
+            return children;
         }
     }
 
     export class Line extends AbsNode {
         static QuerySelector: string = ':scope .kix-lineview';
-        children: Segment[] = [];
 
         constructor(elem: HTMLElement) {
             super();
@@ -129,14 +117,13 @@ export namespace WriteBetter {
         }
 
         getChildren(): Node[] {
-            this.children = []
-            let children = this.textNodes(this.element);
-            children.forEach((e: Text) => {
+            let children: Segment[] = [];
+            this.textNodes(this.element).forEach((e: Text) => {
                 if (e.textContent.trim()) {
-                    this.children.push(new Segment(e.parentElement));
+                    children.push(new Segment(e.parentElement));
                 }
             });
-            return this.children;
+            return children;
         }
 
         getQuerySelector(): string {
@@ -213,7 +200,7 @@ export namespace WriteBetter {
                     childSuggestions.push({ index: s.index - index, offset: s.offset, reason: s.reason });
                 }
             });
-            if (childSuggestions.length > 0){
+            if (childSuggestions.length > 0) {
                 propagateSuggestions(c, childSuggestions);
             }
         });
