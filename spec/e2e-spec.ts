@@ -61,6 +61,8 @@ describe('browser with extension', () => {
       const page = await browser.newPage();
       await page.goto('https://docs.google.com/document/d/1KX_6FahTxjSIDIh07LdfIt4dfik0_S1OTzNvQsD3YOc');
 
+      await page.waitFor(3000); // TODO: figure out why last element takes a second to display.
+
       const highlights: string[] = await page.evaluate(() => {
         const hs: string[] = [];
         document.querySelectorAll('span.writebetter-highlight').forEach(e => hs.push(e.textContent))
@@ -70,7 +72,7 @@ describe('browser with extension', () => {
       expect(highlights).toEqual(texts);
 
       await page.close();
-    });
+    }, 10000);
   });
 
   describe('so the cat was stolen', () => {

@@ -59,12 +59,6 @@ export namespace WriteBetter {
                 throw 'Doc.New: input element cannot be falsy';
             }
             this.element = elem;
-            let children: NodeListOf<Element> = this.element.querySelectorAll(Page.QuerySelector);
-            children.forEach((e: Element) => {
-                if ((e as HTMLElement).innerText.trim()) {
-                    this.children.push(new Page(e as HTMLElement));
-                }
-            });
         }
 
         static getInstance(): Doc {
@@ -72,6 +66,13 @@ export namespace WriteBetter {
         }
 
         getChildren(): Node[] {
+            this.children = [];
+            let children: NodeListOf<Element> = this.element.querySelectorAll(Page.QuerySelector);
+            children.forEach((e: Element) => {
+                if ((e as HTMLElement).innerText.trim()) {
+                    this.children.push(new Page(e as HTMLElement));
+                }
+            });
             return this.children;
         }
     }
@@ -83,15 +84,16 @@ export namespace WriteBetter {
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
+        }
+
+        getChildren(): Node[] {
+            this.children = [];
             let children: NodeListOf<Element> = this.element.querySelectorAll(Paragraph.QuerySelector);
             children.forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
                     this.children.push(new Paragraph(e as HTMLElement));
                 }
             });
-        }
-
-        getChildren(): Node[] {
             return this.children;
         }
     }
@@ -103,15 +105,16 @@ export namespace WriteBetter {
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
+        }
+
+        getChildren(): Node[] {
+            this.children = [];
             let children: NodeListOf<Element> = this.element.querySelectorAll(Line.QuerySelector);
             children.forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
                     this.children.push(new Line(e as HTMLElement));
                 }
             });
-        }
-
-        getChildren(): Node[] {
             return this.children;
         }
     }
@@ -123,15 +126,16 @@ export namespace WriteBetter {
         constructor(elem: HTMLElement) {
             super();
             this.element = elem;
-            let children = this.textNodes(elem);
+        }
+
+        getChildren(): Node[] {
+            this.children = []
+            let children = this.textNodes(this.element);
             children.forEach((e: Text) => {
                 if (e.textContent.trim()) {
                     this.children.push(new Segment(e.parentElement));
                 }
             });
-        }
-
-        getChildren(): Node[] {
             return this.children;
         }
 
@@ -175,6 +179,9 @@ export namespace WriteBetter {
         }
 
         applySuggestions(suggestions: Suggestion[]): void {
+            if (this.element.querySelector('span.writebetter-highlight') || this.element.classList.contains('writebetter-highlight')) {
+                return;
+            }
             suggestions.forEach(s => this.highlights.push(WriteBetterUI.Highlight.of(this, s)));
             WriteBetterUI.Style.getInstance().highlight(this);
             console.info('applied suggestion', suggestions, 'on text: ', this.getText());

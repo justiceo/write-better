@@ -35,7 +35,7 @@ const init = () => {
         if (curr != prevContent) {
             console.log('content changed: re-analyzing doc.')
             prevContent = curr
-            // analyze();
+            analyze();
         }
     }, 1000)
 }
