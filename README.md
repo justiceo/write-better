@@ -1,6 +1,8 @@
-# Write Better
+# ![logo](assets/images/quill-orange24.png) Write Better 
 
 An English language grammar checker for Google docs. A.K.A the chrome extension port of [Btford's WriteGood](https://github.com/btford/write-good) which is a bundling of different naive English language linters. I checked for grammatical errors on this README using WriteBetter ;)
+
+![Sample Suggestions](assets/images/screenshot1.png)
 
 ### Features
 * **Works Offline**: It comes packaged with all the resources needed to parse text, generate and display suggestions on Google docs. No worries it's under 100Kb in size! See how to [inspect requests made by chrome extensions](https://www.howtogeek.com/302558/how-do-you-monitor-requests-made-by-a-google-chrome-extension/) if you're curious about what data extensions are sending or requesting.
