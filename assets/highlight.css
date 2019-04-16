@@ -35,7 +35,7 @@ span.writebetter-highlight:before {
     color: black;
     content: '';
     font-size: 14px;
-    font-family: docs-Consolas;
+    font-family: docs-Consolas, monospace;
     padding: 10px 15px;
     bottom: 30px;
     white-space: nowrap;
