@@ -113,19 +113,6 @@ export namespace WriteBetter {
     export class Segment extends AbsNode {
         highlights: WriteBetterUI.Highlight[] = [];
 
-        constructor(elem: HTMLElement) {
-            super(elem);
-            let count = 0;
-            elem.childNodes.forEach(c => {
-                if (c.nodeType == 3) {
-                    count++;
-                }
-            })
-            if (count != 1) {
-                console.error(`Segment.constructor: segment has ${elem.childElementCount} text nodes expected 1`);
-            }
-        }
-
         getChildren(): Node[] {
             console.error('Segment.getChildren: segment is intended to be used as text node and should not have children');
             return []
