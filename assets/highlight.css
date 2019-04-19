@@ -24,6 +24,7 @@ span.writebetter-highlight:after {
     left: 5px;
     transform: translate3d(0, 6px, 0);
     transition: all .1s ease-in-out;
+    display: none;
 }
 
 span.writebetter-highlight:before {
@@ -41,6 +42,7 @@ span.writebetter-highlight:before {
     white-space: nowrap;
     transform: scale3d(.2, .2, 1);
     transition: all .2s ease-in-out;
+    display: none;
 }
 
 span.writebetter-highlight:hover {
@@ -51,6 +53,7 @@ span.writebetter-highlight:hover:before,
 span.writebetter-highlight:hover:after {
     opacity: 1;
     transform: scale3d(1, 1, 1);
+    display: inline;
 }
 
 span.writebetter-highlight:hover:after {
