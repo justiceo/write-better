@@ -14,6 +14,7 @@ export namespace WriteBetter {
         getElement: () => HTMLElement;
         getChildren: () => Node[];
         getSuggestions: () => Suggestion[];
+        propagateSuggestions: (...suggestions: Suggestion[]) => void;
         visit: <T>(fn: (node: Node, prev: T[]) => T[], prev: T[]) => void
     }
 
@@ -50,6 +51,7 @@ export namespace WriteBetter {
         }
 
         abstract getChildren(): Node[];
+        abstract propagateSuggestions(...suggestions: Suggestion[]): void;
     }
 
     export class Doc extends AbsNode {
@@ -60,13 +62,17 @@ export namespace WriteBetter {
         }
 
         getChildren(): Node[] {
-            let children = [];
+            let children: Paragraph[] = [];
             this.element.querySelectorAll(Paragraph.QuerySelector).forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
                     children.push(new Paragraph(e as HTMLElement));
                 }
             });
             return children;
+        }
+
+        propagateSuggestions(..._: Suggestion[]) {
+            this.getChildren().forEach(c => c.propagateSuggestions());
         }
     }
 
@@ -82,6 +88,27 @@ export namespace WriteBetter {
             });
             return children;
         }
+
+        propagateSuggestions(...suggestions: Suggestion[]) {
+            suggestions.push(...this.getSuggestions());
+            this.getChildren().forEach(c => {
+                const childSuggestions: Suggestion[] = []
+                suggestions.forEach(s => {
+                    // TODO: need to handle case when there are multiple matches.
+                    const index = this.getText().indexOf(c.getText(), 0);
+                    if (index === -1) {
+                        console.warn(`propagateSuggestions: could not find child ${c.getElement().nodeName} in ${this.getElement().nodeName} with text: ${c.getText()}`);
+                        return;
+                    }
+                    if (s.index >= index && (s.index + s.offset <= index + c.getText().length)) {
+                        childSuggestions.push({ index: s.index - index, offset: s.offset, reason: s.reason });
+                    }
+                });
+                if (childSuggestions.length > 0) {
+                    c.propagateSuggestions(...childSuggestions);
+                }
+            });
+        }
     }
 
     export class Line extends AbsNode {
@@ -95,6 +122,26 @@ export namespace WriteBetter {
                 }
             });
             return children;
+        }
+
+        propagateSuggestions(...suggestions: Suggestion[]) {
+            this.getChildren().forEach(c => {
+                const childSuggestions: Suggestion[] = []
+                suggestions.forEach(s => {
+                    // TODO: need to handle case when there are multiple matches.
+                    const index = this.getText().indexOf(c.getText(), 0);
+                    if (index === -1) {
+                        console.warn(`propagateSuggestions: could not find child ${c.getElement().nodeName} in ${this.getElement().nodeName} with text: ${c.getText()}`);
+                        return;
+                    }
+                    if (s.index >= index && (s.index + s.offset <= index + c.getText().length)) {
+                        childSuggestions.push({ index: s.index - index, offset: s.offset, reason: s.reason });
+                    }
+                });
+                if (childSuggestions.length > 0) {
+                    c.propagateSuggestions(...childSuggestions);
+                }
+            });
         }
 
         static textNodes(el: HTMLElement): Text[] {
@@ -118,45 +165,13 @@ export namespace WriteBetter {
             return []
         }
 
-        applySuggestions(suggestions: Suggestion[]): void {
+        propagateSuggestions(...suggestions: Suggestion[]) {
             if (this.element.querySelector('span.writebetter-highlight') || this.element.classList.contains('writebetter-highlight')) {
                 return;
             }
-            suggestions.forEach(s => this.highlights.push(WriteBetterUI.Highlight.of(this, s)));
+            this.highlights = suggestions.map(s => WriteBetterUI.Highlight.of(this, s));
             WriteBetterUI.Style.getInstance().highlight(this);
             console.info('applied suggestion', suggestions, 'on text: ', this.getText());
         }
-    }
-
-    export const propagateSuggestions = (node: Node, suggestions: Suggestion[]) => {
-        console.group(node, 'suggestions', suggestions);
-        if (node instanceof Segment) {
-            node.applySuggestions(suggestions);
-            console.groupEnd();
-            return;
-        }
-
-        if (node instanceof Paragraph) {
-            suggestions = node.getSuggestions();
-        }
-
-        node.getChildren().forEach(c => {
-            const childSuggestions: Suggestion[] = []
-            suggestions.forEach(s => {
-                // TODO: need to handle case when there are multiple matches.
-                const index = node.getText().indexOf(c.getText(), 0);
-                if (index === -1) {
-                    console.warn(`propagateSuggestions: could not find child ${c.getElement().nodeName} in ${node.getElement().nodeName} with text: ${c.getText()}`);
-                    return;
-                }
-                if (s.index >= index && (s.index + s.offset <= index + c.getText().length)) {
-                    childSuggestions.push({ index: s.index - index, offset: s.offset, reason: s.reason });
-                }
-            });
-            if (childSuggestions.length > 0) {
-                propagateSuggestions(c, childSuggestions);
-            }
-        });
-        console.groupEnd();
     }
 }
