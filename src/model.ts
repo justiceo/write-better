@@ -164,13 +164,13 @@ export namespace WriteBetter {
     }
 
     // Segment is the immediate parent of a text node. 
-    // Its only child is the text node and it should be treated as a textnode.
+    // It may have multiple text and element nodes under it.
     export class Segment extends AbsNode {
         highlights: WriteBetterUI.Highlight[] = [];
 
         getChildren(): Node[] {
-            console.error('Segment.getChildren: segment is intended to be used as text node and should not have children');
-            return []
+            console.error('Segment.getChildren: segment should be treated as a leaf');
+            return [];
         }
 
         propagateSuggestions(...suggestions: Suggestion[]) {

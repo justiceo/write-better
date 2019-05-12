@@ -26,6 +26,7 @@ export namespace WriteBetterUI {
                 return;
             }
 
+            // Ensure that highlights are sorted before begining to append to the dom.
             node.highlights.sort((a, b) => {
                 if (a.index < b.index) return -1;
                 if (a.index > b.index) return 1;
@@ -41,11 +42,10 @@ export namespace WriteBetterUI {
                 }
             }
 
-            // append this element to the dom.
-            // TODO: assert that p has only one child text node.
             let p = node.getElement();
 
             // find the textnode and replace it. At its index, insert pre+highlight+post elements
+            // TODO: handle the case of multiple child text nodes
             let child: ChildNode;
             for (let c of p.childNodes) {
                 if (c.nodeType == 3) {
@@ -58,12 +58,13 @@ export namespace WriteBetterUI {
                 return;
             }
 
+            const text = child.textContent;
             const d = new WriteBetter.Doc().getElement().getBoundingClientRect();
             for (let i = 0; i < node.highlights.length; i++) {
                 const h = node.highlights[i];
                 // Insert the text up till the first highlight
                 if (i == 0) {
-                    p.insertBefore(document.createTextNode(h.fullText.substring(0, h.index)), child);
+                    p.insertBefore(document.createTextNode(text.substring(0, h.index)), child);
                 }
 
                 // Insert the highlight;
@@ -72,9 +73,9 @@ export namespace WriteBetterUI {
                 // Insert the text between this highlight and next
                 if (i < node.highlights.length - 1) {
                     const hnext = node.highlights[i + 1];
-                    p.insertBefore(document.createTextNode(h.fullText.substring(h.index + h.offset, hnext.index)), child);
+                    p.insertBefore(document.createTextNode(text.substring(h.index + h.offset, hnext.index)), child);
                 } else {
-                    p.insertBefore(document.createTextNode(h.fullText.substring(h.index + h.offset, h.fullText.length - 1)), child); // Include end to avoid zero-width char &#8203;
+                    p.insertBefore(document.createTextNode(text.substring(h.index + h.offset)), child); 
                 }
                 // add the css rules for this highlight.
                 const pos = 100 * h.element.getBoundingClientRect().left / (d.left + d.width);
@@ -124,7 +125,8 @@ export namespace WriteBetterUI {
         reason: string;
         index: number;
         offset: number;
-        fullText: string;
+        // TODO: deprecate this field to avoid misuse.
+        fullText: string; // Includes the whitespace from g-inline-block breaker and other text nodes if there are multiple.
         element: HTMLSpanElement;
 
         static of(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): Highlight {
