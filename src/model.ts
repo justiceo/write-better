@@ -13,7 +13,7 @@ export namespace WriteBetter {
         getText: () => string;
         getElement: () => HTMLElement;
         getChildren: () => Node[];
-        getSuggestions: () => Suggestion[];
+        getSuggestions: () => Promise<Suggestion[]>;
         propagateSuggestions: (...suggestions: Suggestion[]) => void;
         visit: <T>(fn: (node: Node, prev: T[]) => T[], prev: T[]) => void
     }
@@ -36,8 +36,8 @@ export namespace WriteBetter {
             return this.element;
         }
 
-        getSuggestions(): Suggestion[] {
-            return writeGood(this.getText());
+        async getSuggestions(): Promise<Suggestion[]> {
+            return Promise.resolve(writeGood(this.getText()));
         }
 
         visit<T>(fn: (node: Node, prev: T[]) => T[], prev: T[]): void {
@@ -94,8 +94,11 @@ export namespace WriteBetter {
             return children;
         }
 
-        propagateSuggestions(...suggestions: Suggestion[]) {
-            suggestions.push(...this.getSuggestions());
+        async propagateSuggestions(...suggestions: Suggestion[]) {
+            const paragraphSuggestions = await this.getSuggestions();
+            // Cut the CPU some slack in case the above operation hit too hard (think large paragraphs).
+            await new Promise(resolve => setTimeout(resolve, 50));
+            suggestions.push(...paragraphSuggestions);
             this.getChildren().forEach(c => {
                 const childSuggestions: Suggestion[] = []
                 suggestions.forEach(s => {
