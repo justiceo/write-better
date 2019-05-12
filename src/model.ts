@@ -72,6 +72,11 @@ export namespace WriteBetter {
         }
 
         propagateSuggestions(..._: Suggestion[]) {
+            // For page performance reasons, ignore large documents.
+            if (this.getText().length > 4000) {
+                console.log("Document too large. Character count:", this.getText().length);
+                return;
+            }
             this.getChildren().forEach(c => c.propagateSuggestions());
         }
     }
