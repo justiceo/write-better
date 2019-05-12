@@ -42,8 +42,7 @@ const init = () => {
 
 const analyze = () => {
     console.groupCollapsed('propagate suggestions:');
-    let doc = new WriteBetter.Doc();
-    WriteBetter.propagateSuggestions(doc, doc.getSuggestions());
+    new WriteBetter.Doc().propagateSuggestions();
     console.groupEnd();
 }
 
