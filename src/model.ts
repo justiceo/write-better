@@ -60,7 +60,7 @@ export namespace WriteBetter {
         }
 
         getChildren(): Node[] {
-            let children = [];
+            let children: Paragraph[] = [];
             this.element.querySelectorAll(Paragraph.QuerySelector).forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
                     children.push(new Paragraph(e as HTMLElement));
