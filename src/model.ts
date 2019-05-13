@@ -1,7 +1,9 @@
 import { WriteBetterUI } from './ui';
+import { Log } from './shared';
 const writeGood: (input: string) => WriteBetter.Suggestion[] = require('write-good');
 type xNode = Node;
 
+const TAG = 'model.ts';
 export namespace WriteBetter {
     export class Suggestion {
         index: number
@@ -74,7 +76,7 @@ export namespace WriteBetter {
         propagateSuggestions(..._: Suggestion[]) {
             // For page performance reasons, ignore large documents.
             if (this.getText().length > 4000) {
-                console.log("Document too large. Character count:", this.getText().length);
+                Log.debug(TAG, "Document too large. Character count:", this.getText().length);
                 return;
             }
             this.getChildren().forEach(c => c.propagateSuggestions());
@@ -169,7 +171,7 @@ export namespace WriteBetter {
         highlights: WriteBetterUI.Highlight[] = [];
 
         getChildren(): Node[] {
-            console.error('Segment.getChildren: segment should be treated as a leaf');
+            Log.error(TAG, 'Segment.getChildren: segment should be treated as a leaf');
             return [];
         }
 
@@ -179,7 +181,6 @@ export namespace WriteBetter {
             }
             this.highlights = suggestions.map(s => WriteBetterUI.Highlight.of(this, s));
             WriteBetterUI.Style.getInstance().highlight(this);
-            console.info('applied suggestion', suggestions, 'on text: ', this.getText());
         }
     }
 }

@@ -1,6 +1,6 @@
 import { WriteBetter } from './model';
 import { WriteBetterUI } from './ui';
-import { Message } from './shared';
+import { Message, Log } from './shared';
 
 const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
     console.debug('content-script received message: ', msg.type);
@@ -33,7 +33,7 @@ const init = () => {
     setInterval(() => {
         const curr = new WriteBetter.Doc().getText();
         if (curr != prevContent) {
-            console.log('content changed: re-analyzing doc.')
+            Log.debug('contentscript.js', 'content changed: re-analyzing doc.')
             prevContent = curr
             analyze();
         }
@@ -41,9 +41,7 @@ const init = () => {
 }
 
 const analyze = () => {
-    console.groupCollapsed('propagate suggestions:');
     new WriteBetter.Doc().propagateSuggestions();
-    console.groupEnd();
 }
 
 chrome.runtime.onMessage.addListener(onMessage);

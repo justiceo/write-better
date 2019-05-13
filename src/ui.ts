@@ -1,4 +1,7 @@
 import { WriteBetter } from './model';
+import { Log } from './shared';
+
+const TAG = "ui.ts";
 
 export namespace WriteBetterUI {
     export class Style {
@@ -54,7 +57,7 @@ export namespace WriteBetterUI {
                 }
             }
             if (!child) {
-                console.error('could not find child text node for', node);
+                Log.error(TAG, 'could not find child text node for', node);
                 return;
             }
 
@@ -75,7 +78,7 @@ export namespace WriteBetterUI {
                     const hnext = node.highlights[i + 1];
                     p.insertBefore(document.createTextNode(text.substring(h.index + h.offset, hnext.index)), child);
                 } else {
-                    p.insertBefore(document.createTextNode(text.substring(h.index + h.offset)), child); 
+                    p.insertBefore(document.createTextNode(text.substring(h.index + h.offset)), child);
                 }
                 // add the css rules for this highlight.
                 const pos = 100 * h.element.getBoundingClientRect().left / (d.left + d.width);
@@ -90,7 +93,7 @@ export namespace WriteBetterUI {
 
         clear() {
             this.css.remove();
-            console.log(`removed css file from document: ${this.css.id}`)
+            Log.debug(TAG, `removed css file from document: ${this.css.id}`)
         }
 
         replaceAll(input: string, pairs: Map<string, string>): string {
@@ -107,7 +110,7 @@ export namespace WriteBetterUI {
                     return sheet;
                 }
             }
-            console.error('getSheet: no sheet found')
+            Log.error(TAG, 'getSheet: no sheet found')
             return null;
         }
 
@@ -169,7 +172,7 @@ export namespace WriteBetterUI {
                 }
             }
 
-            console.warn('Using potentially bad highlight: ', h);
+            Log.debug(TAG, 'using potentially bad highlight: ', h);
             return h;
         }
     }
