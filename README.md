@@ -23,8 +23,14 @@ An English language grammar checker for Google docs. A.K.A the chrome extension 
 git clone http://github.com/justiceo/write-better  
 # install dependencies 
 cd write-better && npm install  
-# produces an installable extension directory                    
-gulp build                                          
+# create an installable extension directory                    
+gulp build
+# create a release       
+git checkout release
+git rebase master
+gulp clean
+gulp build
+zip -r extension.zip extension -x "*.DS_Store"
 ```
 
 Extension directory would be in write-better/extension. See how to [load an unpacked extension](https://developer.chrome.com/extensions/getstarted#manifest) in chrome.
