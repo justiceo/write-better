@@ -1,5 +1,7 @@
 # ![logo](assets/images/quill-orange24.png) Write Better 
 
+[![Build Status](https://travis-ci.org/justiceo/write-better.svg?branch=master)](https://travis-ci.org/justiceo/write-better)
+
 An English language grammar checker for Google docs. A.K.A the chrome extension port of [Btford's WriteGood](https://github.com/btford/write-good) which is a bundling of different naive English language linters. I checked for grammatical errors on this README using WriteBetter ;)
 
 ![Sample Suggestions](assets/images/screenshot1.png)
