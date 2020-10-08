@@ -20,22 +20,48 @@ An English language grammar checker for Google docs. A.K.A the chrome extension 
 
 
 ### Build the extension locally
+
+1. Download the repo
+
 ```
-# download the repo
 git clone http://github.com/justiceo/write-better  
-# install dependencies 
-cd write-better && npm install  
-# create an installable extension directory                    
-gulp build
-# create a release       
-git checkout release
-git rebase master
-gulp clean
-gulp build
-zip -r extension.zip extension -x "*.DS_Store"
 ```
 
+2. Install dependencies 
+
+```
+cd write-better && npm install  
+```
+
+3. Build the extension
+
+```
+gulp build
+```
 Extension directory would be in write-better/extension. See how to [load an unpacked extension](https://developer.chrome.com/extensions/getstarted#manifest) in chrome.
+
+### Other tasks
+
+4. Test the extension
+
+```
+gulp test
+```
+
+5. Start the build in live-reload mode
+
+```
+gulp
+```
+
+6. Create a release-able extension
+
+```
+git checkout -b release                         # Not necessary but preferable.
+gulp clean                                      # Remove any artifacts from old builds and watch
+gulp build                                      # Build the extension
+zip -r extension.zip extension -x "*.DS_Store"  # Zip it up and upload to chrome dashboard.
+```
 
 
 ### Feedback

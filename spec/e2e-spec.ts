@@ -5,9 +5,10 @@ describe('browser with extension', () => {
   beforeAll(async () => {
     browser = await puppeteer.launch({
       headless: false,
+      ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
       args: [
-        `--disable-extensions-except=/Users/justiceo/code/chrome/write-better/extension`,
-        `--load-extension=/Users/justiceo/code/chrome/write-better/extension`,
+        `--disable-extensions-except=${process.env.PWD}/extension`,
+        `--load-extension=${process.env.PWD}/extension`,
       ]
     });
   });
