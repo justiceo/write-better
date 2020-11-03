@@ -7,8 +7,8 @@ import ts from 'gulp-typescript';
 import Jasmine from 'jasmine';
 import decache from 'decache';
 
-const backgroundScripts = ['src/background-script/background.ts', 'src/shared/shared.ts'];
-const contentScripts = ['src/content-script/content-script.ts', 'src/content-script/model.ts','src/content-script/ui.ts', 'src/shared/shared.ts'];
+const backgroundScripts = ['src/background-script/background.ts'];
+const contentScripts = ['src/content-script/content-script.ts']; // Dependencies are pulled-in autoamtically.
 const testSpecs = ['spec/**/*.ts'];
 const assets = ['assets/**/*'];
 const outDir = './extension';
