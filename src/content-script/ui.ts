@@ -1,5 +1,5 @@
 import { WriteBetter } from './model';
-import { Log } from '../shared/shared';
+import { Log } from '../shared/log';
 
 const TAG = "ui.ts";
 

@@ -1,5 +1,5 @@
 import { WriteBetterUI } from './ui';
-import { Log } from '../shared/shared';
+import { Log } from '../shared/log';
 const writeGood: (input: string) => WriteBetter.Suggestion[] = require('write-good');
 type xNode = Node;
 
