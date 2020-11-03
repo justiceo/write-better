@@ -39,7 +39,11 @@ export namespace WriteBetter {
         }
 
         async getSuggestions(): Promise<Suggestion[]> {
-            return Promise.resolve(writeGood(this.getText()));
+            let text = this.getText(); 
+            if (text.replace(/\u200C/g, '').trim().length == 0) { // Necessary to replace zero-width non-joiner
+                return Promise.resolve([])
+            }       
+            return Promise.resolve( writeGood(text));
         }
 
         visit<T>(fn: (node: Node, prev: T[]) => T[], prev: T[]): void {

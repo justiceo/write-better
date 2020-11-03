@@ -96,5 +96,41 @@ describe('write-good', () => {
         expect(suggestion.offset).toBe(3, "Offset mismatch");
     });
 
+    it('identifiess multiple violations', () => {
+        let suggestions = writeGood(`So you think you can write? There is often room for improvement.
+
+        The app obviously highlights common errors. Mouse over for hints..  
+        
+        You can utilize a shorter word in place of a purple one.
+        
+        Adverbs are really shown in blue. Get rid of them and pick verbs with force instead.
+        
+        Phrases in orange have been marked to show passive voice.
+        
+        It goes without saying that amber identifies idioms, which we discourage.
+        `);
+        expect(suggestions.length).toBe(7);    
+    });
+
+    it('identifiess multiple violations with extra spaces in-between', () => {
+        let suggestions = writeGood(`So you think you can write? There   is often room for improvement.
+
+        The app   obviously   highlights common errors. Mouse over for hints..  
+        
+        Pertaining   to  wordiness, you can  utilize  a shorter word in place of a purple one.
+        
+        Adverbs are really shown in blue. Get rid of them and pick verbs with force instead.
+        
+        Phrases in orange have been    marked to show passive voice.
+        
+        It   goes without   saying that amber identifies idioms, which we discourage.
+        `);
+        expect(suggestions.length).toBe(8);    
+    });
+
     // TODO: Add known-edge cases here.
+    xit('edge: many not weasel after how', () => {
+        let suggestions = writeGood("How many people have signed up?");
+        expect(suggestions.length).toBe(0);
+    });
 });
