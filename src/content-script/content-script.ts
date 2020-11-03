@@ -1,6 +1,6 @@
 import { WriteBetter } from './model';
 import { WriteBetterUI } from './ui';
-import { Message, Log } from './shared';
+import { Message, Log } from '../shared/shared';
 
 const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
     console.debug('content-script received message: ', msg.type);

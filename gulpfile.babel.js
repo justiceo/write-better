@@ -7,24 +7,25 @@ import ts from 'gulp-typescript';
 import Jasmine from 'jasmine';
 import decache from 'decache';
 
-const bgSrc = ['src/background.ts', 'src/shared.ts'];
-const csSrc = ['src/content-script.ts', 'src/model.ts', 'src/shared.ts', 'src/ui.ts'];
-const testSrc = ['spec/**/*.ts'];
+const backgroundScripts = ['src/background-script/background.ts', 'src/shared/shared.ts'];
+const contentScripts = ['src/content-script/content-script.ts', 'src/content-script/model.ts','src/content-script/ui.ts', 'src/shared/shared.ts'];
+const testSpecs = ['spec/**/*.ts'];
 const assets = ['assets/**/*'];
 const outDir = './extension';
 
-const compileBgScript = () => {
+const compileBackgroundScript = () => {
     return browserify()
-        .add(bgSrc)
+        .add(backgroundScripts)
         .plugin(tsify, { noImplicitAny: true, target: 'es6' })
         .bundle()
         .on('error', (err) => { console.error(err) })
         .pipe(source('background.js'))
         .pipe(gulp.dest(outDir))
 }
+
 const compileContentScript = () => {
     return browserify()
-        .add(csSrc)
+        .add(contentScripts)
         .plugin(tsify, { noImplicitAny: true, target: 'es6' })
         .bundle()
         .on('error', (err) => { console.error(err) })
@@ -33,7 +34,7 @@ const compileContentScript = () => {
 }
 
 const compileTests = () => {
-    return gulp.src(testSrc)
+    return gulp.src(testSpecs)
         .pipe(ts({
             noImplicitAny: true,
         }))
@@ -46,10 +47,11 @@ export const copyAssets = () => {
 }
 
 const watchBackgroundScript = () => {
-    gulp.watch(bgSrc, gulp.parallel(compileBgScript));
+    gulp.watch(backgroundScripts, gulp.parallel(compileBackgroundScript));
 }
+
 const watchContentScript = () => {
-    gulp.watch(csSrc, gulp.parallel(compileContentScript));
+    gulp.watch(contentScripts, gulp.parallel(compileContentScript));
 }
 
 const watchAssets = () => {
@@ -57,7 +59,7 @@ const watchAssets = () => {
 }
 
 export const watchTests = () => {
-    return gulp.watch(testSrc, gulp.series(compileTests, runTest));
+    return gulp.watch(testSpecs, gulp.series(compileTests, runTest));
 }
 
 export const runTest = () => {
@@ -79,7 +81,7 @@ export const runTest = () => {
 export const clean = () => del([outDir]);
 clean.description = 'clean the output directory'
 
-export const build = gulp.parallel(copyAssets, compileBgScript, compileContentScript);
+export const build = gulp.parallel(copyAssets, compileBackgroundScript, compileContentScript);
 build.description = 'compile all sources'
 
 export const test = gulp.series(compileTests, runTest);
