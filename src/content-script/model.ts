@@ -22,6 +22,8 @@ export namespace WriteBetter {
 
     export abstract class AbsNode implements Node {
         element: HTMLElement;
+        static cache: Map<string, Suggestion[]> = new Map();
+
 
         constructor(elem: HTMLElement) {
             this.element = elem;
@@ -42,8 +44,18 @@ export namespace WriteBetter {
             let text = this.getText(); 
             if (text.replace(/\u200C/g, '').trim().length == 0) { // Necessary to replace zero-width non-joiner
                 return Promise.resolve([])
-            }       
-            return Promise.resolve( writeGood(text));
+            }
+
+            // Force clear cache. TODO: Be systematic about it, oldest first.
+            if (AbsNode.cache.size > 500) {
+                AbsNode.cache.clear()
+            }
+            
+            if (AbsNode.cache.has(text)) {
+                return Promise.resolve(AbsNode.cache.get(text))
+            }
+            AbsNode.cache.set(text, writeGood(text));
+            return Promise.resolve(AbsNode.cache.get(text));
         }
 
         visit<T>(fn: (node: Node, prev: T[]) => T[], prev: T[]): void {
@@ -62,6 +74,7 @@ export namespace WriteBetter {
 
     export class Doc extends AbsNode {
         static QuerySelector: string = '.kix-paginateddocumentplugin';
+        static PreviousText: string = null;
 
         constructor() {
             super(document.querySelector(Doc.QuerySelector));
@@ -78,12 +91,14 @@ export namespace WriteBetter {
         }
 
         propagateSuggestions(..._: Suggestion[]) {
-            // For page performance reasons, ignore large documents.
-            if (this.getText().length > 4000) {
-                Log.debug(TAG, "Document too large. Character count:", this.getText().length);
+            if (this.getText() == Doc.PreviousText) {
                 return;
             }
+            Doc.PreviousText = this.getText();
+
+            const t1 = performance.now();
             this.getChildren().forEach(c => c.propagateSuggestions());
+            Log.debug(TAG, "Re-analyzed whole doc in ", performance.now() - t1, "ms");
         }
     }
 
@@ -102,8 +117,6 @@ export namespace WriteBetter {
 
         async propagateSuggestions(...suggestions: Suggestion[]) {
             const paragraphSuggestions = await this.getSuggestions();
-            // Cut the CPU some slack in case the above operation hit too hard (think large paragraphs).
-            await new Promise(resolve => setTimeout(resolve, 50));
             suggestions.push(...paragraphSuggestions);
             this.getChildren().forEach(c => {
                 const childSuggestions: Suggestion[] = []

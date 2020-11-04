@@ -3,21 +3,21 @@ import { WriteBetterUI } from './ui';
 import { Log } from '../shared/log';
 import { Message } from '../shared/shared';
 
-const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
-    console.debug('content-script received message: ', msg.type);
-    if (msg.type === 'analyze_doc') {
-        init();
-        callback(true);
-    } else if (msg.type === 'cleanup') {
-        WriteBetterUI.Style.getInstance().clear();
-        window.removeEventListener('resize', resizeTask);
-    }
-}
-
+const TAG = "content-script.ts"
 let resizeTask: any = null;
 
+const analyze = () => {
+    const t1 = performance.now();
+    new WriteBetter.Doc().propagateSuggestions();
+    Log.debug(TAG, "Analyzed doc in ", performance.now() - t1, "ms");
+}
+
 const init = () => {
-    analyze();
+    // Automatically re-analyze doc every second.
+    // TODO: needs a ways to stop this when plugin is disabled (though disabling not part of v1.).
+    setInterval(analyze, 1000);
+
+    // When window is resized, force re-analyze doc. clear caches how?
     window.addEventListener('resize', () => {
         if (resizeTask !== null) {
             window.clearTimeout(resizeTask);
@@ -28,21 +28,17 @@ const init = () => {
             analyze();
         }, 1000);
     });
-
-    // TODO: needs a ways to stop this when plugin is disabled (though disabling not part of v1.).
-    let prevContent = '';
-    setInterval(() => {
-        const curr = new WriteBetter.Doc().getText();
-        if (curr != prevContent) {
-            Log.debug('contentscript.js', 'content changed: re-analyzing doc.')
-            prevContent = curr
-            analyze();
-        }
-    }, 1000)
 }
 
-const analyze = () => {
-    new WriteBetter.Doc().propagateSuggestions();
+const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (response?: any) => void) => {
+    console.debug('content-script received message: ', msg.type);
+    if (msg.type === 'analyze_doc') {
+        init();
+        callback(true);
+    } else if (msg.type === 'cleanup') {
+        WriteBetterUI.Style.getInstance().clear();
+        window.removeEventListener('resize', resizeTask);
+    }
 }
 
 chrome.runtime.onMessage.addListener(onMessage);
