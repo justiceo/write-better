@@ -1,15 +1,11 @@
 import { WriteBetterUI } from './ui';
 import { Log } from '../shared/log';
-const writeGood: (input: string) => WriteBetter.Suggestion[] = require('write-good');
+import { Suggestion } from './suggestion';
+const writeGood: (input: string) => Suggestion[] = require('write-good');
 type xNode = Node;
 
 const TAG = 'model.ts';
 export namespace WriteBetter {
-    export class Suggestion {
-        index: number
-        offset: number
-        reason: string
-    }
 
     export interface Node {
         getText: () => string;
@@ -185,7 +181,6 @@ export namespace WriteBetter {
     // Segment is the immediate parent of a text node. 
     // It may have multiple text and element nodes under it.
     export class Segment extends AbsNode {
-        highlights: WriteBetterUI.Highlight[] = [];
 
         getChildren(): Node[] {
             Log.error(TAG, 'Segment.getChildren: segment should be treated as a leaf');
@@ -196,8 +191,7 @@ export namespace WriteBetter {
             if (this.element.querySelector('span.writebetter-highlight') || this.element.classList.contains('writebetter-highlight')) {
                 return;
             }
-            this.highlights = suggestions.map(s => WriteBetterUI.Highlight.of(this, s));
-            WriteBetterUI.Style.getInstance().highlight(this);
+            WriteBetterUI.Style.getInstance().highlight(this, suggestions);
         }
     }
 }

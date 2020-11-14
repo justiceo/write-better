@@ -1,5 +1,6 @@
 import { WriteBetter } from './model';
 import { Log } from '../shared/log';
+import { Suggestion } from './suggestion';
 
 const TAG = "ui.ts";
 
@@ -24,24 +25,26 @@ export namespace WriteBetterUI {
             return this._instance || (this._instance = new this());
         }
 
-        highlight(node: WriteBetter.Segment): void {
-            if (node.highlights.length == 0) {
+        highlight(node: WriteBetter.Segment, suggestions: Suggestion[]): void {
+            if (suggestions.length == 0) {
                 return;
             }
+            const highlights = suggestions.map(s => WriteBetterUI.Highlight.of(node.getText(), s));
+            
 
             // Ensure that highlights are sorted before begining to append to the dom.
-            node.highlights.sort((a, b) => {
+            highlights.sort((a, b) => {
                 if (a.index < b.index) return -1;
                 if (a.index > b.index) return 1;
                 return 0;
             });
 
             // If their index overlap, display only one of them.
-            for (let i = node.highlights.length - 1; i >= 1; i--) {
-                const h = node.highlights[i];
-                const hprev = node.highlights[i - 1];
+            for (let i = highlights.length - 1; i >= 1; i--) {
+                const h = highlights[i];
+                const hprev = highlights[i - 1];
                 if (hprev.index + hprev.offset >= h.index) {
-                    node.highlights.splice(i, 1);
+                    highlights.splice(i, 1);
                 }
             }
 
@@ -63,8 +66,8 @@ export namespace WriteBetterUI {
 
             const text = child.textContent;
             const d = new WriteBetter.Doc().getElement().getBoundingClientRect();
-            for (let i = 0; i < node.highlights.length; i++) {
-                const h = node.highlights[i];
+            for (let i = 0; i < highlights.length; i++) {
+                const h = highlights[i];
                 // Insert the text up till the first highlight
                 if (i == 0) {
                     p.insertBefore(document.createTextNode(text.substring(0, h.index)), child);
@@ -74,8 +77,8 @@ export namespace WriteBetterUI {
                 p.insertBefore(h.element, child);
 
                 // Insert the text between this highlight and next
-                if (i < node.highlights.length - 1) {
-                    const hnext = node.highlights[i + 1];
+                if (i < highlights.length - 1) {
+                    const hnext = highlights[i + 1];
                     p.insertBefore(document.createTextNode(text.substring(h.index + h.offset, hnext.index)), child);
                 } else {
                     p.insertBefore(document.createTextNode(text.substring(h.index + h.offset)), child);
@@ -132,12 +135,12 @@ export namespace WriteBetterUI {
         fullText: string; // Includes the whitespace from g-inline-block breaker and other text nodes if there are multiple.
         element: HTMLSpanElement;
 
-        static of(node: WriteBetter.Segment, suggestion: WriteBetter.Suggestion): Highlight {
+        static of(fullText: string, suggestion: Suggestion): Highlight {
             let h = new Highlight();
             h.reason = suggestion.reason;
             h.index = suggestion.index;
             h.offset = suggestion.offset;
-            h.fullText = node.getText();
+            h.fullText = fullText;
             // h = Highlight.patch(h);
 
             // create an element that wraps the suggestion.
