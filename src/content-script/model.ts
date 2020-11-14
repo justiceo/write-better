@@ -5,7 +5,7 @@ const writeGood: (input: string) => Suggestion[] = require('write-good');
 type xNode = Node;
 
 const TAG = 'model.ts';
-export namespace WriteBetter {
+export namespace Model {
 
     export interface Node {
         getText: () => string;

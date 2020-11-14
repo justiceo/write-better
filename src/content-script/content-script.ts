@@ -1,5 +1,5 @@
-import { WriteBetter } from './model';
-import { WriteBetterUI } from './ui';
+import { Model } from './model';
+import { Style } from './style';
 import { Log } from '../shared/log';
 import { Message } from '../shared/shared';
 
@@ -8,7 +8,7 @@ let resizeTask: any = null;
 
 const analyze = () => {
     const t1 = performance.now();
-    new WriteBetter.Doc().propagateSuggestions();
+    new Model.Doc().propagateSuggestions();
     Log.debug(TAG, "Analyzed doc in ", performance.now() - t1, "ms");
 }
 
@@ -36,7 +36,7 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
         init();
         callback(true);
     } else if (msg.type === 'cleanup') {
-        WriteBetterUI.Style.getInstance().clear();
+        Style.getInstance().clear();
         window.removeEventListener('resize', resizeTask);
     }
 }
