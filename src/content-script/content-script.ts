@@ -2,17 +2,24 @@ import { Model } from './model';
 import { Style } from './style';
 import { Log } from '../shared/log';
 import { Message } from '../shared/shared';
+import { getEditor } from './editor';
 
 const TAG = "content-script.ts"
 let resizeTask: any = null;
 
 const analyze = () => {
     const t1 = performance.now();
-    new Model.Doc().propagateSuggestions();
+    getEditor().analyzeText();
     Log.debug(TAG, "Analyzed doc in ", performance.now() - t1, "ms");
 }
 
 const init = () => {
+    const editor = getEditor();
+    if (!editor) {
+        Log.debug(TAG, "Invalid editor model");
+        return;
+    }
+
     // Automatically re-analyze doc every second.
     // TODO: needs a ways to stop this when plugin is disabled (though disabling not part of v1.).
     setInterval(analyze, 1000);

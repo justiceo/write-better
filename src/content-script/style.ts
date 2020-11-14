@@ -2,6 +2,7 @@ import { Model } from './model';
 import { Log } from '../shared/log';
 import { Suggestion } from './suggestion';
 import { Highlight } from './highlight';
+import { getEditor } from './editor';
 
 const TAG = "style.ts";
 
@@ -64,7 +65,7 @@ export class Style {
 
         // Rebuild the text node, replacing affected text segments with highlight elements.
         const text = originalTextNode.textContent;
-        const d = new Model.Doc().getElement().getBoundingClientRect();
+        const d = getEditor().getDocument().getBoundingClientRect();
         for (let i = 0; i < highlights.length; i++) {
             const h = highlights[i];
             // Insert the text up till the first highlight

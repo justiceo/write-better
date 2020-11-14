@@ -1,6 +1,7 @@
 import { Style } from './style';
 import { Log } from '../shared/log';
 import { Suggestion } from './suggestion';
+import { Editor } from './editor';
 const writeGood: (input: string) => Suggestion[] = require('write-good');
 type xNode = Node;
 
@@ -18,11 +19,12 @@ export namespace Model {
 
     export abstract class AbsNode implements Node {
         element: HTMLElement;
+        editor: Editor;
         static cache: Map<string, Suggestion[]> = new Map();
 
-
-        constructor(elem: HTMLElement) {
+        constructor(elem: HTMLElement, editor: Editor) {
             this.element = elem;
+            this.editor = editor;
         }
 
         getText(): string {
@@ -37,7 +39,7 @@ export namespace Model {
         }
 
         async getSuggestions(): Promise<Suggestion[]> {
-            let text = this.getText(); 
+            let text = this.getText();
             if (text.replace(/\u200C/g, '').trim().length == 0) { // Necessary to replace zero-width non-joiner
                 return Promise.resolve([])
             }
@@ -46,7 +48,7 @@ export namespace Model {
             if (AbsNode.cache.size > 500) {
                 AbsNode.cache.clear()
             }
-            
+
             if (AbsNode.cache.has(text)) {
                 return Promise.resolve(AbsNode.cache.get(text))
             }
@@ -69,18 +71,13 @@ export namespace Model {
     }
 
     export class Doc extends AbsNode {
-        static QuerySelector: string = '.kix-paginateddocumentplugin';
         static PreviousText: string = null;
-
-        constructor() {
-            super(document.querySelector(Doc.QuerySelector));
-        }
 
         getChildren(): Node[] {
             let children: Paragraph[] = [];
-            this.element.querySelectorAll(Paragraph.QuerySelector).forEach((e: Element) => {
+            this.element.querySelectorAll(this.editor.getParagraphSelector()).forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
-                    children.push(new Paragraph(e as HTMLElement));
+                    children.push(new Paragraph(e as HTMLElement, this.editor));
                 }
             });
             return children;
@@ -99,13 +96,12 @@ export namespace Model {
     }
 
     export class Paragraph extends AbsNode {
-        static QuerySelector: string = ':scope .kix-paragraphrenderer';
 
         getChildren(): Node[] {
             let children: Line[] = [];
-            this.element.querySelectorAll(Line.QuerySelector).forEach((e: Element) => {
+            this.element.querySelectorAll(this.editor.getLineSelector()).forEach((e: Element) => {
                 if ((e as HTMLElement).innerText.trim()) {
-                    children.push(new Line(e as HTMLElement));
+                    children.push(new Line(e as HTMLElement, this.editor));
                 }
             });
             return children;
@@ -135,13 +131,12 @@ export namespace Model {
     }
 
     export class Line extends AbsNode {
-        static QuerySelector: string = ':scope .kix-lineview';
 
         getChildren(): Node[] {
             let children: Segment[] = [];
             Line.textNodes(this.element).forEach((e: Text) => {
                 if (e.textContent.trim()) {
-                    children.push(new Segment(e.parentElement));
+                    children.push(new Segment(e.parentElement, this.editor));
                 }
             });
             return children;
