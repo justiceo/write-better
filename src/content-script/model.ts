@@ -1,4 +1,4 @@
-import { WriteBetterUI } from './ui';
+import { Style } from './style';
 import { Log } from '../shared/log';
 import { Suggestion } from './suggestion';
 const writeGood: (input: string) => Suggestion[] = require('write-good');
@@ -191,7 +191,7 @@ export namespace WriteBetter {
             if (this.element.querySelector('span.writebetter-highlight') || this.element.classList.contains('writebetter-highlight')) {
                 return;
             }
-            WriteBetterUI.Style.getInstance().highlight(this, suggestions);
+            Style.getInstance().highlight(this, suggestions);
         }
     }
 }
