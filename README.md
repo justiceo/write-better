@@ -96,3 +96,31 @@ The only way I get feedback is when people complete this [anonymous form](https:
 #### v0.0.7
 * Fix extension not working on large documents.
 * Severally performance improvements and bug fixes.
+
+
+# Responsive Running lines counter, best implementation from https://stackoverflow.com/a/37623987
+
+```
+function countLines(target) {
+      var style = window.getComputedStyle(target, null);
+      var height = parseInt(style.getPropertyValue("height"));
+      var font_size = parseInt(style.getPropertyValue("font-size"));
+      var line_height = parseInt(style.getPropertyValue("line-height"));
+      var box_sizing = style.getPropertyValue("box-sizing");
+      
+      if(isNaN(line_height)) line_height = font_size * 1.2;
+     
+      if(box_sizing=='border-box')
+      {
+        var padding_top = parseInt(style.getPropertyValue("padding-top"));
+        var padding_bottom = parseInt(style.getPropertyValue("padding-bottom"));
+        var border_top = parseInt(style.getPropertyValue("border-top-width"));
+        var border_bottom = parseInt(style.getPropertyValue("border-bottom-width"));
+        height = height - padding_top - padding_bottom - border_top - border_bottom
+      }
+      var lines = Math.ceil(height / line_height);
+      alert("Lines: " + lines);
+      return lines;
+    }
+    countLines(document.getElementById("foo"));
+```

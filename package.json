@@ -1,6 +1,6 @@
 {
   "name": "write-better",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Grammar and writing style suggestions to improve the quality of your writings",
   "scripts": {
     "test": "gulp test",

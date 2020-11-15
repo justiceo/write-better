@@ -1,7 +1,7 @@
 // Simple util for logging to console.
 // Ensure output level is set to 'verbose' to see debug logs.
 export class Log {
-    static debugMode = true;
+    static debugMode = false;
 
     static debug(tag: string, ...logs: any[]) {
         if (!this.debugMode) {

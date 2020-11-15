@@ -14,7 +14,6 @@ export namespace Model {
         getChildren: () => Node[];
         getSuggestions: () => Promise<Suggestion[]>;
         propagateSuggestions: (...suggestions: Suggestion[]) => void;
-        visit: <T>(fn: (node: Node, prev: T[]) => T[], prev: T[]) => void
     }
 
     export abstract class AbsNode implements Node {
@@ -54,16 +53,6 @@ export namespace Model {
             }
             AbsNode.cache.set(text, writeGood(text));
             return Promise.resolve(AbsNode.cache.get(text));
-        }
-
-        visit<T>(fn: (node: Node, prev: T[]) => T[], prev: T[]): void {
-            let out = fn(this, prev);
-            if (out) {
-                prev.concat(out);
-            }
-            this.getChildren().forEach(c => {
-                c.visit(fn, prev);
-            });
         }
 
         abstract getChildren(): Node[];
