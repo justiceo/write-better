@@ -63,30 +63,27 @@ gulp build                                      # Build the extension
 zip -r extension.zip extension -x "*.DS_Store"  # Zip it up and upload to chrome dashboard.
 ```
 
+To create .crx file (ensure previous .crx is removed first), use:
+
+```
+google-chrome --pack-extension=extension  [--pack-extension-key=<extension_key>]
+```
+
 ### Debugging
 
 1. Content script can be located in Chrome Devtools -> Sources -> Content Script. Ensure Console output level is VERBOSE
 2. Background script can be located in Manage Extensions -> (Find loaded extension) -> Background page.
 3. After a rebuild, reload extension using reload button on the extension card at chrome://extensions/
 
-#### While awaiting a PR for these libraries, do:
 
-1. Update node_modules/passive-voice/passive.js+184 to `var re = new RegExp('\\b(am|are|were|being|is|been|was|be)\\b[\\s|\\u200C]*([\\w]+ed|' + irregulars.join('|') + ')\\b', 'gi');`
+#### PRs to track
 
-2. Update node_modules/too-wordy/too-wordy.js+222-223 to 
+1. https://github.com/btford/passive-voice/pull/4
+2. https://github.com/duereg/no-cliches/pull/10
+3. https://github.com/duereg/too-wordy/pull/5
 
-```
-const spacedWordyWords = wordyWords.map(w => w.replace(/ /g, '[\\b\\s\\u200C]*'))
-const wordyRegex = new RegExp(`\\b(${spacedWordyWords.join('|')})\\b`, 'gi');
-```
+After which: update btford/write-good's dependencies.
 
-3. Update node_modules/no-cliches/cliches.js+701-702 to
-```
-const spacedCliches = cliches.map(w => w.replace(/ /g, '[\\b\\s\\u200C]*'))
-const clicheRegex = new RegExp(`\\b(${spacedCliches.join('|')})\\b`, 'gi');
-```
-
-4. Update node_modules/write-good/lib/there-is.js+9 to `const startsWithThereIsRegex = new RegExp('^(\\s)*there[\\b\\s\\u200C]*(is|are)\\b', 'i');`
 
 
 ### Feedback
