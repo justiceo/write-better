@@ -86,11 +86,13 @@ export class Style {
 
             // Add the css rules for this highlight.
             const pos = 100 * h.element.getBoundingClientRect().left / (d.left + d.width);
-            this.css.innerHTML += Style.replaceAll(Style.cssTemplate, new Map([
+            // TODO: Update to use string formatter here.
+            const newStyle = Style.replaceAll(Style.cssTemplate, new Map([
                 ['selector', h.element.id],
                 ['reason', Style.replaceAll(h.reason, new Map([[`'`, ``]]))],
                 ['direction', pos > 70 ? 'right' : 'left'],
             ]));
+            this.css.appendChild(document.createTextNode(newStyle));
         }
 
         // Remove the original text node.
