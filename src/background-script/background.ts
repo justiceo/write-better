@@ -8,7 +8,3 @@ chrome.runtime.onInstalled.addListener((details: chrome.runtime.InstalledDetails
         return false;
     }
 });
-
-chrome.runtime.onSuspend.addListener(() => {
-    // TODO: more cleanup.
-});
