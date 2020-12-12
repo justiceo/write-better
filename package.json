@@ -1,6 +1,6 @@
 {
   "name": "write-better",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Grammar and writing style suggestions to improve the quality of your writings",
   "scripts": {
     "test": "gulp test",
@@ -8,8 +8,24 @@
   },
   "author": "Justice Ogbonna",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justiceo/write-better"
+  },
+  "keywords": [
+    "english",
+    "checker",
+    "ginger",
+    "grammar",
+    "grammarly",
+    "language",
+    "linter",
+    "prose",
+    "writing",
+    "words"
+  ],
   "dependencies": {
-    "write-good": "^1.0.3"
+    "write-good": "github:justiceo/write-good"
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",
