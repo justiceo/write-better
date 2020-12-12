@@ -40,6 +40,13 @@ gulp build
 ```
 Extension directory would be in write-better/extension. See how to [load an unpacked extension](https://developer.chrome.com/extensions/getstarted#manifest) in chrome.
 
+4. Demo it (starts new browser instance with extension installed)
+
+```
+npm run start:firefox
+npm run start:chrome
+```
+
 ### Other tasks
 
 4. Test the extension

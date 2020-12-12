@@ -5,7 +5,8 @@
   "scripts": {
     "test": "gulp test",
     "build": "gulp build",
-    "start:firefox": "web-ext run --source-dir ./extension/"
+    "start:chrome": "gulp chromeDemo",
+    "start:firefox": "gulp firefoxDemo"
   },
   "author": "Justice Ogbonna",
   "license": "MIT",

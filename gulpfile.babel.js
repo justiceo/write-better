@@ -6,6 +6,8 @@ import del from 'del';
 import ts from 'gulp-typescript';
 import Jasmine from 'jasmine';
 import decache from 'decache';
+import puppeteer from 'puppeteer';
+import webExt from 'web-ext';
 
 const backgroundScripts = ['src/background-script/background.ts'];
 const contentScripts = ['src/content-script/content-script.ts']; // Dependencies are pulled-in autoamtically.
@@ -85,6 +87,21 @@ export const build = gulp.parallel(copyAssets, compileBackgroundScript, compileC
 build.description = 'compile all sources'
 
 export const test = gulp.series(compileTests, runTest);
+
+export const chromeDemo = () => {
+    puppeteer.launch({
+        headless: false,
+        ignoreDefaultArgs: ["--disable-extensions", "--enable-automation"],
+        args: [
+            `--disable-extensions-except=${process.env.PWD}/extension`,
+            `--load-extension=${process.env.PWD}/extension`,
+        ]
+    });
+}
+
+export const firefoxDemo = () => {
+    webExt.cmd.run({ sourceDir: `${process.env.PWD}/extension` }, { shouldExitProgram: true });
+}
 
 const defaultTask = gulp.series(clean, build, gulp.parallel(watchBackgroundScript, watchContentScript, watchAssets))
 defaultTask.description = 'start watching for changes to all source'
