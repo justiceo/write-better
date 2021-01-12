@@ -20,11 +20,12 @@ export class WriteBetter {
     constructor() {
         this.css = document.createElement('style');
         this.css.title = 'write-better-css-file';
-        this.css.type = 'text/css';
+        this.css.id = 'write-better-css';
+        // TODO: Remove stylesheet if it already exists.
         document.body.appendChild(this.css);
     }
 
-    analyze(selector: string, inplace = true, paragraphSplitter = this.smartSplitter): HTMLElement {
+    analyze(selector: string, inplace = true): HTMLElement {
         Log.debug(TAG, "#analyze", selector);
         const e = document.querySelector(selector) as HTMLElement;
         if (e == null) {
@@ -42,25 +43,24 @@ export class WriteBetter {
             .pipe(map(e => this.applySuggestions(e, inplace)));
 
         // TODO: if not inplace, attempt to reconstruct e before returning it.
-        subscription.subscribe(e => Log.debug(TAG, "updating: ", e))
+        subscription.subscribe(e => Log.debug(TAG, " "));
         return e;
     }
 
 
     analyzeAndWatch(selector: string): Observable<HTMLElement> {
-        Log.debug(TAG, "#analyzeAndWatch", selector);
-        return interval(1000).pipe(map(_ => this.analyze(selector)));
+        return interval(2000).pipe(map(_ => this.analyze(selector)));
     }
 
     applySuggestions(paragraph: HTMLElement, inplace: boolean): HTMLElement {
-        Log.debug(TAG, "#applySuggestions");
         return this.applySuggestionsInternal(paragraph, this.getSuggestions(paragraph), inplace);
     }
 
     applySuggestionsInternal(paragraph: HTMLElement, suggestions: Suggestion[], inplace: boolean): HTMLElement {
-        Log.debug(TAG, "#applySuggestionsInternal", suggestions);
+        Log.debug(TAG, "#applySuggestionsInternal", paragraph.innerText, suggestions);
         paragraph = inplace ? paragraph : paragraph.cloneNode(true) as HTMLElement
         if (suggestions.length == 0) {
+            Log.debug(TAG, "No suggestions for paragraph: ", paragraph.innerText);
             return paragraph;
         }
 
@@ -73,22 +73,27 @@ export class WriteBetter {
             return 0;
         });
 
-
+        // If multiple suggestions are overlapping, display only the first occurring suggestion.
         for (let i = highlights.length - 1; i >= 1; i--) {
             const h = highlights[i];
             const hprev = highlights[i - 1];
-            // If multiple suggestions are overlapping, display only the first occurring suggestion.
             if (hprev.index + hprev.offset >= h.index) {
                 highlights.splice(i, 1);
+                Log.debug(TAG, "Skipping overlapping highlight with text `", h.element.innerText, "`");
                 continue;
             }
+        }
 
-            // Find the relevant text node.        
+        // Find the relevant text node and update it.
+        for (let i = 0; i < highlights.length; i++) {
+            const h = highlights[i];
             const nodesSnapshot = new XPathEvaluator().evaluate(`//text()[contains(.,'${h.element.innerText}')]`, paragraph, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-            // Update it
+
             if (nodesSnapshot.snapshotLength > 0) {
                 this.updateTextNode(nodesSnapshot.snapshotItem(0), h);
                 this.updateCSS(this.selector, h);
+            } else {
+                Log.debug(TAG, "No matching textnode for highlight `", h.element.innerText, "`")
             }
         }
 
@@ -112,7 +117,7 @@ export class WriteBetter {
 
     updateCSS(selector: string, h: Highlight) {
         // Add the css rules for this highlight.
-        const d = document.querySelector(selector).getBoundingClientRect();        
+        const d = document.querySelector(selector).getBoundingClientRect();
         const pos = 100 * h.element.getBoundingClientRect().left / (d.left + d.width);
         // TODO: Update to use string formatter here.
         const newStyle = WriteBetter.replaceAll(WriteBetter.cssTemplate, new Map([
@@ -138,10 +143,10 @@ export class WriteBetter {
     // Only returns elements that contain text which *needs* to be analyzed.
     // NB: Concating the result of this function would not yield its input.
     smartSplitter(e: HTMLElement): Observable<HTMLElement> {
-        Log.debug(TAG, "#smartSplitter", this);
+        Log.debug(TAG, "#smartSplitter");
         if (this.isGoogleDocs()) {
             return from(e.querySelectorAll<HTMLElement>(":scope .kix-paragraphrenderer").values())
-                .pipe(filter(e => !!e.innerText.trim())) // only emit paragraphs with text.
+                .pipe(filter(e => !!e.innerText.replace(/\u200C/g, '').trim())) // only emit paragraphs with text.
                 .pipe(filter(e => this.needsAnalyzing(e))); // only emit unprocessed or modified paragraphs.
         }
 
