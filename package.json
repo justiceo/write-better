@@ -27,6 +27,7 @@
     "words"
   ],
   "dependencies": {
+    "rxjs": "^6.6.3",
     "write-good": "github:justiceo/write-good"
   },
   "devDependencies": {
