@@ -108,9 +108,10 @@ export class WriteBetter {
         // TODO: Instead 0 for position allow multiple of same highlight per text.
         const index = parent.innerText.indexOf(h.element.innerText, 0);
 
-        parent.appendChild(document.createTextNode(originalText.substring(0, index)));
-        parent.appendChild(h.element);
-        parent.appendChild(document.createTextNode(originalText.substring(index + h.offset)));
+        // Insert adjacent to textnode in-case there are multiple nodes under its parent.
+        parent.insertBefore(document.createTextNode(originalText.substring(0, index)), node);
+        parent.insertBefore(h.element, node);
+        parent.insertBefore(document.createTextNode(originalText.substring(index + h.offset)), node);
         parent.removeChild(node);
         return parent;
     }
