@@ -1,4 +1,7 @@
 // Write-good is the only dependency of this extension.
+
+import { Suggestion } from "../src/content-script/suggestion";
+
 // This test ensures the library fulfills its promises (e.g. after an update). 
 const writeGood = require('write-good');
 
@@ -8,7 +11,7 @@ describe('write-good', () => {
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe('"was killed" may be passive voice', "Reason mismatch");        
+        expect(suggestion.reason).toBe('"was killed" may be passive voice', "Reason mismatch");
         expect(suggestion.index).toBe(9, "Index mismatch");
         expect(suggestion.offset).toBe(10, "Offset mismatch");
     });
@@ -18,7 +21,7 @@ describe('write-good', () => {
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe('"really" can weaken meaning', "Reason mismatch");        
+        expect(suggestion.reason).toBe('"really" can weaken meaning', "Reason mismatch");
         expect(suggestion.index).toBe(7, "Index mismatch");
         expect(suggestion.offset).toBe(6, "Offset mismatch");
     });
@@ -31,7 +34,7 @@ describe('write-good', () => {
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe('"the" is repeated', "Reason mismatch");        
+        expect(suggestion.reason).toBe('"the" is repeated', "Reason mismatch");
         expect(suggestion.index).toBe(43, "Index mismatch");
         expect(suggestion.offset).toBe(3, "Offset mismatch");
     });
@@ -41,7 +44,7 @@ describe('write-good', () => {
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe('"So" adds no meaning', "Reason mismatch");        
+        expect(suggestion.reason).toBe('"So" adds no meaning', "Reason mismatch");
         expect(suggestion.index).toBe(15, "Index mismatch");
         expect(suggestion.offset).toBe(2, "Offset mismatch");
     });
@@ -51,7 +54,7 @@ describe('write-good', () => {
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe('"There is" is unnecessary verbiage', "Reason mismatch");        
+        expect(suggestion.reason).toBe('"There is" is unnecessary verbiage', "Reason mismatch");
         expect(suggestion.index).toBe(0, "Index mismatch");
         expect(suggestion.offset).toBe(8, "Offset mismatch");
     });
@@ -61,7 +64,7 @@ describe('write-good', () => {
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe('"many" is a weasel word and can weaken meaning', "Reason mismatch");        
+        expect(suggestion.reason).toBe('"many" is a weasel word and can weaken meaning', "Reason mismatch");
         expect(suggestion.index).toBe(6, "Index mismatch");
         expect(suggestion.offset).toBe(4, "Offset mismatch");
     });
@@ -71,7 +74,7 @@ describe('write-good', () => {
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe('"utilize" is wordy or unneeded', "Reason mismatch");        
+        expect(suggestion.reason).toBe('"utilize" is wordy or unneeded', "Reason mismatch");
         expect(suggestion.index).toBe(8, "Index mismatch");
         expect(suggestion.offset).toBe(7, "Offset mismatch");
     });
@@ -81,23 +84,23 @@ describe('write-good', () => {
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe('"It goes without saying" is a cliche', "Reason mismatch");        
+        expect(suggestion.reason).toBe('"It goes without saying" is a cliche', "Reason mismatch");
         expect(suggestion.index).toBe(0, "Index mismatch");
         expect(suggestion.offset).toBe(22, "Offset mismatch");
     });
 
     it('identifies e-primes', () => {
-        let suggestions = writeGood("Blessed are the poor in spirit.", {eprime: true});
+        let suggestions = writeGood("Blessed are the poor in spirit.", { eprime: true });
         expect(suggestions.length).toBe(1);
 
         let suggestion = suggestions[0];
-        expect(suggestion.reason).toBe(`"are" is a form of 'to be'`, "Reason mismatch");        
+        expect(suggestion.reason).toBe(`"are" is a form of 'to be'`, "Reason mismatch");
         expect(suggestion.index).toBe(8, "Index mismatch");
         expect(suggestion.offset).toBe(3, "Offset mismatch");
     });
 
     it('identifiess multiple violations', () => {
-        let suggestions = writeGood(`So you think you can write? There is often room for improvement.
+        let suggestions: Suggestion[] = writeGood(`So you think you can write? There is often room for improvement.
 
         The app obviously highlights common errors. Mouse over for hints..  
         
@@ -109,11 +112,13 @@ describe('write-good', () => {
         
         It goes without saying that amber identifies idioms, which we discourage.
         `);
-        expect(suggestions.length).toBe(7);    
+        expect(suggestions.length).toBe(7);
+        const suggestionsText = suggestions.map(s => s.reason.match(/"([^"]+)"/)[1]);
+        expect(suggestionsText).toEqual(['So', 'There is', 'obviously', 'utilize', 'really', 'been marked', 'It goes without saying'])
     });
 
     it('identifiess multiple violations with extra spaces in-between', () => {
-        let suggestions = writeGood(`So you think you can write? There   is often room for improvement.
+        const suggestions: Suggestion[] = writeGood(`So you think you can write? There   is often room for improvement.
 
         The app   obviously   highlights common errors. Mouse over for hints..  
         
@@ -125,7 +130,10 @@ describe('write-good', () => {
         
         It   goes without   saying that amber identifies idioms, which we discourage.
         `);
-        expect(suggestions.length).toBe(8);    
+
+        expect(suggestions.length).toBe(8);
+        const suggestionsText = suggestions.map(s => s.reason.match(/"([^"]+)"/)[1]);
+        expect(suggestionsText).toEqual(['So', 'There   is', 'obviously', 'Pertaining   to', 'utilize', 'really', 'been    marked', 'It   goes without   saying'])
     });
 
     // TODO: Add known-edge cases here.
