@@ -87,13 +87,20 @@ export class WriteBetter {
         // Find the relevant text node and update it.
         for (let i = 0; i < highlights.length; i++) {
             const h = highlights[i];
-            const nodesSnapshot = new XPathEvaluator().evaluate(`//text()[contains(.,'${h.element.innerText}')]`, paragraph, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+            // https://devhints.io/xpath for xpath cheatseat.
+            const xpathExpression = `//div//text()[contains(.,'${h.element.innerText}')]`;
+            const nodesSnapshot = document.evaluate(xpathExpression, paragraph, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
-            if (nodesSnapshot.snapshotLength > 0) {
-                this.updateTextNode(nodesSnapshot.snapshotItem(0), h);
-                this.updateCSS(this.selector, h);
-            } else {
-                Log.debug(TAG, "No matching textnode for highlight `", h.element.innerText, "`")
+            for (let j = 0; j < nodesSnapshot.snapshotLength; j++) {
+                const currMatch = nodesSnapshot.snapshotItem(j);
+                // TODO: This is still susceptible to matching two different nodes "So" and "Some" for the error "So".
+                if (paragraph.contains(currMatch) /*&& currMatch.textContent.match(`\b${h.element.innerText}\b`) */) {
+                    this.updateTextNode(currMatch, h);
+                    this.updateCSS(this.selector, h);
+                    break;
+                } else {
+                    Log.debug("Skipping not matching node:", currMatch);
+                }
             }
         }
 
@@ -108,11 +115,17 @@ export class WriteBetter {
         // TODO: Instead 0 for position allow multiple of same highlight per text.
         const index = parent.innerText.indexOf(h.element.innerText, 0);
 
+        if (index < 0) {
+            Log.error(TAG, "#updateTextNode, highlight not found");
+            return parent;
+        }
+
         // Insert adjacent to textnode in-case there are multiple nodes under its parent.
         parent.insertBefore(document.createTextNode(originalText.substring(0, index)), node);
         parent.insertBefore(h.element, node);
         parent.insertBefore(document.createTextNode(originalText.substring(index + h.offset)), node);
         parent.removeChild(node);
+        Log.debug(TAG, "#updateTextNode: ", parent);
         return parent;
     }
 
