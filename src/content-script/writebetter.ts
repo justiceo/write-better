@@ -181,6 +181,13 @@ export class WriteBetter {
         })
         return input;
     }
+
+
+    /* Remove highlight CSS from the DOM */
+    clear() {
+        Log.debug(TAG, `Removing css file from document: ${this.css.id}`)
+        this.css.remove();
+    }
 }
 
 // Ref - https://stackoverflow.com/a/2631931

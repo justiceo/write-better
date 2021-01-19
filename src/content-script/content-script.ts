@@ -1,8 +1,5 @@
-import { Model } from './model';
-import { Style } from './style';
 import { Log } from '../shared/log';
 import { Message } from '../shared/shared';
-import { getEditor } from './editor';
 import { WriteBetter } from './writebetter';
 
 const TAG = "content-script.ts"
@@ -16,8 +13,7 @@ const analyze = () => {
 }
 
 const init = () => {
-    const editor = getEditor();
-    if (!editor) {
+    if (!writeBetter.isGoogleDocs()) {
         Log.debug(TAG, "Invalid editor model");
         return;
     }
@@ -45,7 +41,7 @@ const onMessage = (msg: Message, _: chrome.runtime.MessageSender, callback: (res
         init();
         callback(true);
     } else if (msg.type === 'cleanup') {
-        Style.getInstance().clear();
+        writeBetter.clear();
         window.removeEventListener('resize', resizeTask);
     }
 }
