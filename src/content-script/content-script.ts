@@ -3,13 +3,15 @@ import { Style } from './style';
 import { Log } from '../shared/log';
 import { Message } from '../shared/shared';
 import { getEditor } from './editor';
+import { WriteBetter } from './writebetter';
 
 const TAG = "content-script.ts"
 let resizeTask: any = null;
+const writeBetter = new WriteBetter();
 
 const analyze = () => {
     const t1 = performance.now();
-    getEditor().analyzeText();
+    writeBetter.analyze('.kix-paginateddocumentplugin');
     Log.debug(TAG, "Analyzed doc in ", performance.now() - t1, "ms");
 }
 
