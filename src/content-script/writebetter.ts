@@ -53,6 +53,7 @@ export class WriteBetter {
     }
 
     applySuggestions(paragraph: HTMLElement, inplace: boolean): HTMLElement {
+        this.unapplyHiglights(paragraph);
         return this.applySuggestionsInternal(paragraph, this.getSuggestions(paragraph), inplace);
     }
 
@@ -173,6 +174,11 @@ export class WriteBetter {
 
     isGoogleDocs(): boolean {
         return location.hostname.includes("docs.google.com");
+    }
+
+    unapplyHiglights(paragraph: HTMLElement) {
+        const highlights = paragraph.querySelectorAll(".writebetter-highlight");
+        highlights.forEach(h => h.outerHTML = h.innerHTML);
     }
 
     static replaceAll(input: string, pairs: Map<string, string>): string {

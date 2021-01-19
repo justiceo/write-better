@@ -32,8 +32,7 @@ describe('browser with extension write-better', () => {
         return hs;
       });
       const texts = ['So', 'obviously', 'utilize', 'really', 'been marked', 'It goes without saying']; // Include 'There is'
-      // TODO: Remove existing highlights before adding new one. Otherwise skip completely.
-      expect(new Set(highlights)) .toEqual(new Set(texts));
+      expect(highlights).toEqual(texts);
 
       await page.close();
     }, 20000);
