@@ -48,7 +48,7 @@ export class WriteBetter {
                 }));
 
         // TODO: if not inplace, attempt to reconstruct e before returning it.
-        subscription.subscribe(e => Log.debug(TAG, " "), err => Log.error(TAG, err));
+        subscription.subscribe(e => {}, err => Log.error(TAG, err));
         return e;
     }
 
@@ -58,11 +58,8 @@ export class WriteBetter {
     }
 
     applySuggestions(paragraph: HTMLElement, inplace: boolean): HTMLElement {
-        return this.applySuggestionsInternal(paragraph, this.getSuggestions(paragraph), inplace);
-    }
-
-    applySuggestionsInternal(paragraph: HTMLElement, suggestions: Suggestion[], inplace: boolean): HTMLElement {
-        Log.debug(TAG, "#applySuggestionsInternal", this.getCleanText(paragraph), suggestions);
+        const suggestions = this.getSuggestions(paragraph);
+        Log.debug(TAG, "#applySuggestions", this.getTruncatedText(paragraph), suggestions);
         paragraph = inplace ? paragraph : paragraph.cloneNode(true) as HTMLElement
         if (suggestions.length == 0) {
             return paragraph;
@@ -105,7 +102,7 @@ export class WriteBetter {
                     this.updateCSS(this.selector, h);
                     break;
                 } else {
-                    Log.debug(`Skipping not matching node '${currMatch.textContent}' for suggestion '${this.getText(h.element)}'`);
+                    Log.debug(TAG, `#applySuggestions: skipping not matching node '${currMatch.textContent}' for suggestion '${this.getText(h.element)}'`);
                 }
             }
         }
@@ -114,7 +111,7 @@ export class WriteBetter {
     }
 
     updateTextNode(node: Node, h: Highlight): HTMLElement {
-        Log.debug(TAG, `#updateTextNode: highlight '${this.getText(h.element)}' in  '${node.textContent}'`);
+        Log.debug(TAG, `#updateTextNode: highlight '${this.getText(h.element)}' in  '${this.getTruncatedString(node.textContent)}'`);
         const parent = node.parentElement;
         // If already highlighted, just return it.
         if (parent.classList.contains("writebetter-highlight")) {
@@ -171,6 +168,18 @@ export class WriteBetter {
     getCleanText(e: HTMLElement): string {
         return this.getText(e).replace(/\u200C/g, '').replace('  ', ' ').trim();
     }
+
+    getTruncatedText(e: HTMLElement) {
+        return this.getTruncatedString(this.getCleanText(e));
+     };
+
+     getTruncatedString(e: string) {
+        const words = e.split(" ");
+        if (words.length > 7) {
+           return words.slice(0, 3).join(" ") + " ... " + words.slice(words.length-3).join(" ");
+        }
+        return e;
+     };
 
     // Only returns elements that contain text which *needs* to be analyzed.
     // NB: Concating the result of this function would not yield its input.
