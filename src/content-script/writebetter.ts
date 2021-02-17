@@ -27,7 +27,6 @@ export class WriteBetter {
     }
 
     analyze(selector: string, inplace = true): HTMLElement {
-        Log.debug(TAG, "#analyze", selector);
         const e = document.querySelector(selector) as HTMLElement;
         if (e == null) {
             return null;

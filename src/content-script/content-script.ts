@@ -8,8 +8,9 @@ const writeBetter = new WriteBetter();
 
 const analyze = () => {
     const t1 = performance.now();
-    writeBetter.analyze('.kix-paginateddocumentplugin');
-    Log.debug(TAG, "Analyzed doc in ", performance.now() - t1, "ms");
+    const gdocSelector = '.kix-paginateddocumentplugin';
+    writeBetter.analyze(gdocSelector);
+    Log.debug(TAG, `Analyzed ${gdocSelector}  in ${Math.ceil(performance.now() - t1)}ms"`);
 }
 
 const init = () => {
