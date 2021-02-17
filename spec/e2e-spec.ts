@@ -31,11 +31,11 @@ describe('browser with extension write-better', () => {
         document.querySelectorAll('span.writebetter-highlight').forEach(e => hs.push(e.textContent.replace(/\u200C/g, '')))
         return hs;
       });
-      const texts = ['So', 'obviously', 'utilize', 'really', 'been marked', 'It goes without saying']; // Include 'There is'
+      const texts = ['obviously', 'utilize', 'really', 'been marked', 'It goes without saying']; // Include 'There is'
       expect(highlights).toEqual(texts);
 
       await page.close();
-    }, 20000);
+    }, 30000);
 
     xit('should take screenshot', async () => {
       const page = await browser.newPage();
