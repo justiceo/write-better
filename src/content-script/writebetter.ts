@@ -45,6 +45,7 @@ export class WriteBetter {
                 finalize(() => {
                     Log.debug(TAG, "Done...");
                     WriteBetter.cache = WriteBetter.tempCache;
+                    WriteBetter.tempCache = new Map();
                 }));
 
         // TODO: if not inplace, attempt to reconstruct e before returning it.
