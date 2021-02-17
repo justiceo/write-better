@@ -3,4 +3,5 @@ export class Suggestion {
     index: number
     offset: number
     reason: string
+    type: string
 }

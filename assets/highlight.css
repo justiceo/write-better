@@ -1,6 +1,34 @@
 span.writebetter-highlight {
+    /* The actual underline */
     position: relative;
     border-bottom: 3px solid #ffc578;
+}
+span.writebetter-highlight.weasle {
+    border-bottom-color: blue;
+}
+span.writebetter-highlight.so {
+    border-bottom-color: red;
+}
+span.writebetter-highlight.adverb {
+    border-bottom-color: purple;
+}
+span.writebetter-highlight.tooWordy {
+    border-bottom-color: magenta;
+}
+span.writebetter-highlight.thereIs {
+    border-bottom-color: cyan;
+}
+span.writebetter-highlight.illusion {
+    border-bottom-color: aqua;
+}
+span.writebetter-highlight.passive {
+    border-bottom-color: burlywood;
+}
+span.writebetter-highlight.cliches {
+    border-bottom-color: cadetblue;
+}
+span.writebetter-highlight.eprime {
+    border-bottom-color: darkcyan;
 }
 
 span.writebetter-highlight:before,

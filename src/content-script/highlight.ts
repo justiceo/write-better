@@ -9,12 +9,13 @@ export class Highlight extends Suggestion {
         const el = document.createElement('span');
         el.innerText = textSegment.substring(suggestion.index, suggestion.index + suggestion.offset);
         el.id = Highlight.uniqueSelector();
-        el.classList.add('writebetter-highlight');
+        el.classList.add('writebetter-highlight', suggestion.type);
 
         return {
             index: suggestion.index,
             offset: suggestion.offset,
             reason: suggestion.reason,
+            type: suggestion.type,
             element: el
         };
     }
