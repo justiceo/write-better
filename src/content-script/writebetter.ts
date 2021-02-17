@@ -115,6 +115,11 @@ export class WriteBetter {
     updateTextNode(node: Node, h: Highlight): HTMLElement {
         Log.debug(TAG, "#updateTextNode for '", this.getText(h.element), "'");
         const parent = node.parentElement;
+        // If already highlighted, just return it.
+        if (parent.classList.contains("writebetter-highlight")) {
+            return parent;
+        }
+
         const originalText = parent.textContent; // innerText??
         // Find index of text in parent which can be arbitrarily located in the paragraph.
         // TODO: Instead 0 for position allow multiple of same highlight per text.
