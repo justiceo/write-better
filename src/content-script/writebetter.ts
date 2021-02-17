@@ -98,13 +98,15 @@ export class WriteBetter {
 
             for (let j = 0; j < nodesSnapshot.snapshotLength; j++) {
                 const currMatch = nodesSnapshot.snapshotItem(j);
+                
+                // TODO: Also skip hidden nodes https://stackoverflow.com/a/21696585/3665475
                 // TODO: This is still susceptible to matching two different nodes "So" and "Some" for the error "So".
                 if (paragraph.contains(currMatch) /*&& currMatch.textContent.match(`\b${this.getText(h.element)}\b`) */) {
                     this.updateTextNode(currMatch, h);
                     this.updateCSS(this.selector, h);
                     break;
                 } else {
-                    Log.debug("Skipping not matching node:", currMatch);
+                    Log.debug(`Skipping not matching node '${currMatch.textContent}' for suggestion '${this.getText(h.element)}'`);
                 }
             }
         }
@@ -113,29 +115,32 @@ export class WriteBetter {
     }
 
     updateTextNode(node: Node, h: Highlight): HTMLElement {
-        Log.debug(TAG, "#updateTextNode for '", this.getText(h.element), "'");
+        Log.debug(TAG, `#updateTextNode: highlight '${this.getText(h.element)}' in  '${node.textContent}'`);
         const parent = node.parentElement;
         // If already highlighted, just return it.
         if (parent.classList.contains("writebetter-highlight")) {
+            Log.debug(TAG, `#updateTextNode: skipping already highlighted suggestion '${this.getText(h.element)}'`);
             return parent;
         }
 
-        const originalText = parent.textContent; // innerText??
-        // Find index of text in parent which can be arbitrarily located in the paragraph.
-        // TODO: Instead 0 for position allow multiple of same highlight per text.
-        const index = this.getText(parent).indexOf(this.getText(h.element), 0);
-
+        // Find location of suggestion in the text node containing it.
+        const index = node.textContent.indexOf(this.getText(h.element), 0);
         if (index < 0) {
-            Log.error(TAG, "#updateTextNode, highlight not found");
+            Log.error(TAG, `#updateTextNode, suggestion '${this.getText(h.element)}' not found`);
             return parent;
         }
 
         // Insert adjacent to textnode in-case there are multiple nodes under its parent.
-        parent.insertBefore(document.createTextNode(originalText.substring(0, index)), node);
+        const originalText = this.getText(parent);
+        parent.insertBefore(document.createTextNode(node.textContent.substring(0, index)), node);
         parent.insertBefore(h.element, node);
-        parent.insertBefore(document.createTextNode(originalText.substring(index + h.offset)), node);
+        parent.insertBefore(document.createTextNode(node.textContent.substring(index + h.offset)), node);
         parent.removeChild(node);
-        Log.debug(TAG, "#updateTextNode: ", parent);
+
+        if (originalText != this.getText(parent)) {
+            Log.error(TAG, `#updateTextNode: improperly modified parent '${this.getText(parent)}'`);
+            // TODO: consider reverting the change.
+        }
         return parent;
     }
 
