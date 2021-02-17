@@ -1,5 +1,5 @@
 import { from, interval, Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, finalize } from 'rxjs/operators';
 import { Suggestion } from './suggestion';
 import { Log } from '../shared/log';
 import { Highlight } from './highlight';
@@ -9,7 +9,8 @@ const TAG = 'writebetter.ts';
 export class WriteBetter {
     previousText: string = null;
     selector: string = null; // TODO: parameterize.
-    static cache: Map<string, string> = new Map();
+    static cache: Map<string, boolean> = new Map();
+    static tempCache: Map<string, boolean> = new Map();
     private css: HTMLStyleElement;
     private static readonly cssTemplate: string = `
             #selector:before {
@@ -32,18 +33,22 @@ export class WriteBetter {
             return null;
         }
 
-        if (this.getText(e) == this.previousText) {
+        if (this.getCleanText(e) == this.previousText) {
             return e;
         }
 
-        this.previousText = this.getText(e);
+        this.previousText = this.getCleanText(e);
         this.selector = selector;
 
         const subscription = this.smartSplitter(e)
-            .pipe(map(e => this.applySuggestions(e, inplace)));
+            .pipe(map(e => this.applySuggestions(e, inplace)),
+                finalize(() => {
+                    Log.debug(TAG, "Done...");
+                    WriteBetter.cache = WriteBetter.tempCache;
+                }));
 
         // TODO: if not inplace, attempt to reconstruct e before returning it.
-        subscription.subscribe(e => Log.debug(TAG, " "));
+        subscription.subscribe(e => Log.debug(TAG, " "), err => Log.error(TAG, err));
         return e;
     }
 
@@ -53,19 +58,18 @@ export class WriteBetter {
     }
 
     applySuggestions(paragraph: HTMLElement, inplace: boolean): HTMLElement {
-        this.unapplyHiglights(paragraph);
         return this.applySuggestionsInternal(paragraph, this.getSuggestions(paragraph), inplace);
     }
 
     applySuggestionsInternal(paragraph: HTMLElement, suggestions: Suggestion[], inplace: boolean): HTMLElement {
-        Log.debug(TAG, "#applySuggestionsInternal", paragraph.innerText, suggestions);
+        Log.debug(TAG, "#applySuggestionsInternal", this.getCleanText(paragraph), suggestions);
         paragraph = inplace ? paragraph : paragraph.cloneNode(true) as HTMLElement
         if (suggestions.length == 0) {
-            Log.debug(TAG, "No suggestions for paragraph: ", paragraph.innerText);
+            Log.debug(TAG, "No suggestions for paragraph: ", this.getCleanText(paragraph));
             return paragraph;
         }
 
-        const highlights = suggestions.map(s => Highlight.of(paragraph.innerText, s));
+        const highlights = suggestions.map(s => Highlight.of(this.getText(paragraph), s));
 
         // Ensure that highlights are sorted before begining to append to the dom.
         highlights.sort((a, b) => {
@@ -80,7 +84,7 @@ export class WriteBetter {
             const hprev = highlights[i - 1];
             if (hprev.index + hprev.offset >= h.index) {
                 highlights.splice(i, 1);
-                Log.debug(TAG, "Skipping overlapping highlight with text `", h.element.innerText, "`");
+                Log.debug(TAG, "Skipping overlapping highlight with text `", this.getText(h.element), "`");
                 continue;
             }
         }
@@ -89,13 +93,13 @@ export class WriteBetter {
         for (let i = 0; i < highlights.length; i++) {
             const h = highlights[i];
             // https://devhints.io/xpath for xpath cheatseat.
-            const xpathExpression = `//div//text()[contains(.,'${h.element.innerText}')]`;
+            const xpathExpression = `//div//text()[contains(.,'${this.getText(h.element)}')]`;
             const nodesSnapshot = document.evaluate(xpathExpression, paragraph, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
             for (let j = 0; j < nodesSnapshot.snapshotLength; j++) {
                 const currMatch = nodesSnapshot.snapshotItem(j);
                 // TODO: This is still susceptible to matching two different nodes "So" and "Some" for the error "So".
-                if (paragraph.contains(currMatch) /*&& currMatch.textContent.match(`\b${h.element.innerText}\b`) */) {
+                if (paragraph.contains(currMatch) /*&& currMatch.textContent.match(`\b${this.getText(h.element)}\b`) */) {
                     this.updateTextNode(currMatch, h);
                     this.updateCSS(this.selector, h);
                     break;
@@ -109,12 +113,12 @@ export class WriteBetter {
     }
 
     updateTextNode(node: Node, h: Highlight): HTMLElement {
-        Log.debug(TAG, "#updateTextNode for '", h.element.innerText, "'");
+        Log.debug(TAG, "#updateTextNode for '", this.getText(h.element), "'");
         const parent = node.parentElement;
         const originalText = parent.textContent; // innerText??
         // Find index of text in parent which can be arbitrarily located in the paragraph.
         // TODO: Instead 0 for position allow multiple of same highlight per text.
-        const index = parent.innerText.indexOf(h.element.innerText, 0);
+        const index = this.getText(parent).indexOf(this.getText(h.element), 0);
 
         if (index < 0) {
             Log.error(TAG, "#updateTextNode, highlight not found");
@@ -155,27 +159,33 @@ export class WriteBetter {
         return e.innerText;
     }
 
+    getCleanText(e: HTMLElement): string {
+        return this.getText(e).replace(/\u200C/g, '').replace('  ', ' ').trim();
+    }
+
     // Only returns elements that contain text which *needs* to be analyzed.
     // NB: Concating the result of this function would not yield its input.
     smartSplitter(e: HTMLElement): Observable<HTMLElement> {
         Log.debug(TAG, "#smartSplitter");
         if (this.isGoogleDocs()) {
             return from(e.querySelectorAll<HTMLElement>(":scope .kix-paragraphrenderer").values())
-                .pipe(filter(e => !!e.innerText.replace(/\u200C/g, '').trim())) // only emit paragraphs with text.
-                .pipe(filter(e => this.needsAnalyzing(e))); // only emit unprocessed or modified paragraphs.
+                .pipe(filter(e => !!this.getCleanText(e))) // only emit paragraphs with text.
+                .pipe(filter(e => !this.isCached(e))); // only emit modified paragraphs.
         }
 
         return from([]);
     }
 
-    needsAnalyzing(e: HTMLElement): boolean {
-        return !WriteBetter.cache.has(getPathTo(e)) || WriteBetter.cache.get(getPathTo(e)) != e.innerText;
+    isCached(paragraph: HTMLElement): boolean {
+        WriteBetter.tempCache.set(this.getCleanText(paragraph), true);
+        return WriteBetter.cache.has(this.getCleanText(paragraph));
     }
 
     isGoogleDocs(): boolean {
         return location.hostname.includes("docs.google.com");
     }
 
+    // @Deprecated.
     unapplyHiglights(paragraph: HTMLElement) {
         const highlights = paragraph.querySelectorAll(".writebetter-highlight");
         highlights.forEach(h => h.outerHTML = h.innerHTML);
