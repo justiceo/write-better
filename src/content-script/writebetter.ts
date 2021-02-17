@@ -65,7 +65,6 @@ export class WriteBetter {
         Log.debug(TAG, "#applySuggestionsInternal", this.getCleanText(paragraph), suggestions);
         paragraph = inplace ? paragraph : paragraph.cloneNode(true) as HTMLElement
         if (suggestions.length == 0) {
-            Log.debug(TAG, "No suggestions for paragraph: ", this.getCleanText(paragraph));
             return paragraph;
         }
 
@@ -126,7 +125,7 @@ export class WriteBetter {
         // Find location of suggestion in the text node containing it.
         const index = node.textContent.indexOf(this.getText(h.element), 0);
         if (index < 0) {
-            Log.error(TAG, `#updateTextNode, suggestion '${this.getText(h.element)}' not found`);
+            Log.warn(TAG, `#updateTextNode, suggestion '${this.getText(h.element)}' not found`);
             return parent;
         }
 

@@ -11,11 +11,28 @@ export class Log {
         console.debug("%c%s %s", "color: blue", `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}]`, tag, ...logs);
     }
 
+    static log(tag: string, ...logs: any[]) {
+        if (!this.debugMode) {
+            return;
+        }
+        const d = new Date(Date.now());
+        console.log("%c%s %s", "color: blue", `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}]`, tag, ...logs);
+    }
+
+
+    static warn(tag: string, ...logs: any[]) {
+        if (!this.debugMode) {
+            return;
+        }
+        const d = new Date(Date.now());
+        console.warn("%c%s %s", "color: yellow", `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}]`, tag, ...logs);
+    }
+
     static error(tag: string, ...logs: any[]) {
         if (!this.debugMode) {
             return;
         }
         const d = new Date(Date.now());
-        console.debug("%c%s %s", "color: red", `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}]`, tag, ...logs);
+        console.error("%c%s %s", "color: red", `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}]`, tag, ...logs);
     }
 }
