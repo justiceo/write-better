@@ -79,14 +79,8 @@ export class WriteBetter {
         this.observer.observe(targetNode, config);
     }
 
-    stopWatch() {
-        if (this.observer) {
-            this.observer.disconnect();
-        }
-    }
-
     applySuggestions(paragraph: HTMLElement, inplace: boolean): HTMLElement {
-        const suggestions = this.getSuggestions(paragraph);
+        const suggestions = writeGood(this.getText(paragraph));
         Log.debug(TAG, "#applySuggestions", this.getTruncatedText(paragraph), suggestions);
         paragraph = inplace ? paragraph : paragraph.cloneNode(true) as HTMLElement
         if (suggestions.length == 0) {
@@ -181,10 +175,6 @@ export class WriteBetter {
         this.css.appendChild(document.createTextNode(newStyle));
     }
 
-    getSuggestions(e: HTMLElement): Suggestion[] {
-        return writeGood(this.getText(e))
-    }
-
 
     getText(e: HTMLElement): string {
         // InnerText appproximates the rendered text of the element 
@@ -231,12 +221,6 @@ export class WriteBetter {
         return location.hostname.includes("docs.google.com");
     }
 
-    // @Deprecated.
-    unapplyHiglights(paragraph: HTMLElement) {
-        const highlights = paragraph.querySelectorAll(".writebetter-highlight");
-        highlights.forEach(h => h.outerHTML = h.innerHTML);
-    }
-
     static replaceAll(input: string, pairs: Map<string, string>): string {
         pairs.forEach((newValue: string, oldValue: string) => {
             input = input.replace(new RegExp(oldValue, 'g'), newValue);
@@ -245,27 +229,13 @@ export class WriteBetter {
     }
 
 
-    /* Remove highlight CSS from the DOM */
-    clear() {
-        Log.debug(TAG, `Removing css file from document: ${this.css.id}`)
+    /* Stop observers and remove highlight CSS from the DOM */
+    cleanup() {
+        Log.debug(TAG, `#cleanup`)
         this.css.remove();
-    }
-}
 
-// Ref - https://stackoverflow.com/a/2631931
-function getPathTo(element: any): string {
-    if (element.id !== '')
-        return 'id("' + element.id + '")';
-    if (element === document.body)
-        return element.tagName;
-
-    var ix = 0;
-    var siblings = element.parentNode.childNodes;
-    for (var i = 0; i < siblings.length; i++) {
-        var sibling = siblings[i];
-        if (sibling === element)
-            return getPathTo(element.parentNode) + '/' + element.tagName + '[' + (ix + 1) + ']';
-        if (sibling.nodeType === 1 && sibling.tagName === element.tagName)
-            ix++;
+        if (this.observer) {
+            this.observer.disconnect();
+        }
     }
 }
