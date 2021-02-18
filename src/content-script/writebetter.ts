@@ -1,5 +1,5 @@
-import { from, interval, Observable } from 'rxjs';
-import { filter, map, finalize } from 'rxjs/operators';
+import { from, interval, Observable, Subject } from 'rxjs';
+import { filter, map, finalize, throttle } from 'rxjs/operators';
 import { Suggestion } from './suggestion';
 import { Log } from '../shared/log';
 import { Highlight } from './highlight';
@@ -49,7 +49,7 @@ export class WriteBetter {
                 }));
 
         // TODO: if not inplace, attempt to reconstruct e before returning it.
-        subscription.subscribe(e => {}, err => Log.error(TAG, err));
+        subscription.subscribe(e => { }, err => Log.error(TAG, err));
         return e;
     }
 
@@ -64,8 +64,16 @@ export class WriteBetter {
         // Options for the observer (which mutations to observe)
         const config = { attributes: true, childList: true, subtree: true };
 
+        // Throttle DOM change events, to avoid calling analyze() excessively per second.
+        // The trailing:true option ensures the last event is always called.
+        const domChangeSubject = new Subject();
+        domChangeSubject.pipe(throttle(() => interval(1000), { trailing: true })).subscribe(() => this.analyze(selector));
+
+        // Function called whenever the DOM changes, in this case, notify subject.
+        const callback = () => domChangeSubject.next()
+
         // Create an observer instance linked to the callback function
-        this.observer = new MutationObserver(() => this.analyze(selector));
+        this.observer = new MutationObserver(callback);
 
         // Start observing the target node for configured mutations
         this.observer.observe(targetNode, config);
