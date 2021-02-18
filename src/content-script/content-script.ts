@@ -9,7 +9,7 @@ const writeBetter = new WriteBetter();
 const analyze = () => {
     const t1 = performance.now();
     const gdocSelector = '.kix-paginateddocumentplugin';
-    writeBetter.analyze(gdocSelector);
+    writeBetter.analyzeAndWatch(gdocSelector);
     Log.debug(TAG, `Analyzed ${gdocSelector}  in ${Math.ceil(performance.now() - t1)}ms"`);
 }
 
@@ -21,7 +21,7 @@ const init = () => {
 
     // Automatically re-analyze doc every second.
     // TODO: needs a ways to stop this when plugin is disabled (though disabling not part of v1.).
-    setInterval(analyze, 1000);
+    analyze()
 
     // When window is resized, force re-analyze doc. clear caches how?
     window.addEventListener('resize', () => {

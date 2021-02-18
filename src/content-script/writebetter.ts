@@ -9,6 +9,7 @@ const TAG = 'writebetter.ts';
 export class WriteBetter {
     previousText: string = null;
     selector: string = null; // TODO: parameterize.
+    observer: MutationObserver = null;
     static cache: Map<string, boolean> = new Map();
     static tempCache: Map<string, boolean> = new Map();
     private css: HTMLStyleElement;
@@ -54,7 +55,26 @@ export class WriteBetter {
 
 
     analyzeAndWatch(selector: string): Observable<HTMLElement> {
-        return interval(2000).pipe(map(_ => this.analyze(selector)));
+        // Select the node that will be observed for mutations
+        const targetNode = document.querySelector(selector) as HTMLElement;
+        if (targetNode == null) {
+            return null;
+        }
+
+        // Options for the observer (which mutations to observe)
+        const config = { attributes: true, childList: true, subtree: true };
+
+        // Create an observer instance linked to the callback function
+        this.observer = new MutationObserver(() => this.analyze(selector));
+
+        // Start observing the target node for configured mutations
+        this.observer.observe(targetNode, config);
+    }
+
+    stopWatch() {
+        if (this.observer) {
+            this.observer.disconnect();
+        }
     }
 
     applySuggestions(paragraph: HTMLElement, inplace: boolean): HTMLElement {
@@ -94,7 +114,7 @@ export class WriteBetter {
 
             for (let j = 0; j < nodesSnapshot.snapshotLength; j++) {
                 const currMatch = nodesSnapshot.snapshotItem(j);
-                
+
                 // TODO: Also skip hidden nodes https://stackoverflow.com/a/21696585/3665475
                 // TODO: This is still susceptible to matching two different nodes "So" and "Some" for the error "So".
                 if (paragraph.contains(currMatch) /*&& currMatch.textContent.match(`\b${this.getText(h.element)}\b`) */) {
@@ -171,15 +191,15 @@ export class WriteBetter {
 
     getTruncatedText(e: HTMLElement) {
         return this.getTruncatedString(this.getCleanText(e));
-     };
+    };
 
-     getTruncatedString(e: string) {
+    getTruncatedString(e: string) {
         const words = e.split(" ");
         if (words.length > 7) {
-           return words.slice(0, 3).join(" ") + " ... " + words.slice(words.length-3).join(" ");
+            return words.slice(0, 3).join(" ") + " ... " + words.slice(words.length - 3).join(" ");
         }
         return e;
-     };
+    };
 
     // Only returns elements that contain text which *needs* to be analyzed.
     // NB: Concating the result of this function would not yield its input.
