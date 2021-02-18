@@ -62,7 +62,7 @@ export class WriteBetter {
         }
 
         // Options for the observer (which mutations to observe)
-        const config = { attributes: true, childList: true, subtree: true };
+        const config: MutationObserverInit = { attributes: true, childList: true, subtree: true, characterData: true };
 
         // Throttle DOM change events, to avoid calling analyze() excessively per second.
         // The trailing:true option ensures the last event is always called.
