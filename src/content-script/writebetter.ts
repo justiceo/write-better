@@ -54,7 +54,7 @@ export class WriteBetter {
     }
 
 
-    analyzeAndWatch(selector: string): Observable<HTMLElement> {
+    analyzeAndWatch(selector: string): void {
         // Select the node that will be observed for mutations
         const targetNode = document.querySelector(selector) as HTMLElement;
         if (targetNode == null) {
@@ -67,16 +67,19 @@ export class WriteBetter {
         // Throttle DOM change events, to avoid calling analyze() excessively per second.
         // The trailing:true option ensures the last event is always called.
         const domChangeSubject = new Subject();
-        domChangeSubject.pipe(throttle(() => interval(1000), { trailing: true })).subscribe(() => this.analyze(selector));
+        domChangeSubject.pipe(throttle(() => interval(1000), { leading: true, trailing: true })).subscribe(() => this.analyze(selector));
 
         // Function called whenever the DOM changes, in this case, notify subject.
-        const callback = () => domChangeSubject.next()
+        const callback = () => domChangeSubject.next();
 
         // Create an observer instance linked to the callback function
         this.observer = new MutationObserver(callback);
 
         // Start observing the target node for configured mutations
         this.observer.observe(targetNode, config);
+
+        // Trigger an initial call for analysis, incase extension is loaded after DOM is setup.
+        setTimeout(() => domChangeSubject.next(), 1000);
     }
 
     applySuggestions(paragraph: HTMLElement, inplace: boolean): HTMLElement {
