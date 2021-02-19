@@ -7,6 +7,61 @@ span.writebetter-highlight:hover {
     background: #f0f0f0;
 }
 
+span.writebetter-highlight:before,
+span.writebetter-highlight:after {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1000;
+}
+
+span.writebetter-highlight:after {
+    /* The Arrow below the tooltip */
+    border-right: 6px solid transparent;
+    border-top: 10px solid #eee;
+    border-left: 6px solid transparent;
+    content: '';
+    height: 0px;
+    width: 0px;
+    bottom: 20px;
+    left: 5px;
+    transform: translate3d(0, 6px, 0);
+    transition: all .1s ease-in-out;
+    display: none;
+}
+
+span.writebetter-highlight:before {
+    /* The tooltip box */
+    background: rgba(255, 255, 255, .95);
+    border: 1px solid #ddd;
+    box-shadow: 3px 3px #eee;
+    border-radius: 5px;
+    color: black;
+    content: '';
+    font-size: 14px;
+    font-family: docs-Consolas, monospace;
+    padding: 10px 15px;
+    bottom: 30px;
+    white-space: nowrap;
+    transform: scale3d(.2, .2, 1);
+    transition: all .2s ease-in-out;
+    display: none;
+}
+
+span.writebetter-highlight:hover:before,
+span.writebetter-highlight:hover:after {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+    display: inline;
+}
+
+span.writebetter-highlight:hover:after {
+    transition: all .2s .1s ease-in-out;
+}
+
+
+/* Cosmetic CSS below */
 /* See colornames at https://htmlcolorcodes.com/color-names/ */
 span.writebetter-highlight.weasel {
     border-bottom-color: rgba(255, 165, 0, 1); /* orange */
@@ -70,57 +125,4 @@ span.writebetter-highlight.eprime {
 }
 span.writebetter-highlight.eprime:hover {
     background: rgba(0, 139, 139, 0.3);
-}
-
-span.writebetter-highlight:before,
-span.writebetter-highlight:after {
-    display: block;
-    opacity: 0;
-    pointer-events: none;
-    position: absolute;
-    z-index: 1000;
-}
-
-span.writebetter-highlight:after {
-    /* The Arrow below the tooltip */
-    border-right: 6px solid transparent;
-    border-top: 10px solid #eee;
-    border-left: 6px solid transparent;
-    content: '';
-    height: 0px;
-    width: 0px;
-    bottom: 20px;
-    left: 5px;
-    transform: translate3d(0, 6px, 0);
-    transition: all .1s ease-in-out;
-    display: none;
-}
-
-span.writebetter-highlight:before {
-    /* The tooltip box */
-    background: rgba(255, 255, 255, .95);
-    border: 1px solid #ddd;
-    box-shadow: 3px 3px #eee;
-    border-radius: 5px;
-    color: black;
-    content: '';
-    font-size: 14px;
-    font-family: docs-Consolas, monospace;
-    padding: 10px 15px;
-    bottom: 30px;
-    white-space: nowrap;
-    transform: scale3d(.2, .2, 1);
-    transition: all .2s ease-in-out;
-    display: none;
-}
-
-span.writebetter-highlight:hover:before,
-span.writebetter-highlight:hover:after {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
-    display: inline;
-}
-
-span.writebetter-highlight:hover:after {
-    transition: all .2s .1s ease-in-out;
 }
