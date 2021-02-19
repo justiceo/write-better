@@ -3,32 +3,73 @@ span.writebetter-highlight {
     position: relative;
     border-bottom: 3px solid #ffc578;
 }
-span.writebetter-highlight.weasle {
-    border-bottom-color: blue;
+span.writebetter-highlight:hover {
+    background: #f0f0f0;
+}
+
+/* See colornames at https://htmlcolorcodes.com/color-names/ */
+span.writebetter-highlight.weasel {
+    border-bottom-color: rgba(255, 165, 0, 1); /* orange */
+    background: rgba(255, 165, 0, 0.15);
+}
+span.writebetter-highlight.weasel:hover{
+    background: rgba(255, 165, 0, 0.3);
 }
 span.writebetter-highlight.so {
-    border-bottom-color: red;
+    border-bottom-color: rgba(221, 160, 221, 1);
+    background: rgba(221, 160, 221, 0.15);
+}
+span.writebetter-highlight.so:hover {
+    background: rgba(221, 160, 221, 0.3);
 }
 span.writebetter-highlight.adverb {
-    border-bottom-color: purple;
+    border-bottom-color: rgb(102, 205, 170);
+    background: rgba(102, 205, 170, 0.15);
+}
+span.writebetter-highlight.adverb:hover {
+    background: rgba(102, 205, 170, 0.3);
 }
 span.writebetter-highlight.tooWordy {
-    border-bottom-color: magenta;
+    border-bottom-color: rgb(64, 224, 208);
+    background: rgba(64, 224, 208, 0.15);
+}
+span.writebetter-highlight.tooWordy:hover {
+    background: rgba(64, 224, 208, 0.3);
 }
 span.writebetter-highlight.thereIs {
-    border-bottom-color: cyan;
+    border-bottom-color: rgb(0, 191, 255);
+    background: rgba(0, 191, 255, 0.15);
+}
+span.writebetter-highlight.thereIs:hover {
+    background: rgba(0, 191, 255, 0.3);
 }
 span.writebetter-highlight.illusion {
-    border-bottom-color: aqua;
+    border-bottom-color: rgb(0, 255, 255); /* Aqua */
+    background: rgba(0, 255, 255, 0.15);
+}
+span.writebetter-highlight.illusion:hover {
+    background: rgba(0, 255, 255, 0.3);
 }
 span.writebetter-highlight.passive {
-    border-bottom-color: burlywood;
+    border-bottom-color: rgb(255, 160, 122); /* lightsalmon */
+    background: rgba(255, 160, 122, 0.15);
+}
+span.writebetter-highlight.passive:hover {
+    background: rgba(255, 160, 122, 0.3); 
 }
 span.writebetter-highlight.cliches {
-    border-bottom-color: cadetblue;
+    border-bottom-color: rgb(123, 104, 238); /* MediumSlateBlue */
+    background: rgba(123, 104, 238, 0.15);
+}
+span.writebetter-highlight.cliches:hover {
+    background: rgba(123, 104, 238, 0.3);
 }
 span.writebetter-highlight.eprime {
-    border-bottom-color: darkcyan;
+    border-bottom-color: rgb(0, 139, 139); /* DarkCyan */
+    background: rgba(0, 139, 139, 0.15);
+}
+span.writebetter-highlight.eprime:hover {
+    background: rgba(0, 139, 139, 0.3);
 }
 
 span.writebetter-highlight:before,
@@ -71,10 +112,6 @@ span.writebetter-highlight:before {
     transform: scale3d(.2, .2, 1);
     transition: all .2s ease-in-out;
     display: none;
-}
-
-span.writebetter-highlight:hover {
-    background: #f0f0f0;
 }
 
 span.writebetter-highlight:hover:before,
