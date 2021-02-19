@@ -70,6 +70,13 @@ span.writebetter-highlight.weasel {
 span.writebetter-highlight.weasel:hover{
     background: rgba(255, 165, 0, 0.3);
 }
+span.writebetter-highlight.weasel:before {
+    box-shadow: 3px 3px rgba(255, 165, 0, 0.3);;
+}
+span.writebetter-highlight.weasel:after {
+    border-top: 10px solid rgba(255, 165, 0, 0.3);;
+}
+
 span.writebetter-highlight.so {
     border-bottom-color: rgba(221, 160, 221, 1);
     background: rgba(221, 160, 221, 0.15);
@@ -77,6 +84,13 @@ span.writebetter-highlight.so {
 span.writebetter-highlight.so:hover {
     background: rgba(221, 160, 221, 0.3);
 }
+span.writebetter-highlight.so:before {
+    box-shadow: 3px 3px  rgba(221, 160, 221, 0.3);
+}
+span.writebetter-highlight.so:after {
+    border-top: 10px solid  rgba(221, 160, 221, 0.3);
+}
+
 span.writebetter-highlight.adverb {
     border-bottom-color: rgb(102, 205, 170);
     background: rgba(102, 205, 170, 0.15);
@@ -84,6 +98,13 @@ span.writebetter-highlight.adverb {
 span.writebetter-highlight.adverb:hover {
     background: rgba(102, 205, 170, 0.3);
 }
+span.writebetter-highlight.adverb:before {
+    box-shadow: 3px 3px rgba(102, 205, 170, 0.3);
+}
+span.writebetter-highlight.adverb:after {
+    border-top: 10px solid rgba(102, 205, 170, 0.3);
+}
+
 span.writebetter-highlight.tooWordy {
     border-bottom-color: rgb(64, 224, 208);
     background: rgba(64, 224, 208, 0.15);
@@ -91,6 +112,13 @@ span.writebetter-highlight.tooWordy {
 span.writebetter-highlight.tooWordy:hover {
     background: rgba(64, 224, 208, 0.3);
 }
+span.writebetter-highlight.adverb:before {
+    box-shadow: 3px 3px rgba(64, 224, 208, 0.3);
+}
+span.writebetter-highlight.adverb:after {
+    border-top: 10px solid rgba(64, 224, 208, 0.3);
+}
+
 span.writebetter-highlight.thereIs {
     border-bottom-color: rgb(0, 191, 255);
     background: rgba(0, 191, 255, 0.15);
@@ -98,6 +126,13 @@ span.writebetter-highlight.thereIs {
 span.writebetter-highlight.thereIs:hover {
     background: rgba(0, 191, 255, 0.3);
 }
+span.writebetter-highlight.thereIs:before {
+    box-shadow: 3px 3px rgba(0, 191, 255, 0.3);
+}
+span.writebetter-highlight.thereIs:after {
+    border-top: 10px solid rgba(0, 191, 255, 0.3);
+}
+
 span.writebetter-highlight.illusion {
     border-bottom-color: rgb(0, 255, 255); /* Aqua */
     background: rgba(0, 255, 255, 0.15);
@@ -105,6 +140,13 @@ span.writebetter-highlight.illusion {
 span.writebetter-highlight.illusion:hover {
     background: rgba(0, 255, 255, 0.3);
 }
+span.writebetter-highlight.illusion:before {
+    box-shadow: 3px 3px rgba(0, 255, 255, 0.3);
+}
+span.writebetter-highlight.illusion:after {
+    border-top: 10px solid rgba(0, 255, 255, 0.3);
+}
+
 span.writebetter-highlight.passive {
     border-bottom-color: rgb(255, 160, 122); /* lightsalmon */
     background: rgba(255, 160, 122, 0.15);
@@ -112,6 +154,13 @@ span.writebetter-highlight.passive {
 span.writebetter-highlight.passive:hover {
     background: rgba(255, 160, 122, 0.3); 
 }
+span.writebetter-highlight.passive:before {
+    box-shadow: 3px 3px rgba(255, 160, 122, 0.3); 
+}
+span.writebetter-highlight.passive:after {
+    border-top: 10px solid rgba(255, 160, 122, 0.3); 
+}
+
 span.writebetter-highlight.cliches {
     border-bottom-color: rgb(123, 104, 238); /* MediumSlateBlue */
     background: rgba(123, 104, 238, 0.15);
@@ -119,10 +168,23 @@ span.writebetter-highlight.cliches {
 span.writebetter-highlight.cliches:hover {
     background: rgba(123, 104, 238, 0.3);
 }
+span.writebetter-highlight.cliches:before {
+    box-shadow: 3px 3px rgba(123, 104, 238, 0.3);
+}
+span.writebetter-highlight.cliches:after {
+    border-top: 10px solid rgba(123, 104, 238, 0.3);
+}
+
 span.writebetter-highlight.eprime {
     border-bottom-color: rgb(0, 139, 139); /* DarkCyan */
     background: rgba(0, 139, 139, 0.15);
 }
 span.writebetter-highlight.eprime:hover {
     background: rgba(0, 139, 139, 0.3);
+}
+span.writebetter-highlight.eprime:before {
+    box-shadow: 3px 3px rgba(0, 139, 139, 0.3);
+}
+span.writebetter-highlight.eprime:after {
+    border-top: 10px solid rgba(0, 139, 139, 0.3);
 }
