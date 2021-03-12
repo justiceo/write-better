@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/all.min.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="css/fontawesome.min.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="addblock-popup">
+        <div class="addblock-header">
+            <div class="logo"><img src="img/logo-write.png" alt="">
+                <h4>Write Better</h4>
+            </div>
+            <div class="con-icon"><i class="fas fa-cog"></i></div>
+        </div>
+        <div class="block-add">
+            <div class="block-item">
+                <div class="block-website">
+                    <div class="website-name">
+                        <h5>This website:</h5>
+                        <p><label id="hostname">www.example.com</label></p>
+                    </div>
+                    <div class="website-contrl">
+                        <input id="hostname-checkbox" type="checkbox" />
+                    </div>
+                </div>
+
+                <div class="block-page">
+                    <div class="page-name">
+                        <h5>This page:</h5>
+                        <p><label id="url-path">/some/page</label></p>
+                    </div>
+                    <div class="page-contrl"><input id="url-path-checkbox" type="checkbox" /></div>
+                </div>
+            </div>
+            <div class="block-number">
+                <div class="on-page">
+                    <p>Suggestions on page</p>
+                    <span id="page-error-count">0</span>
+                </div>
+
+                <div class="in-total">
+                    <p>Total words strengthened</p>
+                    <span id="total-error-count">0</span>
+                </div>
+            </div>
+            <!-- <button id="options" class="btn">view options</button> -->
+            <textarea name="" id="options" placeholder="Type, paste or select text from any website"></textarea>
+        </div>
+        <p class="block-vir">version 1.1.0</p>
+    </div>
+    <script src="popup.js" type="text/javascript" charset="utf-8"></script>
+</body>
+
+</html>

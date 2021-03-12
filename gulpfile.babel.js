@@ -11,6 +11,7 @@ import webExt from 'web-ext';
 
 const backgroundScripts = ['src/background-script/background.ts'];
 const contentScripts = ['src/content-script/content-script.ts']; // Dependencies are pulled-in autoamtically.
+const popupScript = ['src/popup/popup.ts'];
 const testSpecs = ['spec/**/*.ts'];
 const assets = ['assets/**/*'];
 const outDir = './extension';
@@ -35,6 +36,16 @@ const compileContentScript = () => {
         .pipe(gulp.dest(outDir))
 }
 
+const compilePopupScript = () => {
+    return browserify()
+        .add(popupScript)
+        .plugin(tsify, { noImplicitAny: true, target: 'es6' })
+        .bundle()
+        .on('error', (err) => { console.error(err) })
+        .pipe(source('popup.js'))
+        .pipe(gulp.dest(outDir))
+}
+
 const compileTests = () => {
     return gulp.src(testSpecs)
         .pipe(ts({
@@ -54,6 +65,10 @@ const watchBackgroundScript = () => {
 
 const watchContentScript = () => {
     gulp.watch(contentScripts, gulp.parallel(compileContentScript));
+}
+
+const watchPopupScript = () => {
+    gulp.watch(popupScript, gulp.parallel(compilePopupScript));
 }
 
 const watchAssets = () => {
@@ -83,7 +98,7 @@ export const runTest = () => {
 export const clean = () => del([outDir]);
 clean.description = 'clean the output directory'
 
-export const build = gulp.parallel(copyAssets, compileBackgroundScript, compileContentScript);
+export const build = gulp.parallel(copyAssets, compileBackgroundScript, compileContentScript, compilePopupScript);
 build.description = 'compile all sources'
 
 export const test = gulp.series(compileTests, runTest);
@@ -103,6 +118,6 @@ export const firefoxDemo = () => {
     webExt.cmd.run({ sourceDir: `${process.env.PWD}/extension` }, { shouldExitProgram: true });
 }
 
-const defaultTask = gulp.series(clean, build, gulp.parallel(watchBackgroundScript, watchContentScript, watchAssets))
+const defaultTask = gulp.series(clean, build, gulp.parallel(watchBackgroundScript, watchContentScript, watchAssets, watchPopupScript))
 defaultTask.description = 'start watching for changes to all source'
 export default defaultTask

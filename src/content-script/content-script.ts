@@ -5,6 +5,11 @@ import { WriteBetter } from './writebetter';
 const TAG = "content-script.ts"
 const writeBetter = new WriteBetter();
 
+/*
+This script is started after loading when document is idle.
+The browser chooses a time to inject scripts between "document_end" and immediately after the window.onloadevent fires. The exact moment of injection depends on how complex the document is and how long it is taking to load, and is optimized for page load speed.
+Content scripts running at "document_idle" do not need to listen for the window.onload event, they are guaranteed to run after the DOM is complete.
+*/
 const init = () => {
     if (!writeBetter.isGoogleDocs()) {
         Log.debug(TAG, "Invalid editor model");
