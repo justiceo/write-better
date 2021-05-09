@@ -3,4 +3,3 @@ extension/*
 spec/**/*.js
 public
 resources
-themes/book
